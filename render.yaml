@@ -1,0 +1,58 @@
+services:
+  # Backend API
+  - type: web
+    name: sistemagestionagricola
+    env: node
+    region: oregon
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        value: g5n/luqG5cC8d+64IqsJaQPIPVOXrxzORpQPREDaursgxx8sSMVyLx6xq8bNlIcv
+      - key: DATABASE_URL
+        value: postgresql://elorza:g65hHAdGLwoOYl33zlPRnVyzdsY6FsD1@dpg-d1qpnlodl3ps73eln790-a.oregon-postgres.render.com/sistema_gestion_agricola
+      - key: CORS_ORIGIN
+        value: https://sistemagestionagricola-frontend.onrender.com
+      - key: PRISMA_HIDE_UPDATE_MESSAGE
+        value: true
+      - key: CHECKPOINT_DISABLE
+        value: 1
+    autoDeploy: true
+
+  # Frontend App
+  - type: web
+    name: sistemagestionagricola-frontend
+    env: static
+    region: oregon
+    plan: free
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://sistemagestionagricola.onrender.com/api
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+      - path: /assets/*
+        name: Cache-Control
+        value: max-age=31536000
+    redirects:
+      - source: /*
+        destination: /index.html
+        type: rewrite
+    autoDeploy: true
+# Nota: La base de datos ya existe en Render con esta configuración:
+# - Hostname: dpg-d1qpnlodl3ps73eln790-a.oregon-postgres.render.com
+# - Database: sistema_gestion_agricola
+# - Username: elorza
+# - Password: g65hHAdGLwoOYl33zlPRnVyzdsY6FsD1
+# Por lo tanto, no necesitamos crear una nueva base de datos

@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: agroservicios-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install && npx prisma generate
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        value: g5n/luqG5cC8d+64IqsJaQPIPVOXrxzORpQPREDaursgxx8sSMVyLx6xq8bNlIcv
+      - key: DATABASE_URL
+        value: postgresql://elorza:g65hHAdGLwoOYl33zlPRnVyzdsY6FsD1@dpg-d1qpnlodl3ps73eln790-a.oregon-postgres.render.com/sistema_gestion_agricola
+      - key: CORS_ORIGIN
+        value: https://sistemagestionagricola.onrender.com
+      - key: PRISMA_HIDE_UPDATE_MESSAGE
+        value: true
+      - key: CHECKPOINT_DISABLE
+        value: 1
+    autoDeploy: true

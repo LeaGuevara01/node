@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Maquinaria {
+  id           Int          @id @default(autoincrement())
+  nombre       String
+  modelo       String
+  anio         Int?
+  categoria    String?
+  descripcion  String?
+  estado       String?
+  numero_serie String?
+  proveedor    String?
+  ubicacion    String?
+  reparaciones Reparacion[]
+}
+
+model Repuesto {
+  id           Int                  @id @default(autoincrement())
+  nombre       String
+  stock        Int
+  proveedorId  Int?
+  categoria    String?
+  codigo       String?
+  descripcion  String?
+  precio       Int?
+  proveedor    String?
+  ubicacion    String?
+  reparaciones ReparacionRepuesto[]
+  proveedorRel Proveedor?           @relation(fields: [proveedorId], references: [id])
+}
+
+model Proveedor {
+  id        Int        @id @default(autoincrement())
+  nombre    String
+  cuit      String?
+  direccion String?
+  email     String?
+  productos String[]
+  telefono  String?
+  web       String?
+  repuestos Repuesto[]
+}
+
+model Reparacion {
+  id           Int                  @id @default(autoincrement())
+  fecha        DateTime
+  maquinariaId Int
+  descripcion  String?
+  userId       Int?
+  maquinaria   Maquinaria           @relation(fields: [maquinariaId], references: [id], onDelete: Cascade)
+  usuario      User?                @relation(fields: [userId], references: [id])
+  repuestos    ReparacionRepuesto[]
+}
+
+model ReparacionRepuesto {
+  id           Int        @id @default(autoincrement())
+  reparacionId Int
+  repuestoId   Int
+  cantidad     Int
+  reparacion   Reparacion @relation(fields: [reparacionId], references: [id], onDelete: Cascade)
+  repuesto     Repuesto   @relation(fields: [repuestoId], references: [id])
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  username     String       @unique
+  password     String
+  role         String
+  reparaciones Reparacion[]
+}

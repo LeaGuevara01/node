@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: agroservicios-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: VITE_API_URL
+        value: https://sistemagestionagricola.onrender.com/api
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    redirects:
+      - source: /*
+        destination: /index.html
+        type: rewrite
+    autoDeploy: true

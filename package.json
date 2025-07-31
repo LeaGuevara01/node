@@ -1,0 +1,28 @@
+{
+  "name": "agroservicios-monorepo",
+  "version": "1.0.0",
+  "description": "Sistema de Gestión Agrícola - Monorepo",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "cd server && npm start",
+    "deploy:backend": "cd server && npm install && npm start",
+    "deploy:frontend": "cd client && npm install && npm run build"
+  },
+  "workspaces": ["server", "client"],
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "react-router-dom": "^7.7.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

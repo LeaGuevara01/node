@@ -1,0 +1,178 @@
+openapi: 3.0.0
+info:
+  title: Sistema de Gestión de Taller Agrícola API
+  version: 1.0.0
+  description: API RESTful para administrar maquinaria, repuestos, proveedores y reparaciones.
+servers:
+  - url: http://localhost:4000/api
+paths:
+  /auth/register:
+    post:
+      summary: Registrar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+      responses:
+        "201":
+          description: Usuario creado
+        "400":
+          description: Error de validación
+  /auth/login:
+    post:
+      summary: Login de usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Token JWT
+        "401":
+          description: Credenciales inválidas
+  /maquinaria:
+    get:
+      summary: Listar maquinarias
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de maquinarias
+    post:
+      summary: Crear maquinaria
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                tipo:
+                  type: string
+                modelo:
+                  type: string
+      responses:
+        "201":
+          description: Maquinaria creada
+        "400":
+          description: Error de validación
+  /repuestos:
+    get:
+      summary: Listar repuestos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de repuestos
+    post:
+      summary: Crear repuesto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                stock:
+                  type: integer
+      responses:
+        "201":
+          description: Repuesto creado
+        "400":
+          description: Error de validación
+  /proveedores:
+    get:
+      summary: Listar proveedores
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de proveedores
+    post:
+      summary: Crear proveedor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "201":
+          description: Proveedor creado
+        "400":
+          description: Error de validación
+  /reparaciones:
+    get:
+      summary: Listar reparaciones
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de reparaciones
+    post:
+      summary: Crear reparación
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fecha:
+                  type: string
+                  format: date-time
+                maquinariaId:
+                  type: integer
+                descripcion:
+                  type: string
+                repuestos:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      repuestoId:
+                        type: integer
+                      cantidad:
+                        type: integer
+      responses:
+        "201":
+          description: Reparación creada
+        "400":
+          description: Error de validación
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
