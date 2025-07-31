@@ -5,6 +5,22 @@
 Write-Host "Verificando configuracion de deploy..." -ForegroundColor Cyan
 Write-Host ""
 
+# Verificar archivos de configuración
+$configFiles = @(
+    ".env.template",
+    "client\.env.example", 
+    "server\.env.example",
+    "client\package.json",
+    "server\package.json"
+)
+
+Write-Host "Verificando archivos de configuracion..." -ForegroundColor Yellownal de Deploy
+
+## Verificar que todo este correcto antes del deploy
+
+Write-Host "Verificando configuracion de deploy..." -ForegroundColor Cyan
+Write-Host ""
+
 # Verificar archivos de configuracion
 $configFiles = @(
     "render.yaml",

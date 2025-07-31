@@ -17,6 +17,20 @@ client/.env
 client/.env.local
 client/.env.production
 
+# Archivos de deploy con credenciales (NUNCA subir al repo)
+render.yaml
+render-*.yaml
+!render.yaml.template
+
+# Archivos locales con credenciales
+credenciales-locales.md
+secrets.md
+.secrets
+
+# Archivos generados con credenciales
+**/config-generated.js
+**/deploy-config.yaml
+
 # Build outputs
 dist/
 build/
