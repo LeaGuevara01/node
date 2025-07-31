@@ -1,7 +1,7 @@
 services:
   # Backend API
   - type: web
-    name: sistemagestionagricola
+    name: node
     env: node
     region: oregon
     plan: free
@@ -19,7 +19,7 @@ services:
       - key: DATABASE_URL
         value: YOUR_DATABASE_URL_HERE
       - key: CORS_ORIGIN
-        value: https://sistemagestionagricola-frontend.onrender.com
+        value: https://node-frontend.onrender.com
       - key: PRISMA_HIDE_UPDATE_MESSAGE
         value: true
       - key: CHECKPOINT_DISABLE
@@ -28,7 +28,7 @@ services:
 
   # Frontend App
   - type: web
-    name: sistemagestionagricola-frontend
+    name: node-frontend
     env: static
     region: oregon
     plan: free
@@ -37,7 +37,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://sistemagestionagricola.onrender.com/api
+        value: https://node.onrender.com/api
     headers:
       - path: /*
         name: Cache-Control
