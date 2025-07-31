@@ -1,5 +1,5 @@
 {
-  "name": "agroservicios-backend",
+  "name": "node-backend",
   "version": "1.0.0",
   "description": "Backend Node.js para gestión de taller agrícola",
   "main": "src/index.js",

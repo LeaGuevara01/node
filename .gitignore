@@ -17,18 +17,6 @@ client/.env
 client/.env.local
 client/.env.production
 
-# Archivos de deploy con credenciales (NUNCA subir al repo)
-render.yaml
-render-backend.yaml
-render-frontend.yaml
-render-backend-existing-db.yaml
-render-frontend-existing-db.yaml
-
-# Templates seguros (SÍ incluir)
-!render.yaml.template
-!render-backend.template.yaml
-!render-frontend.template.yaml
-
 # Archivos locales con credenciales
 credenciales-locales.md
 secrets.md

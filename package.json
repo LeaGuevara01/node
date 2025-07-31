@@ -1,5 +1,5 @@
 {
-  "name": "agroservicios-monorepo",
+  "name": "node-monorepo",
   "version": "1.0.0",
   "description": "Sistema de Gestión Agrícola - Monorepo",
   "scripts": {

@@ -3,6 +3,7 @@
 ## ⚠️ GESTIÓN SEGURA DE CREDENCIALES
 
 Este proyecto implementa un sistema de configuración centralizada que:
+
 - ✅ Lee variables de entorno automáticamente
 - ✅ Valida configuraciones requeridas
 - ✅ Genera archivos de deploy dinámicamente
@@ -13,6 +14,7 @@ Este proyecto implementa un sistema de configuración centralizada que:
 ### **1. Configuración de Variables de Entorno**
 
 #### Paso 1: Crear archivo .env local
+
 ```bash
 # Copiar template y configurar
 cp .env.template .env
@@ -20,6 +22,7 @@ cp .env.template .env
 ```
 
 #### Paso 2: Configurar variables requeridas
+
 ```bash
 # === REQUERIDAS ===
 JWT_SECRET=tu_jwt_secret_64_caracteres_minimo
@@ -36,18 +39,21 @@ RENDER_FRONTEND_SERVICE_NAME=tu-frontend-service
 ### **2. Generar Configuraciones de Deploy**
 
 #### Opción A: Usar script de generación
+
 ```bash
 # Generar archivos de deploy con tus credenciales
 node scripts/generate-deploy-config.js
 ```
 
 Este script:
+
 - ✅ Lee variables de tu archivo .env
 - ✅ Genera render.yaml con credenciales reales
 - ✅ Genera client/.env.production
 - ⚠️ Los archivos generados NO se suben a Git (están en .gitignore)
 
 #### Opción B: Variables en Dashboard de Render
+
 1. Ve a [Render Dashboard](https://dashboard.render.com)
 2. Crea servicios manualmente
 3. Configura variables de entorno en la web usando los valores de tu .env local
@@ -55,6 +61,7 @@ Este script:
 ### **3. Deploy Seguro**
 
 #### Blueprint con archivos generados:
+
 ```bash
 # 1. Configurar variables locales
 cp .env.template .env
@@ -79,19 +86,22 @@ git push
 ### Sistema de configuración implementado:
 
 **`server/src/config/index.js`**
+
 - ✅ Lee variables de entorno automáticamente
 - ✅ Proporciona valores por defecto seguros
 - ✅ Valida configuraciones requeridas
 - ✅ Genera URLs dinámicamente
 
 **`scripts/generate-deploy-config.js`**
+
 - ✅ Genera render.yaml con tus credenciales
 - ✅ Genera archivos .env.production
 - ✅ Usa variables de entorno como fuente única
 
 ### Ejemplo de uso en código:
+
 ```javascript
-const config = require('./config');
+const config = require("./config");
 
 // En lugar de process.env.JWT_SECRET
 const jwtSecret = config.JWT_SECRET;
@@ -103,12 +113,14 @@ config.validate(); // Lanza error si faltan variables críticas
 ## 🛡️ ARCHIVOS SEGUROS VS SENSIBLES
 
 ### ✅ Seguros para Git:
+
 - `.env.template` - Template sin credenciales
 - `server/src/config/index.js` - Sistema de configuración
 - `scripts/generate-deploy-config.js` - Generador de configs
 - `render.yaml.template` - Template sin credenciales
 
 ### 🚫 NUNCA subir a Git:
+
 - `.env` - Variables de entorno con credenciales reales
 - `render.yaml` - Archivo generado con credenciales
 - `client/.env.production` - Archivo generado
@@ -117,22 +129,26 @@ config.validate(); // Lanza error si faltan variables críticas
 ## 🚀 PROCESO COMPLETO DE DEPLOY
 
 1. **Preparación**:
+
    ```bash
    cp .env.template .env
    # Configurar variables reales en .env
    ```
 
 2. **Generación**:
+
    ```bash
    node scripts/generate-deploy-config.js
    ```
 
 3. **Verificación**:
+
    ```bash
    node scripts/verify-deploy.ps1
    ```
 
 4. **Commit seguro**:
+
    ```bash
    git add .  # Solo archivos seguros
    git commit -m "Configuración de deploy"
