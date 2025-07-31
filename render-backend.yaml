@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: agroservicios-backend
+    name: sistemagestionagricola-backend
     env: node
     region: oregon
     plan: free
@@ -17,7 +17,7 @@ services:
       - key: DATABASE_URL
         value: postgresql://elorza:g65hHAdGLwoOYl33zlPRnVyzdsY6FsD1@dpg-d1qpnlodl3ps73eln790-a.oregon-postgres.render.com/sistema_gestion_agricola
       - key: CORS_ORIGIN
-        value: https://sistemagestionagricola.onrender.com
+        value: https://sistemagestionagricola-frontend.onrender.com
       - key: PRISMA_HIDE_UPDATE_MESSAGE
         value: true
       - key: CHECKPOINT_DISABLE

@@ -50,9 +50,3 @@ services:
         destination: /index.html
         type: rewrite
     autoDeploy: true
-# Nota: La base de datos ya existe en Render con esta configuración:
-# - Hostname: dpg-d1qpnlodl3ps73eln790-a.oregon-postgres.render.com
-# - Database: sistema_gestion_agricola
-# - Username: elorza
-# - Password: g65hHAdGLwoOYl33zlPRnVyzdsY6FsD1
-# Por lo tanto, no necesitamos crear una nueva base de datos
