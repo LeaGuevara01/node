@@ -21,8 +21,6 @@ services:
         value: https://sistemagestionagricola-frontend.onrender.com
       - key: JWT_SECRET
         generateValue: true
-      - key: DATABASE_URL
-        sync: false # La configurarás manualmente en Render Dashboard
       - key: PRISMA_HIDE_UPDATE_MESSAGE
         value: true
       - key: CHECKPOINT_DISABLE
