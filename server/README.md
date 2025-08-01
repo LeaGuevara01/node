@@ -1,25 +1,24 @@
-# Backend Node.js
+# Backend - Sistema de Gestión Agrícola
 
 API RESTful para gestión de taller agrícola.
 
-## Stack
+## 🚀 **Inicio Rápido**
 
-- Node.js
-- Express
-- Prisma ORM
-- PostgreSQL
+```bash
+# Instalar dependencias
+npm install
 
-## Seguridad
+# Configurar .env
+cp .env.example .env
 
-- JWT
-- Roles
+# Ejecutar en desarrollo
+npm run dev
 
-## Calidad
+# Ejecutar en producción
+npm start
+```
 
-- Tests (Jest, Supertest)
-- Linter (ESLint)
-
-## Endpoints principales
+## 📚 **Endpoints Principales**
 
 - `/api/auth/register` — Registro de usuario
 - `/api/auth/login` — Login y obtención de token JWT
@@ -28,27 +27,18 @@ API RESTful para gestión de taller agrícola.
 - `/api/proveedores` — Gestión de proveedores
 - `/api/reparaciones` — Gestión de reparaciones
 
-## Migraciones
+## 🔧 **Stack Tecnológico**
 
-- Prisma gestiona el esquema y migraciones de la base de datos
+- **Node.js + Express** - Servidor web
+- **Prisma ORM** - Base de datos
+- **PostgreSQL** - Base de datos
+- **JWT + bcrypt** - Autenticación
+- **Jest + Supertest** - Testing
+- **Swagger UI** - Documentación
 
-## Variables de entorno
+## 📖 **Documentación API**
 
-Ver `.env.example` para configuración de base de datos y JWT
+- **Desarrollo**: http://localhost:4000/api/docs
+- **Producción**: https://sistemagestionagricola.onrender.com/api/docs
 
-## Despliegue en Render
-
-- Configurar variables de entorno en Render
-- Usar `npm start` para producción
-
-## Ejecución local
-
-```bash
-npm run dev
-```
-
-## Ejecución de tests
-
-```bash
-npm test
-```
+Ver el README principal para más información.

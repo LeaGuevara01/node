@@ -20,7 +20,6 @@ services:
         value: true
       - key: CHECKPOINT_DISABLE
         value: 1
-      # JWT_SECRET y DATABASE_URL se configuran manualmente en Dashboard
     autoDeploy: true
 
   # Frontend App
