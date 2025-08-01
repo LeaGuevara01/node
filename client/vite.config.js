@@ -7,7 +7,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    minify: 'terser',
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -15,12 +15,6 @@ export default defineConfig({
           ui: ['lucide-react'],
           utils: ['papaparse', 'jwt-decode']
         }
-      }
-    },
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
       }
     }
   },

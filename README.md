@@ -102,18 +102,18 @@ git push origin main
    - Conecta: `LeaGuevara01/node`
    - Branch: `main`
 
-3. **Configurar variables de entorno**:
-   - Backend Service → Environment:
-   ```
-   JWT_SECRET = tu-jwt-secret-de-64-caracteres
-   DATABASE_URL = postgresql://user:pass@host/database
-   ```
+3. **Configurar automaticamente**:
+   - Render detectará `render.yaml` automáticamente
+   - Base de datos PostgreSQL se creará automáticamente
+   - Variables de entorno se configurarán automáticamente
+   - JWT_SECRET se generará automáticamente
 
 ### **URLs de Producción**
 
 - **Frontend**: https://sistemagestionagricola-frontend.onrender.com
 - **Backend**: https://sistemagestionagricola.onrender.com
 - **API**: https://sistemagestionagricola.onrender.com/api
+- **Health Check**: https://sistemagestionagricola.onrender.com/api/health
 
 ---
 
@@ -160,12 +160,28 @@ npm run dev:client
 # Build para producción
 npm run build
 
+# Deployment preparation (Windows)
+./deploy.ps1
+
+# Deployment preparation (Linux/Mac)
+./deploy.sh
+
 # Tests
 npm test
 
 # Linting
 npm run lint
 ```
+
+### **Scripts de Deployment**
+
+Los scripts `deploy.ps1` (Windows) y `deploy.sh` (Linux/Mac) validan la configuración antes del deployment:
+
+- ✅ Verifican archivos necesarios
+- ✅ Instalan dependencias si faltan
+- ✅ Compilan el frontend
+- ✅ Validan configuración
+- ✅ Proporcionan instrucciones paso a paso
 
 ---
 
