@@ -72,11 +72,15 @@ Set-Location ..
 # Mostrar configuracion
 Write-Host ""
 Write-Host "Configuracion de deployment:" -ForegroundColor Cyan
-Write-Host "   - Base de datos: PostgreSQL (sistemagestionagricola-db)"
+Write-Host "   - Base de datos: PostgreSQL EXISTENTE (sistema_gestion_agricola)"
+Write-Host "   - Usuario DB: elorza"
 Write-Host "   - Backend: Node.js en plan starter"
 Write-Host "   - Frontend: Sitio estatico en plan free"
 Write-Host "   - Region: Oregon"
 Write-Host "   - Auto-deploy: Habilitado"
+Write-Host ""
+Write-Host "IMPORTANTE: Debes configurar DATABASE_URL manualmente:" -ForegroundColor Yellow
+Write-Host "   DATABASE_URL = postgresql://elorza:[password]@dpg-d1qpnlodl3ps73eln790-a:5432/sistema_gestion_agricola"
 Write-Host ""
 
 # Confirmar deployment
@@ -102,7 +106,12 @@ Write-Host "   - Seleccionar la rama 'main'"
 Write-Host "   - Render detectara automaticamente render.yaml"
 Write-Host "   - Hacer clic en 'Deploy'"
 Write-Host ""
-Write-Host "3. URLs de deployment:" -ForegroundColor Yellow
+Write-Host "3. Configurar DATABASE_URL:" -ForegroundColor Yellow
+Write-Host "   - Ve a tu Backend Service > Environment"
+Write-Host "   - Agregar variable: DATABASE_URL"
+Write-Host "   - Valor: postgresql://elorza:[tu-password]@dpg-d1qpnlodl3ps73eln790-a:5432/sistema_gestion_agricola"
+Write-Host ""
+Write-Host "4. URLs de deployment:" -ForegroundColor Yellow
 Write-Host "   - API: https://sistemagestionagricola.onrender.com"
 Write-Host "   - Frontend: https://sistemagestionagricola-frontend.onrender.com"
 Write-Host "   - Health Check: https://sistemagestionagricola.onrender.com/api/health"

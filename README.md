@@ -102,10 +102,18 @@ git push origin main
    - Conecta: `LeaGuevara01/node`
    - Branch: `main`
 
-3. **Configurar automaticamente**:
-   - Render detectará `render.yaml` automáticamente
-   - Base de datos PostgreSQL se creará automáticamente
-   - Variables de entorno se configurarán automáticamente
+3. **Configurar base de datos existente**:
+
+   **Ya tienes tu base de datos PostgreSQL configurada:**
+
+   - Nombre: `sistema_gestion_agricola`
+   - Usuario: `elorza`
+   - Hostname: `dpg-d1qpnlodl3ps73eln790-a`
+
+   **Configurar DATABASE_URL manualmente:**
+
+   - En Render Dashboard → Backend Service → Environment
+   - Agregar: `DATABASE_URL = postgresql://elorza:[tu-password]@dpg-d1qpnlodl3ps73eln790-a:5432/sistema_gestion_agricola`
    - JWT_SECRET se generará automáticamente
 
 ### **URLs de Producción**
@@ -255,7 +263,23 @@ npm run test:coverage
 
 ---
 
-## 🚨 **Troubleshooting**
+## 🚨 **Troubleshooting Deployment**
+
+### **Error: Render detecta Python en lugar de Node.js**
+
+Si ves este error durante el deploy:
+
+```
+==> Using Python version 3.13.4 (default)
+ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'requirements.txt'
+```
+
+**Solución:**
+
+1. Verificar que `render.yaml` está en el directorio raíz
+2. Confirmar que cada servicio especifica `env: node`
+3. Asegurar que `rootDir` apunta a `./server` y `./client`
+4. El archivo `.nvmrc` fuerza la detección de Node.js
 
 ### **Error: Puerto en uso**
 

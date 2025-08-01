@@ -1,0 +1,31 @@
+# Ignore development files
+node_modules/
+.env
+.env.local
+.env.development
+.env.test
+
+# Ignore build outputs (except dist for frontend)
+server/dist/
+*.log
+.DS_Store
+
+# Ignore deployment scripts (not needed in production)
+deploy.ps1
+deploy.sh
+DEPLOYMENT_COMMANDS.md
+
+# Ignore test files
+**/*.test.js
+**/*.spec.js
+coverage/
+
+# Ignore editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore temporary files
+*.tmp
+*.temp

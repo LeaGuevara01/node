@@ -1,12 +1,15 @@
 services:
-  # Backend API
+  # Backend API - Node.js Service
   - type: web
     name: sistemagestionagricola
     env: node
     region: oregon
     plan: starter
-    rootDir: server
-    buildCommand: npm install && npx prisma generate && npx prisma db push
+    rootDir: ./server
+    buildCommand: |
+      npm install
+      npx prisma generate
+      npx prisma db push
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -19,22 +22,24 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
-        sync: false
+        sync: false # La configurarás manualmente en Render Dashboard
       - key: PRISMA_HIDE_UPDATE_MESSAGE
         value: true
       - key: CHECKPOINT_DISABLE
         value: 1
     autoDeploy: true
 
-  # Frontend App
+  # Frontend App - Static Site
   - type: web
     name: sistemagestionagricola-frontend
     env: static
     region: oregon
     plan: free
-    rootDir: client
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    rootDir: ./client
+    buildCommand: |
+      npm install
+      npm run build
+    staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: https://sistemagestionagricola.onrender.com/api
