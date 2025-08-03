@@ -1,5 +1,4 @@
 services:
-  # Backend API - Node.js Service
   - type: web
     name: sistemagestionagricola
     env: node
@@ -19,14 +18,12 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
-        sync: false # Se configurará automáticamente con tu base de datos existente
+        sync: false
       - key: PRISMA_HIDE_UPDATE_MESSAGE
         value: true
       - key: CHECKPOINT_DISABLE
         value: 1
     autoDeploy: true
-
-  # Frontend App - Static Site
   - type: web
     name: sistemagestionagricola-frontend
     env: static
@@ -46,7 +43,7 @@ services:
         name: Cache-Control
         value: max-age=31536000
     redirects:
-      - source: /*
-        destination: /index.html
+      - source: "/*"
+        destination: "/index.html"
         type: rewrite
     autoDeploy: true
