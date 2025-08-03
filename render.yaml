@@ -24,10 +24,11 @@ services:
       - key: CHECKPOINT_DISABLE
         value: 1
     autoDeploy: true
-  - type: static
+  - type: web
     name: sistemagestionagricola-frontend
+    env: static
     buildCommand: npm install && npm run build
-    publishPath: ./dist
+    staticPublishPath: ./dist
     rootDir: ./client
     envVars:
       - key: VITE_API_URL
