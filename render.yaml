@@ -6,10 +6,7 @@ services:
     region: oregon
     plan: starter
     rootDir: ./server
-    buildCommand: |
-      npm install
-      npx prisma generate
-      npx prisma db push
+    buildCommand: npm install && npx prisma generate && npx prisma db push
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -21,6 +18,8 @@ services:
         value: https://sistemagestionagricola-frontend.onrender.com
       - key: JWT_SECRET
         generateValue: true
+      - key: DATABASE_URL
+        sync: false # Se configurará automáticamente con tu base de datos existente
       - key: PRISMA_HIDE_UPDATE_MESSAGE
         value: true
       - key: CHECKPOINT_DISABLE
@@ -34,9 +33,7 @@ services:
     region: oregon
     plan: free
     rootDir: ./client
-    buildCommand: |
-      npm install
-      npm run build
+    buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
