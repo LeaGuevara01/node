@@ -42,8 +42,4 @@ services:
       - path: /assets/*
         name: Cache-Control
         value: max-age=31536000
-    redirects:
-      - source: "/*"
-        destination: "/index.html"
-        type: rewrite
     autoDeploy: true
