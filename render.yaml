@@ -27,8 +27,7 @@ services:
   - type: web
     name: sistemagestionagricola-frontend
     env: static
-    region: oregon
-    plan: free
+    plan: starter
     rootDir: ./client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
