@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { getMaquinarias, createMaquinaria, updateMaquinaria, deleteMaquinaria } = require('../controllers/maquinariaController');
+const { getMaquinarias, createMaquinaria, updateMaquinaria, deleteMaquinaria, getMaquinariaFilters } = require('../controllers/maquinariaController');
 
 router.get('/', auth, getMaquinarias);
+router.get('/filtros', auth, getMaquinariaFilters);
 
 router.post('/', auth, (req, res, next) => {
   if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden crear maquinaria' });

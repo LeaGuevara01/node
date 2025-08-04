@@ -50,12 +50,40 @@ export async function register(username, password, role) {
 // ===== MAQUINARIAS =====
 
 /**
- * Obtener todas las maquinarias
+ * Obtener todas las maquinarias con filtros y paginación
  * @param {string} token - Token de autenticación
- * @returns {Promise<Array>} Lista de maquinarias
+ * @param {Object} filtros - Filtros a aplicar (opcional)
+ * @param {number} pagina - Página a obtener (opcional)
+ * @returns {Promise<Object>} Objeto con maquinarias y paginación
  */
-export async function getMaquinarias(token) {
-  const res = await fetch(`${API_URL}/maquinaria`, {
+export async function getMaquinarias(token, filtros = {}, pagina = 1) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: '10',
+    sortBy: 'categoria',
+    sortOrder: 'asc'
+  });
+
+  // Agregar filtros activos
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      params.append(key, filtros[key].toString());
+    }
+  });
+
+  const res = await fetch(`${API_URL}/maquinaria?${params}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+/**
+ * Obtener opciones de filtros para maquinarias
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Opciones de filtros disponibles
+ */
+export async function getMaquinariaFilters(token) {
+  const res = await fetch(`${API_URL}/maquinaria/filtros`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
@@ -111,7 +139,10 @@ export async function getRepuestos(token) {
   const res = await fetch(`${API_URL}/repuestos`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
-  return res.json();
+  const data = await res.json();
+  // El backend devuelve { repuestos: [...], pagination: {...} }
+  // Retornamos solo el array de repuestos para compatibilidad
+  return data.repuestos || [];
 }
 
 export async function createRepuesto(data, token) {
@@ -126,8 +157,8 @@ export async function createRepuesto(data, token) {
   return res.json();
 }
 
-export async function updateRepuesto(data, token) {
-  const res = await fetch(`${API_URL}/repuestos/${data.id}`, {
+export async function updateRepuesto(id, data, token) {
+  const res = await fetch(`${API_URL}/repuestos/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -135,6 +166,12 @@ export async function updateRepuesto(data, token) {
     },
     body: JSON.stringify(data)
   });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
   return res.json();
 }
 
@@ -144,6 +181,49 @@ export async function deleteRepuesto(id, token) {
     headers: {
       'Authorization': `Bearer ${token}`
     }
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
+  return res.json();
+}
+
+/**
+ * Obtener opciones disponibles para filtros de repuestos
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Opciones de filtros (categorías, ubicaciones, etc.)
+ */
+export async function getOpcionesFiltrosRepuestos(token) {
+  const res = await fetch(`${API_URL}/repuestos/filtros`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+/**
+ * Obtener estadísticas detalladas de repuestos
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Estadísticas de repuestos
+ */
+export async function getEstadisticasRepuestos(token) {
+  const res = await fetch(`${API_URL}/repuestos/estadisticas`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+/**
+ * Búsqueda rápida de repuestos
+ * @param {string} query - Término de búsqueda
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Resultados de búsqueda rápida
+ */
+export async function busquedaRapidaRepuestos(query, token) {
+  const res = await fetch(`${API_URL}/repuestos/busqueda?q=${encodeURIComponent(query)}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
 }

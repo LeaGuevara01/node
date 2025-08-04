@@ -1,240 +1,697 @@
-/**
- * Componente MaquinariaForm - Gestión completa de maquinarias agrícolas
- * 
- * Este componente proporciona funcionalidad completa CRUD para maquinarias:
- * - Formulario de creación de nuevas maquinarias
- * - Lista visual de maquinarias existentes con filtros
- * - Edición in-place mediante modales
- * - Eliminación con confirmación
- * - Importación masiva desde archivos CSV
- * - Validación de datos requeridos
- * - Manejo de errores y estados de carga
- * 
- * @param {string} token - Token de autenticación del usuario
- * @param {function} onCreated - Callback ejecutado cuando se crea una maquinaria
- */
+// Archivo optimizado para MaquinariaForm.jsx siguiendo el patrón de RepuestoForm
+// Implementa filtros avanzados, paginación y diseño moderno
 
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
-import { createMaquinaria, getMaquinarias, updateMaquinaria, deleteMaquinaria } from '../services/api';
+import { createMaquinaria, updateMaquinaria, getMaquinarias, deleteMaquinaria, getMaquinariaFilters } from '../services/api';
+import MaquinariaEditModal from '../components/MaquinariaEditModal';
+import { getColorFromString } from '../utils/colorUtils';
+import { sortMaquinariasByCategory, buildMaquinariaQueryParams, clearMaquinariaFilters, getEstadoColorClass, formatAnio } from '../utils/maquinariaUtils';
+import { 
+  CONTAINER_STYLES, 
+  INPUT_STYLES, 
+  BUTTON_STYLES, 
+  LAYOUT_STYLES,
+  ICON_STYLES,
+  TEXT_STYLES,
+  ALERT_STYLES,
+  MODAL_STYLES,
+  LIST_STYLES,
+  POSITION_STYLES,
+  RANGE_STYLES
+} from '../styles/repuestoStyles';
 
 function MaquinariaForm({ token, onCreated }) {
-  // Estado del formulario de creación
   const [form, setForm] = useState({
     nombre: '', modelo: '', categoria: '', anio: '', numero_serie: '', 
     descripcion: '', proveedor: '', ubicacion: '', estado: ''
   });
-  
-  // Estados para importación masiva CSV
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
-  
-  // Estados de la UI y datos
   const [error, setError] = useState('');
+  const [selectedMaquinaria, setSelectedMaquinaria] = useState(null);
   const [maquinarias, setMaquinarias] = useState([]);
-  const [editingMaquinaria, setEditingMaquinaria] = useState(null);
-  const [editForm, setEditForm] = useState(null);
+  
+  // Estados para filtros
+  const [filtros, setFiltros] = useState({
+    search: '',
+    categoria: '',
+    ubicacion: '',
+    estado: '',
+    anioMin: '',
+    anioMax: ''
+  });
+  const [opcionesFiltros, setOpcionesFiltros] = useState({
+    categorias: [],
+    ubicaciones: [],
+    estados: [],
+    anioRange: { min: 1900, max: new Date().getFullYear() }
+  });
+  const [paginacion, setPaginacion] = useState({
+    current: 1,
+    total: 1,
+    totalItems: 0
+  });
+  const [loading, setLoading] = useState(false);
+  const [searchTimeout, setSearchTimeout] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  /**
-   * Cargar todas las maquinarias desde la API
-   * Se ejecuta al montar el componente y tras operaciones CRUD
-   */
-  async function fetchMaquinarias() {
+  const fetchMaquinarias = async (filtrosActuales = filtros, pagina = 1) => {
+    setLoading(true);
     try {
-      const data = await getMaquinarias(token);
-      setMaquinarias(data || []);
+      console.log('Fetching maquinarias with filters:', filtrosActuales, 'page:', pagina);
+
+      const data = await getMaquinarias(token, filtrosActuales, pagina);
+      console.log('API Response:', data);
+      
+      if (data.maquinarias) {
+        const maquinariasOrdenadas = sortMaquinariasByCategory(data.maquinarias);
+        setMaquinarias(maquinariasOrdenadas);
+        setPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0 });
+      } else {
+        // Respuesta legacy sin paginación
+        const maquinariasOrdenadas = sortMaquinariasByCategory(data || []);
+        setMaquinarias(maquinariasOrdenadas);
+        setPaginacion({ current: 1, total: 1, totalItems: maquinariasOrdenadas.length });
+      }
     } catch (err) {
       console.error('Error al cargar maquinarias:', err);
+      setMaquinarias([]);
+      setError('Error al cargar maquinarias');
+    } finally {
+      setLoading(false);
     }
-  }
-
-  // Cargar datos al montar el componente
-  useEffect(() => {
-    fetchMaquinarias();
-  }, [token, onCreated]);
-
-  // Manejar cambios en el formulario de creación
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Procesar envío del formulario de creación
-   * Valida campos requeridos y crea nueva maquinaria
-   */
-  const handleSubmit = async e => {
+  const fetchOpcionesFiltros = async () => {
+    try {
+      const data = await getMaquinariaFilters(token);
+      setOpcionesFiltros(data);
+    } catch (err) {
+      console.error('Error al cargar opciones de filtros:', err);
+    }
+  };
+
+  const handleFiltroChange = (campo, valor) => {
+    const nuevosFiltros = { ...filtros, [campo]: valor };
+    setFiltros(nuevosFiltros);
+
+    if (campo === 'search') {
+      if (searchTimeout) clearTimeout(searchTimeout);
+      setSearchTimeout(setTimeout(() => {
+        fetchMaquinarias(nuevosFiltros, 1);
+      }, 300));
+    } else {
+      fetchMaquinarias(nuevosFiltros, 1);
+    }
+  };
+
+  const limpiarFiltros = () => {
+    const filtrosVacios = clearMaquinariaFilters();
+    setFiltros(filtrosVacios);
+    fetchMaquinarias(filtrosVacios, 1);
+  };
+
+  const handlePaginacion = (nuevaPagina) => {
+    fetchMaquinarias(filtros, nuevaPagina);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    // Validación de campos obligatorios
-    if (!form.nombre || !form.modelo || !form.categoria) {
-      setError('Nombre, modelo y categoría son obligatorios');
-      return;
-    }
-    
     try {
-      const res = await createMaquinaria(form, token);
-      if (res.id) {
-        onCreated && onCreated(res);
-        // Limpiar formulario tras éxito
-        setForm({ 
-          nombre: '', modelo: '', categoria: '', anio: '', numero_serie: '', 
-          descripcion: '', proveedor: '', ubicacion: '', estado: '' 
-        });
-        fetchMaquinarias();
-      } else {
-        setError(res.error || 'Error al crear maquinaria');
-      }
-    } catch (err) {
-      setError('Error de conexión');
-    }
-  };
-
-  const handleEdit = (maquinaria) => {
-    setEditingMaquinaria(maquinaria);
-    setEditForm({ ...maquinaria });
-  };
-
-  const handleEditChange = e => {
-    const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleUpdate = async e => {
-    e.preventDefault();
-    try {
-      await updateMaquinaria(editForm, token);
-      setEditingMaquinaria(null);
+      const maquinariaData = {
+        ...form,
+        anio: form.anio ? Number(form.anio) : null,
+      };
+      await createMaquinaria(maquinariaData, token);
+      setForm({ 
+        nombre: '', modelo: '', categoria: '', anio: '', numero_serie: '', 
+        descripcion: '', proveedor: '', ubicacion: '', estado: '' 
+      });
+      setShowAddModal(false);
+      if (onCreated) onCreated();
       fetchMaquinarias();
+      fetchOpcionesFiltros(); // Actualizar opciones de filtros
     } catch (err) {
-      console.error('Error al actualizar maquinaria:', err);
+      setError(err.message);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta maquinaria?')) {
-      try {
-        await deleteMaquinaria(id, token);
-        setEditingMaquinaria(null);
-        fetchMaquinarias();
-      } catch (err) {
-        console.error('Error al eliminar maquinaria:', err);
-      }
+  const openEditModal = (maquinaria) => {
+    setSelectedMaquinaria(maquinaria);
+  };
+
+  const closeEditModal = () => {
+    setSelectedMaquinaria(null);
+  };
+
+  const handleUpdateMaquinaria = async (id, maquinariaData) => {
+    try {
+      await updateMaquinaria({ ...maquinariaData, id }, token);
+      fetchMaquinarias();
+      fetchOpcionesFiltros(); // Actualizar opciones de filtros
+      if (onCreated) onCreated();
+    } catch (err) {
+      setError(err.message);
     }
   };
+
+  const handleDeleteMaquinaria = async (id) => {
+    try {
+      await deleteMaquinaria(id, token);
+      fetchMaquinarias();
+      fetchOpcionesFiltros(); // Actualizar opciones de filtros
+      if (onCreated) onCreated();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchMaquinarias();
+    fetchOpcionesFiltros();
+  }, []);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Agregar Maquinaria</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-          <input name="modelo" value={form.modelo} onChange={handleChange} placeholder="Modelo" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-          <input name="categoria" value={form.categoria} onChange={handleChange} placeholder="Categoría" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-          <input name="anio" value={form.anio} onChange={handleChange} placeholder="Año" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" type="number" />
-          <input name="numero_serie" value={form.numero_serie} onChange={handleChange} placeholder="N° Serie" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          <input name="proveedor" value={form.proveedor} onChange={handleChange} placeholder="Proveedor" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          <input name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Ubicación" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-          <input name="estado" value={form.estado} onChange={handleChange} placeholder="Estado" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+    <div className={CONTAINER_STYLES.main}>
+      <div className={CONTAINER_STYLES.maxWidth}>
+        
+        {/* Header con botones de acción */}
+        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+          <div className={LAYOUT_STYLES.flexBetween}>
+            <div>
+              <h1 className={TEXT_STYLES.title}>Gestión de Maquinarias</h1>
+              <p className={TEXT_STYLES.subtitle}>Administra tu flota de maquinarias agrícolas</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <label className="flex-1 sm:flex-initial">
+                <span className="sr-only">Cargar CSV</span>
+                <input 
+                  type="file" 
+                  accept=".csv" 
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    setBulkError(''); setBulkSuccess('');
+                    
+                    Papa.parse(file, {
+                      header: true,
+                      complete: async (results) => {
+                        const validRows = results.data.filter(row => row.nombre && row.modelo && row.categoria);
+                        let successCount = 0, failCount = 0;
+                        
+                        for (const row of validRows) {
+                          try {
+                            await createMaquinaria({
+                              nombre: row.nombre || '',
+                              modelo: row.modelo || '',
+                              categoria: row.categoria || '',
+                              anio: row.anio ? Number(row.anio) : null,
+                              numero_serie: row.numero_serie || '',
+                              descripcion: row.descripcion || '',
+                              proveedor: row.proveedor || '',
+                              ubicacion: row.ubicacion || '',
+                              estado: row.estado || ''
+                            }, token);
+                            successCount++;
+                          } catch (err) {
+                            failCount++;
+                          }
+                        }
+                        setBulkSuccess(`Creadas: ${successCount}`);
+                        setBulkError(failCount ? `Fallidas: ${failCount}` : '');
+                        if (onCreated && successCount) onCreated();
+                        fetchMaquinarias();
+                        fetchOpcionesFiltros();
+                      },
+                      error: (err) => setBulkError('Error al procesar CSV'),
+                    });
+                  }}
+                  className="hidden"
+                  id="csv-upload-maquinaria"
+                />
+                <div className={BUTTON_STYLES.csv}>
+                  <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Cargar CSV
+                </div>
+              </label>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className={BUTTON_STYLES.newItem}
+              >
+                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Nueva Maquinaria
+              </button>
+            </div>
+          </div>
+          
+          {/* Mensajes de estado para carga masiva */}
+          {bulkSuccess && (
+            <div className={ALERT_STYLES.success}>
+              {bulkSuccess}
+            </div>
+          )}
+          {bulkError && (
+            <div className={ALERT_STYLES.error}>
+              {bulkError}
+            </div>
+          )}
         </div>
-        <div className="mt-4">
-          <textarea name="descripcion" value={form.descripcion} onChange={handleChange} placeholder="Descripción" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full" rows="3" />
-        </div>
-        <div className="mt-4">
-          <button type="submit" className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-md font-medium transition-colors duration-200">Agregar Maquinaria</button>
-        </div>
-        {error && <div className="text-red-500 mt-4 p-3 bg-red-50 border border-red-200 rounded-md">{error}</div>}
-      </form>
 
-      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Carga Masiva desde CSV</h2>
-        <input 
-          type="file" 
-          accept=".csv" 
-          onChange={async (e) => {
-            setBulkError('');
-            setBulkSuccess('');
-            const file = e.target.files[0];
-            if (!file) return;
-            Papa.parse(file, {
-              header: true,
-              skipEmptyLines: true,
-              complete: async (results) => {
-                const rows = results.data;
-                let successCount = 0;
-                let failCount = 0;
-                for (const row of rows) {
-                  try {
-                    const res = await createMaquinaria(row, token);
-                    if (res.id) successCount++;
-                    else failCount++;
-                  } catch {
-                    failCount++;
-                  }
-                }
-                setBulkSuccess(`Creadas: ${successCount}`);
-                setBulkError(failCount ? `Fallidas: ${failCount}` : '');
-                if (onCreated && successCount) onCreated();
-                fetchMaquinarias();
-              },
-              error: (err) => setBulkError('Error al procesar CSV'),
-            });
-          }} 
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
-        />
-        {bulkSuccess && <div className="text-green-600 mt-3 p-3 bg-green-50 border border-green-200 rounded-md">{bulkSuccess}</div>}
-        {bulkError && <div className="text-red-500 mt-3 p-3 bg-red-50 border border-red-200 rounded-md">{bulkError}</div>}
-        <div className="text-sm text-gray-500 mt-3 p-3 bg-gray-50 rounded-md">
-          <strong>Formato CSV:</strong> nombre, modelo, categoria, año, numSerie, descripcion, proveedor, ubicacion, estado
-        </div>
-      </div>
+        {/* Filtros compactos */}
+        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+          <h2 className={TEXT_STYLES.sectionTitle}>Filtros</h2>
+          
+          <div className={LAYOUT_STYLES.gridFilters}>
+            {/* Búsqueda */}
+            <div className={LAYOUT_STYLES.searchSpan}>
+              <div className={POSITION_STYLES.relative}>
+                <div className={POSITION_STYLES.iconLeft}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value={filtros.search}
+                  onChange={(e) => handleFiltroChange('search', e.target.value)}
+                  placeholder="Buscar maquinarias..."
+                  className={`${INPUT_STYLES.withIcon} ${INPUT_STYLES.placeholder}`}
+                />
+              </div>
+            </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-6 text-gray-800">Lista de Maquinarias ({maquinarias.length})</h2>
-        <div className="grid grid-cols-1 gap-4">
-          {maquinarias.map((maquinaria, index) => (
-            <div key={maquinaria.id || index} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200 flex justify-between items-center">
-              <div>
-                <div className="font-semibold text-gray-900">{maquinaria.nombre}</div>
-                <div className="text-sm text-gray-600 mt-1">
-                  <span className="mr-4">Modelo: {maquinaria.modelo}</span>
-                  <span className="mr-4">Categoría: {maquinaria.categoria}</span>
-                  <span>Año: {maquinaria.anio}</span>
+            {/* Categoría */}
+            <div>
+              <div className={POSITION_STYLES.relative}>
+                <div className={POSITION_STYLES.iconLeft}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <select
+                  value={filtros.categoria}
+                  onChange={(e) => handleFiltroChange('categoria', e.target.value)}
+                  className={INPUT_STYLES.select}
+                >
+                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Categorías</option>
+                  {opcionesFiltros.categorias?.map(categoria => (
+                    <option key={categoria} value={categoria}>{categoria}</option>
+                  ))}
+                </select>
+                <div className={POSITION_STYLES.iconRight}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
                 </div>
               </div>
-              <button onClick={() => handleEdit(maquinaria)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200">Editar</button>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {editingMaquinaria && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Editar Maquinaria</h2>
-            <form onSubmit={handleUpdate}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input name="nombre" value={editForm.nombre} onChange={handleEditChange} placeholder="Nombre" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-                <input name="modelo" value={editForm.modelo} onChange={handleEditChange} placeholder="Modelo" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-                <input name="categoria" value={editForm.categoria} onChange={handleEditChange} placeholder="Categoría" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-                <input name="anio" value={editForm.anio || ''} onChange={handleEditChange} placeholder="Año" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" type="number" />
-                <input name="numero_serie" value={editForm.numero_serie || ''} onChange={handleEditChange} placeholder="N° Serie" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                <input name="proveedor" value={editForm.proveedor || ''} onChange={handleEditChange} placeholder="Proveedor" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                <input name="ubicacion" value={editForm.ubicacion || ''} onChange={handleEditChange} placeholder="Ubicación" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
-                <input name="estado" value={editForm.estado || ''} onChange={handleEditChange} placeholder="Estado" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+            {/* Ubicación */}
+            <div>
+              <div className={POSITION_STYLES.relative}>
+                <div className={POSITION_STYLES.iconLeft}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <select
+                  value={filtros.ubicacion}
+                  onChange={(e) => handleFiltroChange('ubicacion', e.target.value)}
+                  className={INPUT_STYLES.select}
+                >
+                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Ubicaciones</option>
+                  {opcionesFiltros.ubicaciones?.map(ubicacion => (
+                    <option key={ubicacion} value={ubicacion}>{ubicacion}</option>
+                  ))}
+                </select>
+                <div className={POSITION_STYLES.iconRight}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
-              <div className="mt-4">
-                <textarea name="descripcion" value={editForm.descripcion || ''} onChange={handleEditChange} placeholder="Descripción" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full" rows="3" />
+            </div>
+
+            {/* Estado */}
+            <div>
+              <div className={POSITION_STYLES.relative}>
+                <div className={POSITION_STYLES.iconLeft}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <select
+                  value={filtros.estado}
+                  onChange={(e) => handleFiltroChange('estado', e.target.value)}
+                  className={INPUT_STYLES.select}
+                >
+                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Estados</option>
+                  {opcionesFiltros.estados?.map(estado => (
+                    <option key={estado} value={estado}>{estado}</option>
+                  ))}
+                </select>
+                <div className={POSITION_STYLES.iconRight}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
-              <div className="flex justify-end space-x-4 mt-6">
-                <button type="button" onClick={() => handleDelete(editingMaquinaria.id)} className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200">Eliminar</button>
-                <button type="button" onClick={() => setEditingMaquinaria(null)} className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200">Cancelar</button>
-                <button type="submit" className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition-colors duration-200">Guardar Cambios</button>
+            </div>
+
+            {/* Rango de Años */}
+            <div className="sm:col-span-2">
+              <div className={RANGE_STYLES.container}>
+                <div className={RANGE_STYLES.wrapper}>
+                  <div className={RANGE_STYLES.labelSection}>
+                    <svg className={RANGE_STYLES.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className={RANGE_STYLES.labelText}>Rango de Años</span>
+                  </div>
+                  <div className={RANGE_STYLES.inputsWrapper}>
+                    <input
+                      type="number"
+                      value={filtros.anioMin}
+                      onChange={(e) => handleFiltroChange('anioMin', e.target.value)}
+                      placeholder="Mín"
+                      className={RANGE_STYLES.input}
+                      min={opcionesFiltros.anioRange?.min || 1900}
+                      max={opcionesFiltros.anioRange?.max || new Date().getFullYear()}
+                      step="1"
+                    />
+                    <span className={RANGE_STYLES.separator}>-</span>
+                    <input
+                      type="number"
+                      value={filtros.anioMax}
+                      onChange={(e) => handleFiltroChange('anioMax', e.target.value)}
+                      placeholder="Máx"
+                      className={RANGE_STYLES.input}
+                      min={opcionesFiltros.anioRange?.min || 1900}
+                      max={opcionesFiltros.anioRange?.max || new Date().getFullYear()}
+                      step="1"
+                    />
+                  </div>
+                </div>
               </div>
-            </form>
+            </div>
+          </div>
+
+          <div className={LAYOUT_STYLES.gridButtons}>
+            {/* Botón limpiar filtros */}
+            <button
+              type="button"
+              onClick={limpiarFiltros}
+              className={BUTTON_STYLES.filter.clear}
+            >
+              <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Limpiar filtros
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Lista de Maquinarias */}
+        <div className={CONTAINER_STYLES.card}>
+          <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
+            <div className={LAYOUT_STYLES.flexBetween}>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Maquinarias ({paginacion.totalItems})</h3>
+                <p className={TEXT_STYLES.subtitle}>Ordenadas por categoría y modelo</p>
+              </div>
+              {loading && (
+                <div className={TEXT_STYLES.loading}>
+                  <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                  </svg>
+                  Cargando...
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Lista */}
+          <div className={LIST_STYLES.divider}>
+            {maquinarias.length === 0 ? (
+              <div className={LIST_STYLES.emptyState}>
+                No hay maquinarias que coincidan con los filtros
+              </div>
+            ) : (
+              maquinarias.map((maquinaria) => (
+                <div key={maquinaria.id} className={LIST_STYLES.item}>
+                  <div className={LIST_STYLES.itemContent}>
+                    <div className="flex-1">
+                      <div className={LIST_STYLES.itemHeader}>
+                        <h3 className={LIST_STYLES.itemTitle}>{maquinaria.nombre}</h3>
+                        <span className={`${LIST_STYLES.itemTagStock} ${getEstadoColorClass(maquinaria.estado)} flex-shrink-0`}>
+                          <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {maquinaria.estado || 'Sin estado'}
+                        </span>
+                      </div>
+                      {maquinaria.modelo && (
+                        <div className="text-sm text-gray-600 mt-1 font-medium line-clamp-1">
+                          {maquinaria.modelo}
+                        </div>
+                      )}
+                      <div className={LIST_STYLES.itemTagsRow}>
+                        <div className={LIST_STYLES.itemTagsLeft}>
+                          {maquinaria.categoria && (
+                            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(maquinaria.categoria, 'categoria')}`} title={maquinaria.categoria}>
+                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                              </svg>
+                              <span className="tag-truncate">{maquinaria.categoria}</span>
+                            </span>
+                          )}
+                          {maquinaria.ubicacion && (
+                            <span className={`${LIST_STYLES.itemTagWithEllipsis} ${getColorFromString(maquinaria.ubicacion, 'ubicacion')}`} title={maquinaria.ubicacion}>
+                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              <span className="tag-truncate">{maquinaria.ubicacion}</span>
+                            </span>
+                          )}
+                          {maquinaria.anio && (
+                            <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}>
+                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              {formatAnio(maquinaria.anio)}
+                            </span>
+                          )}
+                        </div>
+                        <div className={LIST_STYLES.itemActions}>
+                          <button
+                            onClick={() => openEditModal(maquinaria)}
+                            className={BUTTON_STYLES.edit}
+                          >
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Paginación */}
+          {paginacion.total > 1 && (
+            <div className={`${CONTAINER_STYLES.cardPadding} border-t border-gray-200 flex justify-center gap-2`}>
+              <button
+                onClick={() => handlePaginacion(paginacion.current - 1)}
+                disabled={paginacion.current <= 1}
+                className={`${BUTTON_STYLES.pagination.base} ${
+                  paginacion.current <= 1 
+                    ? BUTTON_STYLES.pagination.disabled 
+                    : BUTTON_STYLES.pagination.enabled
+                }`}
+              >
+                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Anterior
+              </button>
+              
+              <span className="px-4 py-2 text-sm text-gray-600 flex items-center">
+                Página {paginacion.current} de {paginacion.total}
+              </span>
+              
+              <button
+                onClick={() => handlePaginacion(paginacion.current + 1)}
+                disabled={paginacion.current >= paginacion.total}
+                className={`${BUTTON_STYLES.pagination.base} ${
+                  paginacion.current >= paginacion.total 
+                    ? BUTTON_STYLES.pagination.disabled 
+                    : BUTTON_STYLES.pagination.enabled
+                }`}
+              >
+                Siguiente
+                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Modal de agregar maquinaria */}
+        {showAddModal && (
+          <div className={MODAL_STYLES.overlay}>
+            <div className={MODAL_STYLES.container}>
+              <div className={MODAL_STYLES.content}>
+                <div className={MODAL_STYLES.header}>
+                  <h2 className={MODAL_STYLES.title}>Nueva Maquinaria</h2>
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className={MODAL_STYLES.closeButton}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className={MODAL_STYLES.form}>
+                  <div className={LAYOUT_STYLES.gridForm}>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Nombre</label>
+                      <input
+                        type="text"
+                        value={form.nombre}
+                        onChange={(e) => setForm({...form, nombre: e.target.value})}
+                        className={INPUT_STYLES.base}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Modelo</label>
+                      <input
+                        type="text"
+                        value={form.modelo}
+                        onChange={(e) => setForm({...form, modelo: e.target.value})}
+                        className={INPUT_STYLES.base}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Categoría</label>
+                      <input
+                        type="text"
+                        value={form.categoria}
+                        onChange={(e) => setForm({...form, categoria: e.target.value})}
+                        className={INPUT_STYLES.base}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Año</label>
+                      <input
+                        type="number"
+                        value={form.anio}
+                        onChange={(e) => setForm({...form, anio: e.target.value})}
+                        className={INPUT_STYLES.base}
+                        min="1900"
+                        max="2100"
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Número de Serie</label>
+                      <input
+                        type="text"
+                        value={form.numero_serie}
+                        onChange={(e) => setForm({...form, numero_serie: e.target.value})}
+                        className={INPUT_STYLES.base}
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Proveedor</label>
+                      <input
+                        type="text"
+                        value={form.proveedor}
+                        onChange={(e) => setForm({...form, proveedor: e.target.value})}
+                        className={INPUT_STYLES.base}
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Ubicación</label>
+                      <input
+                        type="text"
+                        value={form.ubicacion}
+                        onChange={(e) => setForm({...form, ubicacion: e.target.value})}
+                        className={INPUT_STYLES.base}
+                      />
+                    </div>
+                    <div>
+                      <label className={INPUT_STYLES.label}>Estado</label>
+                      <input
+                        type="text"
+                        value={form.estado}
+                        onChange={(e) => setForm({...form, estado: e.target.value})}
+                        className={INPUT_STYLES.base}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={INPUT_STYLES.label}>Descripción</label>
+                      <textarea
+                        value={form.descripcion}
+                        onChange={(e) => setForm({...form, descripcion: e.target.value})}
+                        className={INPUT_STYLES.base}
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className={ALERT_STYLES.errorModal}>
+                      {error}
+                    </div>
+                  )}
+
+                  <div className={MODAL_STYLES.buttonGroup}>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className={BUTTON_STYLES.secondary}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className={BUTTON_STYLES.primary}
+                    >
+                      Crear Maquinaria
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal de edición */}
+        {selectedMaquinaria && (
+          <MaquinariaEditModal
+            maquinaria={selectedMaquinaria}
+            onClose={closeEditModal}
+            onUpdate={handleUpdateMaquinaria}
+            onDelete={handleDeleteMaquinaria}
+            token={token}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -37,7 +37,7 @@ function Sidebar({ active, setActive }) {
         }`}
         onClick={() => setOpen(true)}
       >
-        <div className="flex items-center justify-center h-16">
+        <div className="flex items-center justify-center h-12 pt-6">
           <Menu className="text-white" size={20} />
         </div>
       </div>
@@ -48,14 +48,14 @@ function Sidebar({ active, setActive }) {
       <nav className={`fixed top-0 left-0 h-full w-56 bg-gray-900 text-white shadow-xl z-50 transition-transform duration-300 md:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'} border-r-2 border-gray-700`}>
         {/* Header del sidebar con título */}
         <div 
-          className="py-6 px-4 font-bold text-xl border-b border-gray-700 bg-gray-800 cursor-pointer hover:bg-gray-700 transition-colors"
+          className="py-3 px-4 font-bold text-xl border-b border-gray-700 bg-gray-800 cursor-pointer hover:bg-gray-700 transition-colors"
           onClick={() => { setActive(null); setOpen(false); }}
         >
           Secciones
         </div>
         
         {/* Lista de navegación */}
-        <ul className="mt-4 px-2">
+        <ul className="mt-2 px-2">
           {/* Botón Dashboard - sección principal */}
           <li className="mb-2">
             <button

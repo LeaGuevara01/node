@@ -17,8 +17,30 @@ try {
 }
 
 // CORS configuration using centralized config
+const getCorsOrigins = () => {
+  const corsOrigin = config.CORS_ORIGIN;
+  
+  // Si es una cadena separada por comas, dividir en array
+  if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
+    return corsOrigin.split(',').map(origin => origin.trim());
+  }
+  
+  // Si es una cadena simple, devolverla como array
+  if (typeof corsOrigin === 'string') {
+    return [corsOrigin];
+  }
+  
+  // Si ya es un array, devolverlo
+  if (Array.isArray(corsOrigin)) {
+    return corsOrigin;
+  }
+  
+  // Fallback a valores por defecto
+  return ['http://localhost:5173', 'http://localhost:3000'];
+};
+
 const corsOptions = {
-  origin: config.CORS_ORIGIN || ['http://localhost:5173', 'http://localhost:3000'],
+  origin: getCorsOrigins(),
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -75,7 +97,10 @@ const PORT = config.PORT;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`📝 Environment: ${config.NODE_ENV}`);
-  console.log(`🌐 CORS habilitado para: ${config.CORS_ORIGIN}`);
+  
+  const corsOrigins = getCorsOrigins();
+  console.log(`🌐 CORS habilitado para: ${Array.isArray(corsOrigins) ? corsOrigins.join(', ') : corsOrigins}`);
+  
   if (fs.existsSync(__dirname + '/docs/openapi.yaml')) {
     console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
   }

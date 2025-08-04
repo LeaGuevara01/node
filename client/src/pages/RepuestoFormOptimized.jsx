@@ -17,8 +17,7 @@ import {
   ALERT_STYLES,
   MODAL_STYLES,
   LIST_STYLES,
-  POSITION_STYLES,
-  RANGE_STYLES
+  POSITION_STYLES
 } from '../styles/repuestoStyles';
 
 function RepuestoForm({ token, onCreated }) {
@@ -37,13 +36,11 @@ function RepuestoForm({ token, onCreated }) {
     categoria: '',
     ubicacion: '',
     stockMin: '',
-    stockMax: '',
     sinStock: false
   });
   const [opcionesFiltros, setOpcionesFiltros] = useState({
     categorias: [],
-    ubicaciones: [],
-    stockRange: { min: 0, max: 100 }
+    ubicaciones: []
   });
   const [paginacion, setPaginacion] = useState({
     current: 1,
@@ -151,23 +148,21 @@ function RepuestoForm({ token, onCreated }) {
     try {
       await updateRepuesto(id, repuestoData, token);
       fetchRepuestos();
-      fetchOpcionesFiltros(); // Actualizar opciones de filtros
       if (onCreated) onCreated();
     } catch (err) {
-      console.error('Error al actualizar repuesto:', err);
-      throw new Error(err.message || 'Error al actualizar el repuesto');
+      setError(err.message);
     }
   };
 
   const handleDeleteRepuesto = async (id) => {
-    try {
-      await deleteRepuesto(id, token);
-      fetchRepuestos();
-      fetchOpcionesFiltros(); // Actualizar opciones de filtros
-      if (onCreated) onCreated();
-    } catch (err) {
-      console.error('Error al eliminar repuesto:', err);
-      throw new Error(err.message || 'Error al eliminar el repuesto');
+    if (window.confirm('¿Estás seguro de que quieres eliminar este repuesto?')) {
+      try {
+        await deleteRepuesto(id, token);
+        fetchRepuestos();
+        if (onCreated) onCreated();
+      } catch (err) {
+        setError(err.message);
+      }
     }
   };
 
@@ -340,40 +335,21 @@ function RepuestoForm({ token, onCreated }) {
               </div>
             </div>
 
-            {/* Rango de Stock */}
+            {/* Stock mínimo */}
             <div>
-              <div className={RANGE_STYLES.container}>
-                <div className={RANGE_STYLES.wrapper}>
-                  <div className={RANGE_STYLES.labelSection}>
-                    <svg className={RANGE_STYLES.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                    <span className={RANGE_STYLES.labelText}>Rango de Stock</span>
-                  </div>
-                  <div className={RANGE_STYLES.inputsWrapper}>
-                    <input
-                      type="number"
-                      value={filtros.stockMin}
-                      onChange={(e) => handleFiltroChange('stockMin', e.target.value)}
-                      placeholder="Mín"
-                      className={RANGE_STYLES.input}
-                      min={opcionesFiltros.stockRange?.min || 0}
-                      max={opcionesFiltros.stockRange?.max || 1000}
-                      step="1"
-                    />
-                    <span className={RANGE_STYLES.separator}>-</span>
-                    <input
-                      type="number"
-                      value={filtros.stockMax}
-                      onChange={(e) => handleFiltroChange('stockMax', e.target.value)}
-                      placeholder="Máx"
-                      className={RANGE_STYLES.input}
-                      min={opcionesFiltros.stockRange?.min || 0}
-                      max={opcionesFiltros.stockRange?.max || 1000}
-                      step="1"
-                    />
-                  </div>
+              <div className={POSITION_STYLES.relative}>
+                <div className={POSITION_STYLES.iconLeft}>
+                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
                 </div>
+                <input
+                  type="number"
+                  value={filtros.stockMin}
+                  onChange={(e) => handleFiltroChange('stockMin', e.target.value)}
+                  placeholder="Stock mínimo"
+                  className={`${INPUT_STYLES.withIcon} ${INPUT_STYLES.placeholder}`}
+                />
               </div>
             </div>
 
@@ -412,7 +388,7 @@ function RepuestoForm({ token, onCreated }) {
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-medium text-gray-800">Repuestos ({paginacion.totalItems})</h3>
+                <h3 className={TEXT_STYLES.title}>Repuestos ({paginacion.totalItems})</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenados por stock descendente</p>
               </div>
               {loading && (
@@ -440,47 +416,42 @@ function RepuestoForm({ token, onCreated }) {
                     <div className="flex-1">
                       <div className={LIST_STYLES.itemHeader}>
                         <h3 className={LIST_STYLES.itemTitle}>{repuesto.nombre}</h3>
-                        <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock)} flex-shrink-0`}>
+                        <span className={`font-medium flex items-center gap-1 text-sm ml-4 ${getStockColorClass(repuesto.stock)}`}>
                           <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                           </svg>
                           {repuesto.stock}
                         </span>
                       </div>
-                      {repuesto.descripcion && (
-                        <div className="text-sm text-gray-600 mt-1 font-medium line-clamp-1">
-                          {repuesto.descripcion}
-                        </div>
-                      )}
-                      <div className={LIST_STYLES.itemTagsRow}>
-                        <div className={LIST_STYLES.itemTagsLeft}>
+                      <div className={LIST_STYLES.itemDetails}>
+                        <div className={LIST_STYLES.itemLeft}>
                           {repuesto.codigo && (
-                            <span className={`${LIST_STYLES.itemTagWithEllipsis}`} title={repuesto.codigo}>
+                            <span className={`flex items-center gap-1 ${TEXT_STYLES.gray}`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                               </svg>
-                              <span className="tag-truncate">{repuesto.codigo}</span>
+                              {repuesto.codigo}
                             </span>
                           )}
                           {repuesto.categoria && (
-                            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
+                            <span className={`flex items-center gap-1 ${getColorFromString(repuesto.categoria, 'categoria')}`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                               </svg>
-                              <span className="tag-truncate">{repuesto.categoria}</span>
+                              {repuesto.categoria}
                             </span>
                           )}
                           {repuesto.ubicacion && (
-                            <span className={`${LIST_STYLES.itemTagWithEllipsis} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
+                            <span className={`flex items-center gap-1 ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
-                              <span className="tag-truncate">{repuesto.ubicacion}</span>
+                              {repuesto.ubicacion}
                             </span>
                           )}
                           {repuesto.precio && (
-                            <span className={`${LIST_STYLES.itemTag} bg-green-50 text-green-700 border-green-200`}>
+                            <span className={`flex items-center gap-1 ${TEXT_STYLES.gray}`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                               </svg>
@@ -488,7 +459,7 @@ function RepuestoForm({ token, onCreated }) {
                             </span>
                           )}
                         </div>
-                        <div className={LIST_STYLES.itemActions}>
+                        <div className={LIST_STYLES.itemRight}>
                           <button
                             onClick={() => openEditModal(repuesto)}
                             className={BUTTON_STYLES.edit}
@@ -564,7 +535,7 @@ function RepuestoForm({ token, onCreated }) {
                 <form onSubmit={handleSubmit} className={MODAL_STYLES.form}>
                   <div className={LAYOUT_STYLES.gridForm}>
                     <div>
-                      <label className={INPUT_STYLES.label}>Nombre</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                       <input
                         type="text"
                         value={form.nombre}
@@ -574,7 +545,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div>
-                      <label className={INPUT_STYLES.label}>Stock</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
                       <input
                         type="number"
                         value={form.stock}
@@ -584,7 +555,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div>
-                      <label className={INPUT_STYLES.label}>Código</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Código</label>
                       <input
                         type="text"
                         value={form.codigo}
@@ -593,7 +564,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div>
-                      <label className={INPUT_STYLES.label}>Precio</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Precio</label>
                       <input
                         type="number"
                         value={form.precio}
@@ -603,7 +574,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div>
-                      <label className={INPUT_STYLES.label}>Proveedor</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
                       <input
                         type="text"
                         value={form.proveedor}
@@ -612,7 +583,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div>
-                      <label className={INPUT_STYLES.label}>Ubicación</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
                       <input
                         type="text"
                         value={form.ubicacion}
@@ -621,7 +592,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className={INPUT_STYLES.label}>Categoría</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
                       <input
                         type="text"
                         value={form.categoria}
@@ -631,7 +602,7 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className={INPUT_STYLES.label}>Descripción</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                       <textarea
                         value={form.descripcion}
                         onChange={(e) => setForm({...form, descripcion: e.target.value})}

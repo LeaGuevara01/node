@@ -34,8 +34,14 @@ const serverConfig = {
   // Database
   DATABASE_URL: getEnvVar('DATABASE_URL'),
   
-  // CORS
-  CORS_ORIGIN: getEnvVar('CORS_ORIGIN', 'http://localhost:5173', false),
+  // CORS - Soporta múltiples orígenes separados por comas
+  CORS_ORIGIN: (() => {
+    const corsEnv = getEnvVar('CORS_ORIGIN', 'http://localhost:5173,http://localhost:3000', false);
+    if (corsEnv.includes(',')) {
+      return corsEnv.split(',').map(origin => origin.trim());
+    }
+    return corsEnv;
+  })(),
   
   // Prisma
   PRISMA_HIDE_UPDATE_MESSAGE: getEnvVar('PRISMA_HIDE_UPDATE_MESSAGE', 'true', false),

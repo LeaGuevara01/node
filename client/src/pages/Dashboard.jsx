@@ -89,18 +89,15 @@ function Dashboard({ token, role, onLogout }) {
       {/* pl-12 en mobile para evitar overlap con botón hamburguesa */}
       {/* pl-60 en desktop para dejar espacio al sidebar de 224px */}
       <div className="pl-12 md:pl-60">
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header con título y información del usuario */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">Gestión de Taller Agrícola</h1>
-              <div className="text-sm text-gray-600 mt-1">Usuario: <span className="font-semibold">{role}</span></div>
-            </div>
+        <div className="px-2 sm:px-4 lg:px-6 py-2">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-2">
+            {/* Espaciado para layout sin título específico */}
           </div>
         
         {/* Dashboard principal - mostrar estadísticas cuando no hay sección activa */}
         {!activeSection && (
-          <div className="space-y-8">
+          <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatsCard 
                 type="maquinarias" 

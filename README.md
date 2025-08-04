@@ -13,115 +13,90 @@
 Sistema web moderno para la gestión integral de talleres agrícolas que incluye:
 
 - 🚜 **Gestión de Maquinarias**: Registro, seguimiento y mantenimiento
-- 🔧 **Control de Repuestos**: Inventario, stock y proveedores
+- 🔧 **Control de Repuestos**: Inventario con filtros avanzados y stock
 - 👥 **Gestión de Proveedores**: Directorio completo con contactos
 - 🛠️ **Reparaciones**: Historial y seguimiento de servicios
-- 🔐 **Sistema de Usuarios**: Autenticación con roles (Admin/User)
+- 🔐 **Sistema de Usuarios**: Autenticación JWT con roles (Admin/User)
+- 📊 **Dashboard**: Estadísticas y métricas en tiempo real
 
----
+## 📚 **Documentación**
+
+### 🚀 **Para Empezar**
+
+- [`SETUP_DESARROLLO.md`](./docs/SETUP_DESARROLLO.md) - Instalación y configuración local
+- [`API_REFERENCE.md`](./docs/API_REFERENCE.md) - Documentación completa de la API
+
+### 🎯 **Características**
+
+- [`SISTEMA_FILTROS.md`](./docs/SISTEMA_FILTROS.md) - Filtros avanzados para repuestos
+- [`DOCUMENTACION_COMPLETA.md`](./DOCUMENTACION_COMPLETA.md) - Arquitectura completa
+
+### 🚀 **Deployment**
+
+- [`DEPLOYMENT.md`](./docs/DEPLOYMENT.md) - Guía de deployment en Render
+- [`CORS_SOLUTION.md`](./docs/CORS_SOLUTION.md) - Solución a problemas CORS
+
+### 🔒 **Seguridad**
+
+- [`SECURITY.md`](./docs/SECURITY.md) - Mejores prácticas de seguridad
+- [`SANITIZATION_LOG.md`](./docs/SANITIZATION_LOG.md) - Log de sanitización
+
+### 📁 **Toda la Documentación**
+
+- [`docs/`](./docs/) - Documentación completa organizada
 
 ## 🏗️ **Arquitectura**
 
-### **Frontend (React + Vite)**
+### **Stack Tecnológico**
 
-- ⚡ **Vite** para desarrollo rápido
-- 🎨 **Tailwind CSS** para estilos
-- 🔄 **React Router** para navegación
-- 📱 **Responsive Design** para móviles
-- 🔐 **JWT Authentication**
+- **Frontend**: React 18 + Vite + Tailwind CSS
+- **Backend**: Node.js + Express + Prisma ORM
+- **Base de Datos**: PostgreSQL (Render)
+- **Autenticación**: JWT + bcrypt
+- **Deployment**: Render Blueprint
 
-### **Backend (Node.js + Express)**
+### **Características Principales**
 
-- 🚀 **Express** servidor web
-- 🗄️ **Prisma ORM** con PostgreSQL
-- 🔒 **JWT + bcrypt** para seguridad
-- 📚 **Swagger UI** documentación API
-- ✅ **Tests** con Jest + Supertest
-
-### **Base de Datos**
-
-- 🐘 **PostgreSQL** en Render
-- 🔄 **Prisma** para migraciones
-- 📊 **Schema** optimizado para agricultura
+- ⚡ **Desarrollo rápido** con Vite y Hot Reload
+- 🎨 **UI moderna** con Tailwind CSS responsive
+- 🔐 **Seguridad** con JWT y roles de usuario
+- � **Filtros avanzados** para gestión de repuestos
+- � **Deploy automático** con Render Blueprint
 
 ---
 
-## 🚀 **Desarrollo Local**
+## 🚀 **Inicio Rápido**
 
-### **Pre-requisitos**
-
-```bash
-Node.js >= 18.0.0
-npm >= 8.0.0
-Git
-```
-
-### **Instalación Rápida**
+### **1. Clonar e Instalar**
 
 ```bash
-# Clonar repositorio
 git clone https://github.com/LeaGuevara01/node.git
 cd node
-
-# Instalar dependencias
-npm install
-
-# Configurar variables de entorno
-cp server/.env.example server/.env
-# Editar server/.env con tus credenciales
-
-# Ejecutar en desarrollo
-npm run dev
 ```
 
-### **URLs de Desarrollo**
+### **2. Setup Completo**
 
-- **Frontend**: http://localhost:3000
+👉 **[Seguir Guía Completa de Setup](./docs/SETUP_DESARROLLO.md)**
+
+### **3. URLs de Desarrollo**
+
+- **Frontend**: http://localhost:5173
 - **Backend**: http://localhost:4000
-- **API Docs**: http://localhost:4000/api/docs
-- **Health**: http://localhost:4000/api/health
+- **API Health**: http://localhost:4000/api/health
 
 ---
 
-## 🌐 **Deploy en Render**
+## 🚀 **Deploy en Producción**
 
-### **🚀 Deploy Automático (Blueprint)**
+### **Deploy con Blueprint (Recomendado)**
 
-1. **Preparar repositorio**:
-
-```bash
-git add .
-git commit -m "ready for deploy"
-git push origin main
-```
-
-2. **Crear Blueprint en Render**:
-
-   - Ve a: https://dashboard.render.com
-   - **New** → **Blueprint**
-   - Conecta: `LeaGuevara01/node`
-   - Branch: `main`
-
-3. **Configurar base de datos existente**:
-
-   **Ya tienes tu base de datos PostgreSQL configurada:**
-
-   - Nombre: `sistema_gestion_agricola`
-   - Usuario: `elorza`
-   - Hostname: `dpg-d1qpnlodl3ps73eln790-a`
-
-   **Configurar DATABASE_URL manualmente:**
-
-   - En Render Dashboard → Backend Service → Environment
-   - Agregar: `DATABASE_URL = postgresql://elorza:[tu-password]@dpg-d1qpnlodl3ps73eln790-a:5432/sistema_gestion_agricola`
-   - JWT_SECRET se generará automáticamente
+👉 **[Guía Completa de Deployment](./docs/DEPLOYMENT.md)**
 
 ### **URLs de Producción**
 
 - **Frontend**: https://sistemagestionagricola-frontend.onrender.com
 - **Backend**: https://sistemagestionagricola.onrender.com
-- **API**: https://sistemagestionagricola.onrender.com/api
-- **Health Check**: https://sistemagestionagricola.onrender.com/api/health
+- **API Health**: https://sistemagestionagricola.onrender.com/api/health
 
 ---
 
