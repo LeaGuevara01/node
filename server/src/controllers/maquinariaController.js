@@ -231,3 +231,25 @@ exports.getMaquinariaFilters = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Obtener una maquinaria por ID
+exports.getMaquinariaById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const maquinaria = await prisma.maquinaria.findUnique({
+      where: { 
+        id: parseInt(id) 
+      }
+    });
+
+    if (!maquinaria) {
+      return res.status(404).json({ error: 'Maquinaria no encontrada' });
+    }
+
+    res.json(maquinaria);
+  } catch (err) {
+    console.error('Error al obtener maquinaria por ID:', err);
+    res.status(500).json({ error: err.message });
+  }
+};

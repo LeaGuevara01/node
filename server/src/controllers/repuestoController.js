@@ -342,3 +342,25 @@ exports.busquedaRapida = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Obtener un repuesto por ID
+exports.getRepuestoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const repuesto = await prisma.repuesto.findUnique({
+      where: { 
+        id: parseInt(id) 
+      }
+    });
+
+    if (!repuesto) {
+      return res.status(404).json({ error: 'Repuesto no encontrado' });
+    }
+
+    res.json(repuesto);
+  } catch (err) {
+    console.error('Error al obtener repuesto por ID:', err);
+    res.status(500).json({ error: err.message });
+  }
+};

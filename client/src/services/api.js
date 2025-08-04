@@ -56,10 +56,10 @@ export async function register(username, password, role) {
  * @param {number} pagina - Página a obtener (opcional)
  * @returns {Promise<Object>} Objeto con maquinarias y paginación
  */
-export async function getMaquinarias(token, filtros = {}, pagina = 1) {
+export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats = false) {
   const params = new URLSearchParams({
     page: pagina.toString(),
-    limit: '10',
+    limit: forStats ? '10000' : '10',
     sortBy: 'categoria',
     sortOrder: 'asc'
   });
@@ -84,6 +84,19 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1) {
  */
 export async function getMaquinariaFilters(token) {
   const res = await fetch(`${API_URL}/maquinaria/filtros`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+/**
+ * Obtener una maquinaria por ID
+ * @param {string} id - ID de la maquinaria
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Maquinaria encontrada
+ */
+export async function getMaquinariaById(id, token) {
+  const res = await fetch(`${API_URL}/maquinaria/${id}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
@@ -136,13 +149,26 @@ export async function deleteMaquinaria(id, token) {
 }
 
 export async function getRepuestos(token) {
-  const res = await fetch(`${API_URL}/repuestos`, {
+  const res = await fetch(`${API_URL}/repuestos?limit=10000`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await res.json();
   // El backend devuelve { repuestos: [...], pagination: {...} }
   // Retornamos solo el array de repuestos para compatibilidad
   return data.repuestos || [];
+}
+
+/**
+ * Obtener un repuesto por ID
+ * @param {string} id - ID del repuesto
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Repuesto encontrado
+ */
+export async function getRepuestoById(id, token) {
+  const res = await fetch(`${API_URL}/repuestos/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
 }
 
 export async function createRepuesto(data, token) {
@@ -229,7 +255,7 @@ export async function busquedaRapidaRepuestos(query, token) {
 }
 
 export async function getProveedores(token) {
-  const res = await fetch(`${API_URL}/proveedores`, {
+  const res = await fetch(`${API_URL}/proveedores?limit=10000`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
@@ -270,7 +296,7 @@ export async function deleteProveedor(id, token) {
 }
 
 export async function getReparaciones(token) {
-  const res = await fetch(`${API_URL}/reparaciones`, {
+  const res = await fetch(`${API_URL}/reparaciones?limit=10000`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();

@@ -25,8 +25,6 @@ Esta carpeta contiene toda la documentación técnica y de usuario del sistema.
 
 - [`SANITIZATION_LOG.md`](./SANITIZATION_LOG.md) - Log de limpieza y optimización
 - [`REORGANIZACION_COMPLETADA.md`](./REORGANIZACION_COMPLETADA.md) - Reorganización del código
-- [`CLEANUP_OPTIMIZATION_LOG.md`](./CLEANUP_OPTIMIZATION_LOG.md) - Log detallado de optimización
-- [`OPTIMIZATION_SUMMARY.md`](./OPTIMIZATION_SUMMARY.md) - **Resumen final de optimización**
 
 ---
 

@@ -2,6 +2,7 @@
 // Implementa filtros avanzados, paginación y diseño moderno
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import { createMaquinaria, updateMaquinaria, getMaquinarias, deleteMaquinaria, getMaquinariaFilters } from '../services/api';
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
@@ -22,6 +23,7 @@ import {
 } from '../styles/repuestoStyles';
 
 function MaquinariaForm({ token, onCreated }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     nombre: '', modelo: '', categoria: '', anio: '', numero_serie: '', 
     descripcion: '', proveedor: '', ubicacion: '', estado: ''
@@ -287,7 +289,7 @@ function MaquinariaForm({ token, onCreated }) {
             </div>
 
             {/* Categoría */}
-            <div>
+            <div className="md:col-span-2 lg:col-span-1 xl:col-span-1">
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
                   <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,7 +315,7 @@ function MaquinariaForm({ token, onCreated }) {
             </div>
 
             {/* Ubicación */}
-            <div>
+            <div className="md:col-span-2 lg:col-span-1 xl:col-span-1">
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
                   <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,7 +368,7 @@ function MaquinariaForm({ token, onCreated }) {
             </div>
 
             {/* Rango de Años */}
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full">
               <div className={RANGE_STYLES.container}>
                 <div className={RANGE_STYLES.wrapper}>
                   <div className={RANGE_STYLES.labelSection}>
@@ -419,11 +421,11 @@ function MaquinariaForm({ token, onCreated }) {
         </div>
 
         {/* Lista de Maquinarias */}
-        <div className={CONTAINER_STYLES.card}>
+        <div className={`${CONTAINER_STYLES.card} overflow-hidden`}>
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Maquinarias ({paginacion.totalItems})</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Maquinarias ({paginacion.totalItems})</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenadas por categoría y modelo</p>
               </div>
               {loading && (
@@ -438,8 +440,8 @@ function MaquinariaForm({ token, onCreated }) {
             </div>
           </div>
 
-          {/* Lista */}
-          <div className={LIST_STYLES.divider}>
+          {/* Lista con overflow controlado */}
+          <div className={`${LIST_STYLES.divider} overflow-x-hidden`}>
             {maquinarias.length === 0 ? (
               <div className={LIST_STYLES.emptyState}>
                 No hay maquinarias que coincidan con los filtros
@@ -447,24 +449,45 @@ function MaquinariaForm({ token, onCreated }) {
             ) : (
               maquinarias.map((maquinaria) => (
                 <div key={maquinaria.id} className={LIST_STYLES.item}>
-                  <div className={LIST_STYLES.itemContent}>
+                  <div className={`${LIST_STYLES.itemContent} list-item-content`}>
                     <div className="flex-1">
                       <div className={LIST_STYLES.itemHeader}>
                         <h3 className={LIST_STYLES.itemTitle}>{maquinaria.nombre}</h3>
-                        <span className={`${LIST_STYLES.itemTagStock} ${getEstadoColorClass(maquinaria.estado)} flex-shrink-0`}>
-                          <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          {maquinaria.estado || 'Sin estado'}
-                        </span>
+                        <div className={LIST_STYLES.itemActions}>
+                          <button
+                            onClick={() => navigate(`/maquinarias/${maquinaria.id}`)}
+                            className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
+                            title="Ver detalles"
+                          >
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => openEditModal(maquinaria)}
+                            className={BUTTON_STYLES.edit}
+                            title="Editar maquinaria"
+                          >
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                       {maquinaria.modelo && (
-                        <div className="text-sm text-gray-600 mt-1 font-medium line-clamp-1">
+                        <div className={LIST_STYLES.itemDescription}>
                           {maquinaria.modelo}
                         </div>
                       )}
                       <div className={LIST_STYLES.itemTagsRow}>
-                        <div className={LIST_STYLES.itemTagsLeft}>
+                        <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
+                          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={maquinaria.numero_serie || 'Sin número de serie'}>
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="tag-truncate">{maquinaria.numero_serie || 'Sin N° serie'}</span>
+                          </span>
                           {maquinaria.categoria && (
                             <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(maquinaria.categoria, 'categoria')}`} title={maquinaria.categoria}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -474,7 +497,7 @@ function MaquinariaForm({ token, onCreated }) {
                             </span>
                           )}
                           {maquinaria.ubicacion && (
-                            <span className={`${LIST_STYLES.itemTagWithEllipsis} ${getColorFromString(maquinaria.ubicacion, 'ubicacion')}`} title={maquinaria.ubicacion}>
+                            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(maquinaria.ubicacion, 'ubicacion')}`} title={maquinaria.ubicacion}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -482,6 +505,12 @@ function MaquinariaForm({ token, onCreated }) {
                               <span className="tag-truncate">{maquinaria.ubicacion}</span>
                             </span>
                           )}
+                          <span className={`${LIST_STYLES.itemTagStock} ${getEstadoColorClass(maquinaria.estado)}`}>
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {maquinaria.estado || 'Sin estado'}
+                          </span>
                           {maquinaria.anio && (
                             <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,16 +519,6 @@ function MaquinariaForm({ token, onCreated }) {
                               {formatAnio(maquinaria.anio)}
                             </span>
                           )}
-                        </div>
-                        <div className={LIST_STYLES.itemActions}>
-                          <button
-                            onClick={() => openEditModal(maquinaria)}
-                            className={BUTTON_STYLES.edit}
-                          >
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -511,40 +530,44 @@ function MaquinariaForm({ token, onCreated }) {
 
           {/* Paginación */}
           {paginacion.total > 1 && (
-            <div className={`${CONTAINER_STYLES.cardPadding} border-t border-gray-200 flex justify-center gap-2`}>
-              <button
-                onClick={() => handlePaginacion(paginacion.current - 1)}
-                disabled={paginacion.current <= 1}
-                className={`${BUTTON_STYLES.pagination.base} ${
-                  paginacion.current <= 1 
-                    ? BUTTON_STYLES.pagination.disabled 
-                    : BUTTON_STYLES.pagination.enabled
-                }`}
-              >
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Anterior
-              </button>
-              
-              <span className="px-4 py-2 text-sm text-gray-600 flex items-center">
-                Página {paginacion.current} de {paginacion.total}
-              </span>
-              
-              <button
-                onClick={() => handlePaginacion(paginacion.current + 1)}
-                disabled={paginacion.current >= paginacion.total}
-                className={`${BUTTON_STYLES.pagination.base} ${
-                  paginacion.current >= paginacion.total 
-                    ? BUTTON_STYLES.pagination.disabled 
-                    : BUTTON_STYLES.pagination.enabled
-                }`}
-              >
-                Siguiente
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+            <div className="border-t border-gray-200 bg-gray-50 py-3">
+              <div className="px-4 sm:px-6">
+                <div className="flex justify-center items-center gap-2">
+                  <button
+                    onClick={() => handlePaginacion(paginacion.current - 1)}
+                    disabled={paginacion.current <= 1}
+                    className={`${BUTTON_STYLES.pagination.base} ${
+                      paginacion.current <= 1 
+                        ? BUTTON_STYLES.pagination.disabled 
+                        : BUTTON_STYLES.pagination.enabled
+                    }`}
+                  >
+                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
+                  <div className="px-3 py-1 bg-white border border-gray-200 rounded-md">
+                    <span className="text-xs font-medium text-gray-700">
+                      {paginacion.current}/{paginacion.total}
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={() => handlePaginacion(paginacion.current + 1)}
+                    disabled={paginacion.current >= paginacion.total}
+                    className={`${BUTTON_STYLES.pagination.base} ${
+                      paginacion.current >= paginacion.total 
+                        ? BUTTON_STYLES.pagination.disabled 
+                        : BUTTON_STYLES.pagination.enabled
+                    }`}
+                  >
+                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

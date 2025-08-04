@@ -2,6 +2,7 @@
 // Este archivo es una versión refactorizada que usa las utilidades creadas
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import { createRepuesto, updateRepuesto, getRepuestos, deleteRepuesto } from '../services/api';
 import RepuestoEditModal from '../components/RepuestoEditModal';
@@ -22,6 +23,7 @@ import {
 } from '../styles/repuestoStyles';
 
 function RepuestoForm({ token, onCreated }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     nombre: '', stock: '', codigo: '', descripcion: '', precio: '', proveedor: '', ubicacion: '', categoria: ''
   });
@@ -288,7 +290,7 @@ function RepuestoForm({ token, onCreated }) {
             </div>
 
             {/* Categoría */}
-            <div>
+            <div className="md:col-span-2 lg:col-span-1 xl:col-span-1">
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
                   <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -314,7 +316,7 @@ function RepuestoForm({ token, onCreated }) {
             </div>
 
             {/* Ubicación */}
-            <div>
+            <div className="md:col-span-2 lg:col-span-1 xl:col-span-1">
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
                   <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,7 +343,7 @@ function RepuestoForm({ token, onCreated }) {
             </div>
 
             {/* Rango de Stock */}
-            <div>
+            <div className="md:col-span-2 lg:col-span-2 xl:col-span-2 w-full">
               <div className={RANGE_STYLES.container}>
                 <div className={RANGE_STYLES.wrapper}>
                   <div className={RANGE_STYLES.labelSection}>
@@ -376,23 +378,22 @@ function RepuestoForm({ token, onCreated }) {
                 </div>
               </div>
             </div>
-
-            {/* Sin stock */}
-            <div>
-              <button
-                type="button"
-                onClick={() => handleFiltroChange('sinStock', !filtros.sinStock)}
-                className={`${INPUT_STYLES.base} ${filtros.sinStock ? BUTTON_STYLES.filter.active : BUTTON_STYLES.filter.inactive} flex items-center justify-center gap-2`}
-              >
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.864-.833-2.634 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-                {filtros.sinStock ? 'Mostrando sin stock' : 'Filtrar sin stock'}
-              </button>
-            </div>
           </div>
 
           <div className={LAYOUT_STYLES.gridButtons}>
+            {/* Botón filtrar sin stock */}
+            <button
+              type="button"
+              onClick={() => handleFiltroChange('sinStock', !filtros.sinStock)}
+              className={`${BUTTON_STYLES.filter.clear} ${filtros.sinStock ? 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100' : 'bg-gray-50 border-gray-300 text-gray-500 hover:bg-gray-100'}`}
+            >
+              <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              {filtros.sinStock ? 'Mostrando sin stock' : 'Filtrar sin stock'}
+            </button>
+
             {/* Botón limpiar filtros */}
             <button
               type="button"
@@ -408,11 +409,11 @@ function RepuestoForm({ token, onCreated }) {
         </div>
 
         {/* Lista de Repuestos */}
-        <div className={CONTAINER_STYLES.card}>
+        <div className={`${CONTAINER_STYLES.card} overflow-hidden`}>
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-medium text-gray-800">Repuestos ({paginacion.totalItems})</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Repuestos ({paginacion.totalItems})</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenados por stock descendente</p>
               </div>
               {loading && (
@@ -427,8 +428,8 @@ function RepuestoForm({ token, onCreated }) {
             </div>
           </div>
 
-          {/* Lista */}
-          <div className={LIST_STYLES.divider}>
+          {/* Lista con overflow controlado */}
+          <div className={`${LIST_STYLES.divider} overflow-x-hidden`}>
             {repuestos.length === 0 ? (
               <div className={LIST_STYLES.emptyState}>
                 No hay repuestos que coincidan con los filtros
@@ -436,32 +437,45 @@ function RepuestoForm({ token, onCreated }) {
             ) : (
               repuestos.map((repuesto) => (
                 <div key={repuesto.id} className={LIST_STYLES.item}>
-                  <div className={LIST_STYLES.itemContent}>
+                  <div className={`${LIST_STYLES.itemContent} list-item-content`}>
                     <div className="flex-1">
                       <div className={LIST_STYLES.itemHeader}>
-                        <h3 className={LIST_STYLES.itemTitle}>{repuesto.nombre}</h3>
-                        <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock)} flex-shrink-0`}>
-                          <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                          </svg>
-                          {repuesto.stock}
-                        </span>
+                        <h3 className={TEXT_STYLES.itemTitle}>{repuesto.nombre}</h3>
+                        <div className={LIST_STYLES.itemActions}>
+                          <button
+                            onClick={() => navigate(`/repuestos/${repuesto.id}`)}
+                            className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
+                            title="Ver detalles"
+                          >
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => openEditModal(repuesto)}
+                            className={BUTTON_STYLES.edit}
+                            title="Editar repuesto"
+                          >
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                       {repuesto.descripcion && (
-                        <div className="text-sm text-gray-600 mt-1 font-medium line-clamp-1">
+                        <div className={LIST_STYLES.itemDescription}>
                           {repuesto.descripcion}
                         </div>
                       )}
                       <div className={LIST_STYLES.itemTagsRow}>
-                        <div className={LIST_STYLES.itemTagsLeft}>
-                          {repuesto.codigo && (
-                            <span className={`${LIST_STYLES.itemTagWithEllipsis}`} title={repuesto.codigo}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                              </svg>
-                              <span className="tag-truncate">{repuesto.codigo}</span>
-                            </span>
-                          )}
+                        <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
+                          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={repuesto.codigo || 'Sin código'}>
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span className="tag-truncate">{repuesto.codigo || 'Sin código'}</span>
+                          </span>
                           {repuesto.categoria && (
                             <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -471,7 +485,7 @@ function RepuestoForm({ token, onCreated }) {
                             </span>
                           )}
                           {repuesto.ubicacion && (
-                            <span className={`${LIST_STYLES.itemTagWithEllipsis} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
+                            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -479,24 +493,20 @@ function RepuestoForm({ token, onCreated }) {
                               <span className="tag-truncate">{repuesto.ubicacion}</span>
                             </span>
                           )}
+                          <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock)}`}>
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            {repuesto.stock}
+                          </span>
                           {repuesto.precio && (
-                            <span className={`${LIST_STYLES.itemTag} bg-green-50 text-green-700 border-green-200`}>
+                            <span className={`${LIST_STYLES.itemTag} bg-green-100 text-green-700`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                               </svg>
                               ${Number(repuesto.precio).toLocaleString()}
                             </span>
                           )}
-                        </div>
-                        <div className={LIST_STYLES.itemActions}>
-                          <button
-                            onClick={() => openEditModal(repuesto)}
-                            className={BUTTON_STYLES.edit}
-                          >
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -508,40 +518,44 @@ function RepuestoForm({ token, onCreated }) {
 
           {/* Paginación */}
           {paginacion.total > 1 && (
-            <div className={`${CONTAINER_STYLES.cardPadding} border-t border-gray-200 flex justify-center gap-2`}>
-              <button
-                onClick={() => handlePaginacion(paginacion.current - 1)}
-                disabled={paginacion.current <= 1}
-                className={`${BUTTON_STYLES.pagination.base} ${
-                  paginacion.current <= 1 
-                    ? BUTTON_STYLES.pagination.disabled 
-                    : BUTTON_STYLES.pagination.enabled
-                }`}
-              >
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Anterior
-              </button>
-              
-              <span className="px-4 py-2 text-sm text-gray-600 flex items-center">
-                Página {paginacion.current} de {paginacion.total}
-              </span>
-              
-              <button
-                onClick={() => handlePaginacion(paginacion.current + 1)}
-                disabled={paginacion.current >= paginacion.total}
-                className={`${BUTTON_STYLES.pagination.base} ${
-                  paginacion.current >= paginacion.total 
-                    ? BUTTON_STYLES.pagination.disabled 
-                    : BUTTON_STYLES.pagination.enabled
-                }`}
-              >
-                Siguiente
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+            <div className="border-t border-gray-200 bg-gray-50 py-3">
+              <div className="px-4 sm:px-6">
+                <div className="flex justify-center items-center gap-2">
+                  <button
+                    onClick={() => handlePaginacion(paginacion.current - 1)}
+                    disabled={paginacion.current <= 1}
+                    className={`${BUTTON_STYLES.pagination.base} ${
+                      paginacion.current <= 1 
+                        ? BUTTON_STYLES.pagination.disabled 
+                        : BUTTON_STYLES.pagination.enabled
+                    }`}
+                  >
+                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
+                  <div className="px-3 py-1 bg-white border border-gray-200 rounded-md">
+                    <span className="text-xs font-medium text-gray-700">
+                      {paginacion.current}/{paginacion.total}
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={() => handlePaginacion(paginacion.current + 1)}
+                    disabled={paginacion.current >= paginacion.total}
+                    className={`${BUTTON_STYLES.pagination.base} ${
+                      paginacion.current >= paginacion.total 
+                        ? BUTTON_STYLES.pagination.disabled 
+                        : BUTTON_STYLES.pagination.enabled
+                    }`}
+                  >
+                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

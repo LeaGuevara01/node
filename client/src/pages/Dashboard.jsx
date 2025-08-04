@@ -52,14 +52,14 @@ function Dashboard({ token, role, onLogout }) {
     try {
       // Cargar datos en paralelo para mejor rendimiento
       const [maquinariasData, repuestosData, proveedoresData, reparacionesData] = await Promise.all([
-        getMaquinarias(token),
+        getMaquinarias(token, {}, 1, true), // forStats = true para obtener todos
         getRepuestos(token),
         getProveedores(token),
         getReparaciones(token)
       ]);
       
       // Actualizar estados con los datos obtenidos
-      setMaquinarias(maquinariasData);
+      setMaquinarias(maquinariasData.maquinarias || maquinariasData || []);
       setRepuestos(repuestosData);
       setProveedores(proveedoresData);
       setReparaciones(reparacionesData);
@@ -91,7 +91,7 @@ function Dashboard({ token, role, onLogout }) {
       <div className="pl-12 md:pl-60">
         <div className="px-2 sm:px-4 lg:px-6 py-2">
           {/* Header */}
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center">
             {/* Espaciado para layout sin título específico */}
           </div>
         

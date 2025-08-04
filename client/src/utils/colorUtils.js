@@ -35,11 +35,11 @@ export const getColorFromString = (str, type = 'categoria') => {
     ];
     return colors[Math.abs(hash) % colors.length];
   } else {
-    // Para ubicaciones relacionadas con John Deere (JD), usar tonos verdes
+    // Para ubicaciones relacionadas con John Deere (JD), usar tonos verdes con mejor contraste
     if (str.toLowerCase().includes('jd') || str.toLowerCase().includes('john') || str.toLowerCase().includes('deere')) {
       const greenColors = [
-        'bg-green-100 text-green-700', 'bg-emerald-100 text-emerald-700', 'bg-lime-100 text-lime-700', 
-        'bg-green-50 text-green-800', 'bg-emerald-50 text-emerald-800', 'bg-green-200 text-green-800'
+        'bg-green-200 text-green-800', 'bg-emerald-200 text-emerald-800', 'bg-lime-200 text-lime-800', 
+        'bg-green-100 text-green-800', 'bg-emerald-100 text-emerald-800', 'bg-teal-100 text-teal-800'
       ];
       return greenColors[Math.abs(hash) % greenColors.length];
     }

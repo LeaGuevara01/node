@@ -25,11 +25,13 @@ Sistema web moderno para la gestión integral de talleres agrícolas que incluye
 
 - [`SETUP_DESARROLLO.md`](./docs/SETUP_DESARROLLO.md) - Instalación y configuración local
 - [`API_REFERENCE.md`](./docs/API_REFERENCE.md) - Documentación completa de la API
+- [`docs/README.md`](./docs/README.md) - **Índice completo de documentación**
 
 ### 🎯 **Características**
 
 - [`SISTEMA_FILTROS.md`](./docs/SISTEMA_FILTROS.md) - Filtros avanzados para repuestos
-- [`DOCUMENTACION_COMPLETA.md`](./DOCUMENTACION_COMPLETA.md) - Arquitectura completa
+- [`CODE_OPTIMIZATION_COMPLETE.md`](./docs/CODE_OPTIMIZATION_COMPLETE.md) - Optimizaciones técnicas
+- [`CLEANUP_OPTIMIZATION_LOG.md`](./docs/CLEANUP_OPTIMIZATION_LOG.md) - **Log de optimización reciente**
 
 ### 🚀 **Deployment**
 
@@ -39,11 +41,11 @@ Sistema web moderno para la gestión integral de talleres agrícolas que incluye
 ### 🔒 **Seguridad**
 
 - [`SECURITY.md`](./docs/SECURITY.md) - Mejores prácticas de seguridad
-- [`SANITIZATION_LOG.md`](./docs/SANITIZATION_LOG.md) - Log de sanitización
+- [`TROUBLESHOOTING.md`](./docs/TROUBLESHOOTING.md) - Solución de problemas
 
 ### 📁 **Toda la Documentación**
 
-- [`docs/`](./docs/) - Documentación completa organizada
+- [`docs/`](./docs/) - **Documentación completa organizada y optimizada**
 
 ## 🏗️ **Arquitectura**
 
@@ -60,8 +62,10 @@ Sistema web moderno para la gestión integral de talleres agrícolas que incluye
 - ⚡ **Desarrollo rápido** con Vite y Hot Reload
 - 🎨 **UI moderna** con Tailwind CSS responsive
 - 🔐 **Seguridad** con JWT y roles de usuario
-- � **Filtros avanzados** para gestión de repuestos
-- � **Deploy automático** con Render Blueprint
+- 🔍 **Filtros avanzados** para gestión eficiente
+- 🚀 **Deploy automático** con Render Blueprint
+- 🧹 **Código optimizado** con componentes modulares
+- 📦 **Arquitectura escalable** y mantenible
 
 ---
 
@@ -107,8 +111,11 @@ cd node
 ├── 📂 client/                 # Frontend React
 │   ├── 📂 src/
 │   │   ├── 📂 components/     # Componentes reutilizables
+│   │   │   └── 📂 shared/     # Componentes compartidos
 │   │   ├── 📂 pages/          # Páginas principales
 │   │   ├── 📂 services/       # API calls
+│   │   ├── 📂 hooks/          # Custom hooks
+│   │   ├── 📂 utils/          # Utilidades
 │   │   └── 📄 App.jsx         # Componente principal
 │   ├── 📄 package.json
 │   └── 📄 vite.config.js
@@ -121,6 +128,10 @@ cd node
 │   ├── 📂 prisma/
 │   │   └── 📄 schema.prisma   # Schema de base de datos
 │   └── 📄 package.json
+├── 📂 docs/                   # Documentación organizada
+├── 📂 scripts/                # Scripts de deployment
+├── 📂 data/                   # Datos de ejemplo
+│   └── 📂 samples/            # CSVs de muestra
 ├── 📄 render.yaml             # Configuración de deploy
 ├── 📄 package.json            # Scripts del monorepo
 └── 📄 README.md               # Este archivo

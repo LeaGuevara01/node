@@ -37,7 +37,7 @@ function Sidebar({ active, setActive }) {
         }`}
         onClick={() => setOpen(true)}
       >
-        <div className="flex items-center justify-center h-12 pt-6">
+        <div className="flex items-center justify-center h-12 pt-16">
           <Menu className="text-white" size={20} />
         </div>
       </div>
