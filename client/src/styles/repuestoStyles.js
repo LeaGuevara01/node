@@ -4,10 +4,10 @@
 
 // Clases base para contenedores
 export const CONTAINER_STYLES = {
-  main: "min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6",
-  maxWidth: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6",
+  main: "min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-3",
+  maxWidth: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3",
   card: "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden",
-  cardPadding: "p-4 sm:p-6"
+  cardPadding: "p-3 sm:p-4"
 };
 
 // Clases para inputs y formularios
@@ -17,7 +17,8 @@ export const INPUT_STYLES = {
   placeholder: "placeholder-gray-500",
   select: "w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none text-gray-500",
   selectPlaceholder: "text-gray-500",
-  label: "block text-sm font-medium text-gray-500 mb-1"
+  label: "block text-sm font-medium text-gray-700 mb-2",
+  textarea: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 resize-vertical min-h-[100px]"
 };
 
 // Clases para botones
@@ -45,10 +46,12 @@ export const BUTTON_STYLES = {
 // Clases para layouts y grids
 export const LAYOUT_STYLES = {
   flexBetween: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3",
-  gridFilters: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-3",
-  gridButtons: "grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3",
+  gridFilters: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3",
+  gridButtons: "grid grid-cols-1 gap-3 mt-3",
   gridForm: "grid grid-cols-1 sm:grid-cols-2 gap-4",
-  searchSpan: "sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2"
+  searchSpan: "sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2",
+  filterSpan: "md:col-span-1 lg:col-span-1 xl:col-span-1",
+  rangeSpan: "sm:col-span-2 md:col-span-2 lg:col-span-1 xl:col-span-1"
 };
 
 // Clases para iconos
@@ -88,24 +91,25 @@ export const MODAL_STYLES = {
   closeButton: "text-gray-500 hover:text-gray-700 text-2xl flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors duration-200",
   content: "p-6",
   form: "space-y-4",
-  buttonGroup: "flex flex-col sm:flex-row gap-3 pt-4 justify-center sm:justify-end"
+  buttonGroup: "flex flex-col sm:flex-row gap-3 pt-4 justify-between sm:justify-between"
 };
 
 // Clases para elementos de lista
 export const LIST_STYLES = {
   divider: "divide-y divide-gray-200",
-  item: "p-3 sm:p-5 hover:bg-gray-50 transition-colors duration-150",
+  item: "p-2 sm:p-4 hover:bg-gray-50 transition-colors duration-150",
   itemContent: "flex items-start gap-3",
   itemHeader: "flex justify-between items-center mb-1",
   itemDetails: "flex flex-wrap items-center gap-3 mt-1 text-sm min-h-[24px]",
   itemLeft: "flex flex-wrap items-center gap-3 flex-1 min-w-0",
   itemRight: "flex items-center flex-shrink-0 ml-2",
   itemTag: "flex items-center justify-center gap-1 px-2 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[60px]",
-  itemTagStock: "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium tag-no-wrap flex-shrink-0 min-w-[45px] max-w-[50px]",
-  itemTagCategory: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[70px] max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:flex-initial lg:max-w-none",
-  itemTagWithEllipsis: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[80px] max-w-[130px] sm:max-w-[150px] md:max-w-[170px] lg:flex-initial lg:max-w-none",
-  itemTagCode: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[80px] max-w-[130px] sm:max-w-[150px] md:max-w-[170px] lg:flex-initial lg:max-w-none",
-  itemTagLocation: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[70px] max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:flex-initial lg:max-w-none",
+  itemTagStock: "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium tag-no-wrap flex-shrink-0 min-w-[45px] max-w-[70px]",
+  itemTagCategory: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[70px] max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:flex-initial lg:max-w-none",
+  itemTagWithEllipsis: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[80px] max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:flex-initial lg:max-w-none",
+  itemTagCode: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[80px] max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:flex-initial lg:max-w-none",
+  itemTagLocation: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[70px] max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:flex-initial lg:max-w-none",
+  itemTagSupplier: "flex items-center justify-center gap-1 px-1.5 py-1 rounded-md text-xs font-medium tag-no-wrap flex-1 min-w-[80px] max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:flex-initial lg:max-w-none",
   itemDescription: "text-base text-gray-600 mt-1 font-semibold line-clamp-2 flex items-center justify-between gap-2 min-h-[24px]",
   itemTagsRow: "flex items-center justify-between gap-2 mt-2 min-h-[28px] w-full",
   itemTagsLeft: "flex items-center gap-1 sm:gap-2 flex-1 min-w-0 overflow-hidden",
@@ -128,6 +132,6 @@ export const RANGE_STYLES = {
   icon: "w-5 h-5 mr-2 text-gray-400 flex-shrink-0",
   labelText: "text-sm font-medium text-gray-500 whitespace-nowrap",
   inputsWrapper: "flex items-center gap-1 px-3 flex-1 min-w-0 w-full",
-  input: "flex-1 border-0 p-1 text-sm focus:ring-0 focus:outline-none bg-transparent placeholder-gray-500 min-w-0 w-16 text-gray-500",
+  input: "flex-1 border-0 p-1 text-sm focus:ring-0 focus:outline-none bg-transparent placeholder-gray-500 min-w-0 w-16 text-gray-500 text-center",
   separator: "text-gray-500 text-sm font-medium px-2 flex-shrink-0 select-none"
 };

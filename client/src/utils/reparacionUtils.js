@@ -17,6 +17,7 @@ export const buildReparacionQueryParams = (filtros, pagina = 1) => {
   if (filtros.search) params.append('search', filtros.search);
   if (filtros.maquinariaId) params.append('maquinariaId', filtros.maquinariaId);
   if (filtros.userId) params.append('userId', filtros.userId);
+  if (filtros.repuestoId) params.append('repuestoId', filtros.repuestoId);
   if (filtros.fechaInicio) params.append('fechaInicio', filtros.fechaInicio);
   if (filtros.fechaFin) params.append('fechaFin', filtros.fechaFin);
   if (filtros.estado) params.append('estado', filtros.estado);
@@ -33,6 +34,7 @@ export const clearReparacionFilters = () => ({
   search: '',
   maquinariaId: '',
   userId: '',
+  repuestoId: '',
   fechaInicio: '',
   fechaFin: '',
   estado: ''
@@ -48,6 +50,18 @@ export const formatFecha = (fecha) => {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
+  });
+};
+
+/**
+ * Formatea fecha en formato corto (mm/dd) para pantallas pequeñas
+ */
+export const formatFechaCorta = (fecha) => {
+  if (!fecha) return '';
+  const date = new Date(fecha);
+  return date.toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit'
   });
 };
 

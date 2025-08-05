@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test API</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .section {
+        margin: 20px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      button {
+        margin: 5px;
+        padding: 10px;
+      }
+      pre {
+        background: #f5f5f5;
+        padding: 10px;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test API - Reparaciones Module</h1>
+
+    <div class="section">
+      <h2>Authentication</h2>
+      <input type="text" id="username" placeholder="Username" value="admin" />
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        value="admin123"
+      />
+      <button onclick="login()">Login</button>
+      <div id="auth-result"></div>
+    </div>
+
+    <div class="section">
+      <h2>Test APIs</h2>
+      <button onclick="testUsers()">Test Users</button>
+      <button onclick="testMaquinarias()">Test Maquinarias</button>
+      <button onclick="testRepuestos()">Test Repuestos</button>
+      <div id="test-results"></div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:4000/api";
+      let token = "";
+
+      async function login() {
+        try {
+          const response = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value,
+            }),
+          });
+
+          const data = await response.json();
+          if (data.token) {
+            token = data.token;
+            document.getElementById(
+              "auth-result"
+            ).innerHTML = `<pre>✅ Login successful!\nToken: ${token.substring(
+              0,
+              50
+            )}...</pre>`;
+          } else {
+            document.getElementById(
+              "auth-result"
+            ).innerHTML = `<pre>❌ Login failed: ${JSON.stringify(
+              data,
+              null,
+              2
+            )}</pre>`;
+          }
+        } catch (error) {
+          document.getElementById(
+            "auth-result"
+          ).innerHTML = `<pre>❌ Error: ${error.message}</pre>`;
+        }
+      }
+
+      async function testUsers() {
+        if (!token) {
+          alert("Please login first");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/users`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const data = await response.json();
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<h3>Users API Result:</h3><pre>${JSON.stringify(
+            data,
+            null,
+            2
+          )}</pre>`;
+        } catch (error) {
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<h3>Users API Error:</h3><pre>${error.message}</pre>`;
+        }
+      }
+
+      async function testMaquinarias() {
+        if (!token) {
+          alert("Please login first");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/maquinaria?limit=10000`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const data = await response.json();
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<h3>Maquinarias API Result:</h3><pre>${JSON.stringify(
+            data,
+            null,
+            2
+          )}</pre>`;
+        } catch (error) {
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<h3>Maquinarias API Error:</h3><pre>${error.message}</pre>`;
+        }
+      }
+
+      async function testRepuestos() {
+        if (!token) {
+          alert("Please login first");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_URL}/repuestos?limit=10000`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const data = await response.json();
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<h3>Repuestos API Result:</h3><pre>${JSON.stringify(
+            data,
+            null,
+            2
+          )}</pre>`;
+        } catch (error) {
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<h3>Repuestos API Error:</h3><pre>${error.message}</pre>`;
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Papa from 'papaparse';
 import { createMaquinaria, updateMaquinaria, getMaquinarias, deleteMaquinaria, getMaquinariaFilters } from '../services/api';
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
+import EstadoIcon from '../components/EstadoIcon';
 import { getColorFromString } from '../utils/colorUtils';
 import { sortMaquinariasByCategory, buildMaquinariaQueryParams, clearMaquinariaFilters, getEstadoColorClass, formatAnio } from '../utils/maquinariaUtils';
 import { 
@@ -184,7 +185,6 @@ function MaquinariaForm({ token, onCreated }) {
           <div className={LAYOUT_STYLES.flexBetween}>
             <div>
               <h1 className={TEXT_STYLES.title}>Gestión de Maquinarias</h1>
-              <p className={TEXT_STYLES.subtitle}>Administra tu flota de maquinarias agrícolas</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <label className="flex-1 sm:flex-initial">
@@ -341,32 +341,6 @@ function MaquinariaForm({ token, onCreated }) {
               </div>
             </div>
 
-            {/* Estado */}
-            <div>
-              <div className={POSITION_STYLES.relative}>
-                <div className={POSITION_STYLES.iconLeft}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <select
-                  value={filtros.estado}
-                  onChange={(e) => handleFiltroChange('estado', e.target.value)}
-                  className={INPUT_STYLES.select}
-                >
-                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Estados</option>
-                  {opcionesFiltros.estados?.map(estado => (
-                    <option key={estado} value={estado}>{estado}</option>
-                  ))}
-                </select>
-                <div className={POSITION_STYLES.iconRight}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
             {/* Rango de Años */}
             <div className="sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full">
               <div className={RANGE_STYLES.container}>
@@ -406,11 +380,11 @@ function MaquinariaForm({ token, onCreated }) {
           </div>
 
           <div className={LAYOUT_STYLES.gridButtons}>
-            {/* Botón limpiar filtros */}
+            {/* Botón limpiar filtros extendido */}
             <button
               type="button"
               onClick={limpiarFiltros}
-              className={BUTTON_STYLES.filter.clear}
+              className={`${BUTTON_STYLES.filter.clear} w-full`}
             >
               <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -452,7 +426,13 @@ function MaquinariaForm({ token, onCreated }) {
                   <div className={`${LIST_STYLES.itemContent} list-item-content`}>
                     <div className="flex-1">
                       <div className={LIST_STYLES.itemHeader}>
-                        <h3 className={LIST_STYLES.itemTitle}>{maquinaria.nombre}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className={LIST_STYLES.itemTitle}>{maquinaria.nombre}</h3>
+                          <span className={`hidden sm:inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getEstadoColorClass(maquinaria.estado)}`}>
+                            <EstadoIcon estado={maquinaria.estado} className="w-3 h-3" />
+                            <span className="ml-1">{maquinaria.estado || 'Sin estado'}</span>
+                          </span>
+                        </div>
                         <div className={LIST_STYLES.itemActions}>
                           <button
                             onClick={() => navigate(`/maquinarias/${maquinaria.id}`)}
@@ -482,20 +462,12 @@ function MaquinariaForm({ token, onCreated }) {
                       )}
                       <div className={LIST_STYLES.itemTagsRow}>
                         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
-                          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={maquinaria.numero_serie || 'Sin número de serie'}>
+                          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700 hidden sm:flex`} title={maquinaria.numero_serie || 'Sin número de serie'}>
                             <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span className="tag-truncate">{maquinaria.numero_serie || 'Sin N° serie'}</span>
                           </span>
-                          {maquinaria.categoria && (
-                            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(maquinaria.categoria, 'categoria')}`} title={maquinaria.categoria}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                              </svg>
-                              <span className="tag-truncate">{maquinaria.categoria}</span>
-                            </span>
-                          )}
                           {maquinaria.ubicacion && (
                             <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(maquinaria.ubicacion, 'ubicacion')}`} title={maquinaria.ubicacion}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -505,12 +477,14 @@ function MaquinariaForm({ token, onCreated }) {
                               <span className="tag-truncate">{maquinaria.ubicacion}</span>
                             </span>
                           )}
-                          <span className={`${LIST_STYLES.itemTagStock} ${getEstadoColorClass(maquinaria.estado)}`}>
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {maquinaria.estado || 'Sin estado'}
-                          </span>
+                          {maquinaria.categoria && (
+                            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(maquinaria.categoria, 'categoria')}`} title={maquinaria.categoria}>
+                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                              </svg>
+                              <span className="tag-truncate">{maquinaria.categoria}</span>
+                            </span>
+                          )}
                           {maquinaria.anio && (
                             <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">

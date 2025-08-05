@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { getProveedores, createProveedor, updateProveedor, deleteProveedor } = require('../controllers/proveedorController');
+const { getProveedores, getProveedorById, createProveedor, updateProveedor, deleteProveedor } = require('../controllers/proveedorController');
 
 router.get('/', auth, getProveedores);
+router.get('/:id', auth, getProveedorById);
 
 router.post('/', auth, (req, res, next) => {
   if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden crear proveedores' });

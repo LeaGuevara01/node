@@ -10,6 +10,22 @@ exports.getProveedores = async (req, res) => {
   }
 };
 
+exports.getProveedorById = async (req, res) => {
+  try {
+    const proveedor = await prisma.proveedor.findUnique({
+      where: { id: parseInt(req.params.id) }
+    });
+    
+    if (!proveedor) {
+      return res.status(404).json({ error: 'Proveedor no encontrado' });
+    }
+    
+    res.json(proveedor);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.createProveedor = async (req, res) => {
   const { nombre, cuit, telefono, email, direccion, web, productos } = req.body;
   try {

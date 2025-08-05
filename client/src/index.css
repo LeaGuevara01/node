@@ -37,7 +37,7 @@
 /* Mejoras para pantallas pequeñas */
 @media (max-width: 640px) {
   .tag-truncate {
-    max-width: 45px;
+    max-width: 80px;
   }
   
   /* Ajustes específicos para contenedores de tags */
@@ -68,7 +68,7 @@
 /* Ajustes para tablets */
 @media (min-width: 641px) and (max-width: 768px) {
   .tag-truncate {
-    max-width: 70px;
+    max-width: 120px;
   }
   
   .tags-container-mobile {
@@ -81,7 +81,7 @@
 /* Ajustes para pantallas medianas */
 @media (min-width: 769px) and (max-width: 1024px) {
   .tag-truncate {
-    max-width: 90px;
+    max-width: 150px;
   }
   
   .tags-container-mobile {
@@ -99,7 +99,7 @@
 /* Ajustes para pantallas grandes */
 @media (min-width: 1025px) {
   .tag-truncate {
-    max-width: 120px;
+    max-width: 200px;
   }
   
   .tags-container-mobile {

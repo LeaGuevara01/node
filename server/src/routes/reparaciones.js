@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { getReparaciones, createReparacion, updateReparacion, deleteReparacion } = require('../controllers/reparacionController');
+const { getReparaciones, getReparacion, createReparacion, updateReparacion, deleteReparacion } = require('../controllers/reparacionController');
 
 router.get('/', auth, getReparaciones);
+router.get('/:id', auth, getReparacion);
 
 router.post('/', auth, (req, res, next) => {
   if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden crear reparaciones' });

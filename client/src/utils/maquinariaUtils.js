@@ -84,6 +84,29 @@ export const getEstadoColorClass = (estado) => {
 };
 
 /**
+ * Obtiene la clase CSS del icono para el estado de la maquinaria
+ * @param {string} estado - Estado de la maquinaria
+ * @returns {string} - Clase CSS para el icono
+ */
+export const getEstadoIconClass = (estado) => {
+  if (!estado) return 'text-gray-400';
+  
+  const estadoLower = estado.toLowerCase();
+  
+  if (estadoLower.includes('operativo') || estadoLower.includes('funcionando') || estadoLower.includes('activo')) {
+    return 'text-green-600';
+  }
+  if (estadoLower.includes('mantenimiento') || estadoLower.includes('reparacion') || estadoLower.includes('revision')) {
+    return 'text-yellow-600';
+  }
+  if (estadoLower.includes('averiado') || estadoLower.includes('roto') || estadoLower.includes('fuera de servicio')) {
+    return 'text-red-600';
+  }
+  
+  return 'text-gray-600';
+};
+
+/**
  * Formatea el año para mostrar, manejando valores nulos
  * @param {number|null} anio - Año de la maquinaria
  * @returns {string} - Año formateado o texto por defecto
@@ -91,4 +114,21 @@ export const getEstadoColorClass = (estado) => {
 export const formatAnio = (anio) => {
   if (!anio || anio === 0) return 'No especificado';
   return anio.toString();
+};
+
+/**
+ * Formatea fecha para display en detalles
+ * @param {string|Date} fecha - Fecha a formatear
+ * @returns {string} - Fecha formateada o cadena vacía
+ */
+export const formatFechaDetalle = (fecha) => {
+  if (!fecha) return '';
+  const date = new Date(fecha);
+  return date.toLocaleDateString('es-AR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };

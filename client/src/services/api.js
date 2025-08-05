@@ -74,7 +74,10 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
   const res = await fetch(`${API_URL}/maquinaria?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
-  return res.json();
+  const data = await res.json();
+  // El backend devuelve { maquinarias: [...], pagination: {...} }
+  // Siempre retornamos solo el array de maquinarias
+  return data.maquinarias || data || [];
 }
 
 /**
@@ -258,6 +261,15 @@ export async function getProveedores(token) {
   const res = await fetch(`${API_URL}/proveedores?limit=10000`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  const data = await res.json();
+  // El backend puede devolver { proveedores: [...], pagination: {...} } o directamente el array
+  return data.proveedores || data || [];
+}
+
+export async function getProveedorById(id, token) {
+  const res = await fetch(`${API_URL}/proveedores/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   return res.json();
 }
 
@@ -273,8 +285,8 @@ export async function createProveedor(data, token) {
   return res.json();
 }
 
-export async function updateProveedor(data, token) {
-  const res = await fetch(`${API_URL}/proveedores/${data.id}`, {
+export async function updateProveedor(id, data, token) {
+  const res = await fetch(`${API_URL}/proveedores/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -299,6 +311,15 @@ export async function getReparaciones(token) {
   const res = await fetch(`${API_URL}/reparaciones?limit=10000`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  const data = await res.json();
+  // El backend puede devolver { reparaciones: [...], pagination: {...} } o directamente el array
+  return data.reparaciones || data || [];
+}
+
+export async function getReparacion(id, token) {
+  const res = await fetch(`${API_URL}/reparaciones/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
   return res.json();
 }
 
@@ -311,11 +332,17 @@ export async function createReparacion(data, token) {
     },
     body: JSON.stringify(data)
   });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
   return res.json();
 }
 
-export async function updateReparacion(data, token) {
-  const res = await fetch(`${API_URL}/reparaciones/${data.id}`, {
+export async function updateReparacion(id, data, token) {
+  const res = await fetch(`${API_URL}/reparaciones/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -323,6 +350,12 @@ export async function updateReparacion(data, token) {
     },
     body: JSON.stringify(data)
   });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
   return res.json();
 }
 

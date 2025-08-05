@@ -3,14 +3,108 @@ const prisma = new PrismaClient();
 
 exports.getReparaciones = async (req, res) => {
   try {
-    const reparaciones = await prisma.reparacion.findMany({ 
+    const { 
+      search, 
+      maquinariaId, 
+      userId, 
+      repuestoId,
+      fechaInicio, 
+      fechaFin, 
+      estado,
+      page = 1, 
+      limit = 20 
+    } = req.query;
+
+    const where = {};
+    const include = {
+      repuestos: { include: { repuesto: true } }, 
+      usuario: { select: { id: true, username: true } },
+      maquinaria: { select: { id: true, nombre: true, modelo: true } }
+    };
+
+    // Filtro por búsqueda de texto
+    if (search) {
+      where.OR = [
+        { descripcion: { contains: search, mode: 'insensitive' } },
+        { maquinaria: { nombre: { contains: search, mode: 'insensitive' } } },
+        { usuario: { username: { contains: search, mode: 'insensitive' } } }
+      ];
+    }
+
+    // Filtros específicos
+    if (maquinariaId) {
+      where.maquinariaId = Number(maquinariaId);
+    }
+
+    if (userId) {
+      where.userId = Number(userId);
+    }
+
+    // Filtro por repuesto/componente
+    if (repuestoId) {
+      where.repuestos = {
+        some: {
+          repuestoId: Number(repuestoId)
+        }
+      };
+    }
+
+    // Filtro por rango de fechas
+    if (fechaInicio || fechaFin) {
+      where.fecha = {};
+      if (fechaInicio) {
+        where.fecha.gte = new Date(fechaInicio);
+      }
+      if (fechaFin) {
+        where.fecha.lte = new Date(fechaFin);
+      }
+    }
+
+    // Paginación
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const [reparaciones, total] = await Promise.all([
+      prisma.reparacion.findMany({
+        where,
+        include,
+        skip,
+        take,
+        orderBy: { fecha: 'desc' }
+      }),
+      prisma.reparacion.count({ where })
+    ]);
+
+    res.json({
+      data: reparaciones,
+      pagination: {
+        current: Number(page),
+        total: Math.ceil(total / take),
+        totalItems: total
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getReparacion = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const reparacion = await prisma.reparacion.findUnique({
+      where: { id: Number(id) },
       include: { 
         repuestos: { include: { repuesto: true } }, 
         usuario: { select: { id: true, username: true } },
         maquinaria: { select: { id: true, nombre: true, modelo: true } }
-      } 
+      }
     });
-    res.json(reparaciones);
+    
+    if (!reparacion) {
+      return res.status(404).json({ error: 'Reparación no encontrada' });
+    }
+    
+    res.json(reparacion);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

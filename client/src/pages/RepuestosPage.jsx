@@ -122,9 +122,9 @@ const RepuestosPage = ({ token, role }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-4">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Gestión de Repuestos</h1>
         
         {/* Filtros */}

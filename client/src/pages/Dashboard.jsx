@@ -59,10 +59,37 @@ function Dashboard({ token, role, onLogout }) {
       ]);
       
       // Actualizar estados con los datos obtenidos
-      setMaquinarias(maquinariasData.maquinarias || maquinariasData || []);
-      setRepuestos(repuestosData);
-      setProveedores(proveedoresData);
-      setReparaciones(reparacionesData);
+      console.log('Dashboard - Raw data received:', {
+        maquinariasData,
+        repuestosData,
+        proveedoresData,
+        reparacionesData
+      });
+      
+      console.log('Dashboard - Reparaciones data structure:', {
+        isArray: Array.isArray(reparacionesData),
+        hasData: reparacionesData?.data,
+        dataLength: reparacionesData?.data?.length,
+        hasReparaciones: reparacionesData?.reparaciones,
+        reparacionesLength: reparacionesData?.reparaciones?.length
+      });
+      
+      const processedMaquinarias = Array.isArray(maquinariasData) ? maquinariasData : (maquinariasData?.maquinarias || []);
+      const processedRepuestos = Array.isArray(repuestosData) ? repuestosData : (repuestosData?.repuestos || []);
+      const processedProveedores = Array.isArray(proveedoresData) ? proveedoresData : (proveedoresData?.proveedores || []);
+      const processedReparaciones = Array.isArray(reparacionesData) ? reparacionesData : (reparacionesData?.data || reparacionesData?.reparaciones || []);
+      
+      console.log('Dashboard - Processed arrays:', {
+        maquinarias: processedMaquinarias.length,
+        repuestos: processedRepuestos.length,
+        proveedores: processedProveedores.length,
+        reparaciones: processedReparaciones.length
+      });
+      
+      setMaquinarias(processedMaquinarias);
+      setRepuestos(processedRepuestos);
+      setProveedores(processedProveedores);
+      setReparaciones(processedReparaciones);
     } catch (error) {
       console.error("Error fetching data:", error);
       // En caso de error, se mantienen los datos existentes
@@ -89,16 +116,24 @@ function Dashboard({ token, role, onLogout }) {
       {/* pl-12 en mobile para evitar overlap con botón hamburguesa */}
       {/* pl-60 en desktop para dejar espacio al sidebar de 224px */}
       <div className="pl-12 md:pl-60">
-        <div className="px-2 sm:px-4 lg:px-6 py-2">
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            {/* Espaciado para layout sin título específico */}
-          </div>
-        
-        {/* Dashboard principal - mostrar estadísticas cuando no hay sección activa */}
+      <div className="px-2 sm:px-4 lg:px-6 py-2">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          {/* Espaciado para layout sin título específico */}
+        </div>        {/* Dashboard principal - mostrar estadísticas cuando no hay sección activa */}
         {!activeSection && (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Título de la aplicación */}
+            <div className="text-center bg-white rounded-lg shadow-sm p-2 mt-3 border-l-4 border-green-600">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+                🌾 Sistema de Gestión Agrícola
+              </h1>
+              <p className="text-gray-600 text-lg">
+                Gestión integral de maquinarias, repuestos, proveedores y reparaciones
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
               <StatsCard 
                 type="maquinarias" 
                 title="Maquinarias" 

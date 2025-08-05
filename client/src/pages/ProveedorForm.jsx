@@ -34,6 +34,8 @@ import {
   POSITION_STYLES,
   RANGE_STYLES
 } from '../styles/repuestoStyles';
+import { DETAILS_CONTAINER } from '../styles/detailsStyles';
+import { PROVEEDOR_STYLES } from '../styles/proveedorStyles';
 
 function ProveedorForm({ token, onCreated }) {
   const navigate = useNavigate();
@@ -104,10 +106,33 @@ function ProveedorForm({ token, onCreated }) {
       if (proveedoresData && proveedoresData.length > 0) {
         const ubicaciones = [...new Set(proveedoresData.map(p => p.ubicacion).filter(Boolean))];
         const sectores = [...new Set(proveedoresData.map(p => p.sector).filter(Boolean))];
+        
+        // Extraer ciudades de direcciones
+        const ciudades = [...new Set(
+          proveedoresData
+            .map(p => extractCiudadFromDireccion(p.direccion))
+            .filter(Boolean)
+        )];
+        
+        // Extraer productos (asumir que están separados por comas)
+        const productos = [...new Set(
+          proveedoresData
+            .flatMap(p => {
+              if (typeof p.productos === 'string') {
+                return p.productos.split(',').map(prod => prod.trim()).filter(Boolean);
+              } else if (Array.isArray(p.productos)) {
+                return p.productos.filter(Boolean);
+              }
+              return [];
+            })
+        )];
+        
         setOpcionesFiltros(prev => ({
           ...prev,
           ubicaciones,
-          sectores
+          sectores,
+          ciudades,
+          productos
         }));
       }
     } catch (err) {
@@ -187,6 +212,7 @@ function ProveedorForm({ token, onCreated }) {
       await updateProveedor(id, proveedorData, token);
       fetchProveedores();
       fetchOpcionesFiltros(); // Actualizar opciones de filtros
+      closeEditModal(); // Cerrar modal después de actualizar
       if (onCreated) onCreated();
     } catch (err) {
       console.error('Error al actualizar proveedor:', err);
@@ -199,6 +225,7 @@ function ProveedorForm({ token, onCreated }) {
       await deleteProveedor(id, token);
       fetchProveedores();
       fetchOpcionesFiltros(); // Actualizar opciones de filtros
+      closeEditModal(); // Cerrar modal después de eliminar
       if (onCreated) onCreated();
     } catch (err) {
       console.error('Error al eliminar proveedor:', err);
@@ -212,15 +239,14 @@ function ProveedorForm({ token, onCreated }) {
   }, []);
 
   return (
-    <div className={CONTAINER_STYLES.main}>
-      <div className={CONTAINER_STYLES.maxWidth}>
+    <div className={DETAILS_CONTAINER.main}>
+      <div className={DETAILS_CONTAINER.maxWidth}>
         
         {/* Header con botones de acción */}
-        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+        <div className={`${DETAILS_CONTAINER.card} ${DETAILS_CONTAINER.cardPadding}`}>
           <div className={LAYOUT_STYLES.flexBetween}>
             <div>
               <h1 className={TEXT_STYLES.title}>Gestión de Proveedores</h1>
-              <p className={TEXT_STYLES.subtitle}>Administra tu red de proveedores</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <label className="flex-1 sm:flex-initial">
@@ -299,10 +325,10 @@ function ProveedorForm({ token, onCreated }) {
         </div>
 
         {/* Filtros compactos */}
-        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+        <div className={`${DETAILS_CONTAINER.card} ${DETAILS_CONTAINER.cardPadding}`}>
           <h2 className={TEXT_STYLES.sectionTitle}>Filtros</h2>
           
-          <div className={LAYOUT_STYLES.gridFilters}>
+          <div className={PROVEEDOR_STYLES.filters.container}>
             {/* Búsqueda */}
             <div className={LAYOUT_STYLES.searchSpan}>
               <div className={POSITION_STYLES.relative}>
@@ -375,12 +401,12 @@ function ProveedorForm({ token, onCreated }) {
             </div>
           </div>
 
-          <div className={LAYOUT_STYLES.gridButtons}>
-            {/* Botón limpiar filtros */}
+          {/* Botón limpiar filtros extendido */}
+          <div className="mt-6">
             <button
               type="button"
               onClick={limpiarFiltros}
-              className={BUTTON_STYLES.filter.clear}
+              className={`${BUTTON_STYLES.filter.clear} w-full`}
             >
               <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -391,8 +417,8 @@ function ProveedorForm({ token, onCreated }) {
         </div>
 
         {/* Lista de Proveedores */}
-        <div className={`${CONTAINER_STYLES.card} overflow-hidden`}>
-          <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
+        <div className={`${DETAILS_CONTAINER.card} overflow-hidden`}>
+          <div className={`${DETAILS_CONTAINER.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Proveedores ({paginacion.totalItems || proveedores.length})</h3>
@@ -453,7 +479,7 @@ function ProveedorForm({ token, onCreated }) {
                       <div className={LIST_STYLES.itemTagsRow}>
                         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
                           {proveedor.cuit && (
-                            <span className={`${LIST_STYLES.itemTagCode} bg-blue-100 text-blue-700`} title={formatCuit(proveedor.cuit)}>
+                            <span className={`${LIST_STYLES.itemTagCode} bg-blue-100 text-blue-700 hidden sm:flex`} title={formatCuit(proveedor.cuit)}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                               </svg>
@@ -476,14 +502,6 @@ function ProveedorForm({ token, onCreated }) {
                               <span className="tag-truncate">{proveedor.email}</span>
                             </span>
                           )}
-                          {proveedor.web && (
-                            <span className={`${LIST_STYLES.itemTag} bg-indigo-100 text-indigo-700`} title={formatUrl(proveedor.web)}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m-9 9a9 9 0 019-9" />
-                              </svg>
-                              <span className="tag-truncate">Sitio Web</span>
-                            </span>
-                          )}
                           {proveedor.direccion && (
                             <span className={`${LIST_STYLES.itemTagLocation} ${getCiudadColorClass(extractCiudadFromDireccion(proveedor.direccion))}`} title={extractCiudadFromDireccion(proveedor.direccion)}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -491,14 +509,6 @@ function ProveedorForm({ token, onCreated }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
                               <span className="tag-truncate">{extractCiudadFromDireccion(proveedor.direccion)}</span>
-                            </span>
-                          )}
-                          {proveedor.productos && proveedor.productos.length > 0 && (
-                            <span className={`${LIST_STYLES.itemTag} bg-orange-100 text-orange-700`} title={formatProductos(proveedor.productos)}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                              </svg>
-                              <span className="tag-truncate">{proveedor.productos.length} productos</span>
                             </span>
                           )}
                         </div>

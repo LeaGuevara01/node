@@ -54,17 +54,17 @@ function StatsCard({ type, title, value }) {
   const IconComponent = iconMap[type];
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
+    <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-200">
       <div className="flex items-center">
         {/* Contenedor del icono con colores temáticos */}
-        <div className={`p-3 rounded-full ${style.bgColor} ${style.textColor} mr-4`}>
-          <IconComponent size={24} />
+        <div className={`p-2 rounded-full ${style.bgColor} ${style.textColor} mr-3`}>
+          <IconComponent size={20} />
         </div>
         
         {/* Información textual */}
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-semibold text-gray-900">{value || 0}</p>
+          <p className="text-xl font-semibold text-gray-900">{value || 0}</p>
         </div>
       </div>
     </div>

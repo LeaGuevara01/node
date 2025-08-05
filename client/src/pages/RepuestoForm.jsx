@@ -187,7 +187,6 @@ function RepuestoForm({ token, onCreated }) {
           <div className={LAYOUT_STYLES.flexBetween}>
             <div>
               <h1 className={TEXT_STYLES.title}>Gestión de Repuestos</h1>
-              <p className={TEXT_STYLES.subtitle}>Administra tu inventario de repuestos</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <label className="flex-1 sm:flex-initial">
@@ -343,7 +342,7 @@ function RepuestoForm({ token, onCreated }) {
             </div>
 
             {/* Rango de Stock */}
-            <div className="md:col-span-2 lg:col-span-2 xl:col-span-2 w-full">
+            <div className="sm:col-span-2 md:col-span-3 lg:col-span-3 xl:col-span-3 w-full">
               <div className={RANGE_STYLES.container}>
                 <div className={RANGE_STYLES.wrapper}>
                   <div className={RANGE_STYLES.labelSection}>
@@ -357,8 +356,18 @@ function RepuestoForm({ token, onCreated }) {
                       type="number"
                       value={filtros.stockMin}
                       onChange={(e) => handleFiltroChange('stockMin', e.target.value)}
-                      placeholder="Mín"
-                      className={RANGE_STYLES.input}
+                      placeholder="D"
+                      className={`${RANGE_STYLES.input} sm:hidden`}
+                      min={opcionesFiltros.stockRange?.min || 0}
+                      max={opcionesFiltros.stockRange?.max || 1000}
+                      step="1"
+                    />
+                    <input
+                      type="number"
+                      value={filtros.stockMin}
+                      onChange={(e) => handleFiltroChange('stockMin', e.target.value)}
+                      placeholder="Desde"
+                      className={`${RANGE_STYLES.input} hidden sm:block`}
                       min={opcionesFiltros.stockRange?.min || 0}
                       max={opcionesFiltros.stockRange?.max || 1000}
                       step="1"
@@ -368,8 +377,18 @@ function RepuestoForm({ token, onCreated }) {
                       type="number"
                       value={filtros.stockMax}
                       onChange={(e) => handleFiltroChange('stockMax', e.target.value)}
-                      placeholder="Máx"
-                      className={RANGE_STYLES.input}
+                      placeholder="H"
+                      className={`${RANGE_STYLES.input} sm:hidden`}
+                      min={opcionesFiltros.stockRange?.min || 0}
+                      max={opcionesFiltros.stockRange?.max || 1000}
+                      step="1"
+                    />
+                    <input
+                      type="number"
+                      value={filtros.stockMax}
+                      onChange={(e) => handleFiltroChange('stockMax', e.target.value)}
+                      placeholder="Hasta"
+                      className={`${RANGE_STYLES.input} hidden sm:block`}
                       min={opcionesFiltros.stockRange?.min || 0}
                       max={opcionesFiltros.stockRange?.max || 1000}
                       step="1"
@@ -463,11 +482,6 @@ function RepuestoForm({ token, onCreated }) {
                           </button>
                         </div>
                       </div>
-                      {repuesto.descripcion && (
-                        <div className={LIST_STYLES.itemDescription}>
-                          {repuesto.descripcion}
-                        </div>
-                      )}
                       <div className={LIST_STYLES.itemTagsRow}>
                         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
                           <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={repuesto.codigo || 'Sin código'}>
@@ -476,14 +490,6 @@ function RepuestoForm({ token, onCreated }) {
                             </svg>
                             <span className="tag-truncate">{repuesto.codigo || 'Sin código'}</span>
                           </span>
-                          {repuesto.categoria && (
-                            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                              </svg>
-                              <span className="tag-truncate">{repuesto.categoria}</span>
-                            </span>
-                          )}
                           {repuesto.ubicacion && (
                             <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -493,20 +499,22 @@ function RepuestoForm({ token, onCreated }) {
                               <span className="tag-truncate">{repuesto.ubicacion}</span>
                             </span>
                           )}
-                          <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock)}`}>
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                            {repuesto.stock}
-                          </span>
-                          {repuesto.precio && (
-                            <span className={`${LIST_STYLES.itemTag} bg-green-100 text-green-700`}>
+                          {repuesto.categoria && (
+                            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')} hidden sm:flex`} title={repuesto.categoria}>
                               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                               </svg>
-                              ${Number(repuesto.precio).toLocaleString()}
+                              <span className="tag-truncate">{repuesto.categoria}</span>
                             </span>
                           )}
+                        </div>
+                        <div className={LIST_STYLES.itemTagsRight}>
+                          <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock)}`} title={`Stock: ${repuesto.stock}`}>
+                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                            </svg>
+                            <span className="tag-truncate">{repuesto.stock}</span>
+                          </span>
                         </div>
                       </div>
                     </div>

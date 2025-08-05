@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getRepuestoById, updateRepuesto } from '../services/api';
 import { getColorFromString, getStockColorClass } from '../utils/colorUtils';
+import { formatFecha } from '../utils/reparacionUtils';
 import { 
   CONTAINER_STYLES, 
   INPUT_STYLES, 
@@ -130,23 +131,22 @@ function RepuestoDetails({ token }) {
     <div className={CONTAINER_STYLES.main}>
       <div className={CONTAINER_STYLES.maxWidth}>
         
-        {/* Header con navegación mejorado */}
-        <div className="mb-6">
-          <button
-            onClick={() => navigate('/')}
-            className="group flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 mb-6"
-          >
-            <div className="flex items-center justify-center w-8 h-8 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
-              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </div>
-            <span className="font-medium text-gray-700 group-hover:text-blue-700">Volver a Repuestos</span>
-          </button>
-          
-          <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+        {/* Header */}
+        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+          <div className={LAYOUT_STYLES.flexBetween}>
             <div>
-              <h1 className={TEXT_STYLES.title}>Detalles de Repuesto</h1>
+              <div className="flex items-center gap-3 mb-2">
+                <button
+                  onClick={() => navigate('/repuestos')}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Volver a repuestos"
+                >
+                  <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <h1 className={TEXT_STYLES.title}>Detalles de Repuesto</h1>
+              </div>
               <p className={TEXT_STYLES.subtitle}>Información completa y gestión de fotos</p>
             </div>
           </div>
@@ -156,11 +156,11 @@ function RepuestoDetails({ token }) {
           <>
             {/* Información principal */}
             <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 
                 {/* Foto */}
                 <div className="lg:col-span-1">
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
+                  <div className="bg-white border border-gray-200 rounded-xl p-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Fotografía</h3>
                     <div className="space-y-4">
                       <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors">
@@ -244,9 +244,9 @@ function RepuestoDetails({ token }) {
 
                 {/* Información detallada */}
                 <div className="lg:col-span-2">
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Información del repuesto</h3>
-                    <div className="space-y-8">
+                  <div className="bg-white border border-gray-200 rounded-xl p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Información del repuesto</h3>
+                    <div className="space-y-6">
                     
                     {/* Título y descripción */}
                     <div className="space-y-4">
@@ -259,7 +259,7 @@ function RepuestoDetails({ token }) {
                     </div>
 
                     {/* Etiquetas en grid */}
-                    <div className="bg-gray-50 rounded-xl p-6">
+                    <div className="bg-gray-50 rounded-xl p-4">
                       <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Información de producto</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Stock */}
@@ -345,9 +345,9 @@ function RepuestoDetails({ token }) {
 
                     {/* Información adicional */}
                     {(repuesto.created_at || repuesto.updated_at) && (
-                      <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <div className="bg-white border border-gray-200 rounded-xl p-4">
                         <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Información del sistema</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {repuesto.created_at && (
                             <div className="flex items-center gap-3">
                               <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg">
@@ -358,11 +358,7 @@ function RepuestoDetails({ token }) {
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase">Fecha de creación</p>
                                 <p className="text-sm font-semibold text-gray-900">
-                                  {new Date(repuesto.created_at).toLocaleDateString('es-ES', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                  })}
+                                  {formatFecha(repuesto.created_at)}
                                 </p>
                               </div>
                             </div>
@@ -377,11 +373,7 @@ function RepuestoDetails({ token }) {
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase">Última actualización</p>
                                 <p className="text-sm font-semibold text-gray-900">
-                                  {new Date(repuesto.updated_at).toLocaleDateString('es-ES', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                  })}
+                                  {formatFecha(repuesto.updated_at)}
                                 </p>
                               </div>
                             </div>

@@ -6,15 +6,10 @@ import {
   formatFecha,
   formatDateForInput,
   diasDesdeReparacion,
-  getEstadoReparacionColorClass,
-  getPrioridadColorClass,
   calculateCostoRepuestos,
   formatRepuestosUsados,
-  formatDuracion,
   generateResumenReparacion,
-  isValidDate,
-  getDefaultEstado,
-  getDefaultPrioridad
+  isValidDate
 } from '../utils/reparacionUtils';
 import {
   CONTAINER_STYLES,
@@ -36,7 +31,6 @@ function ReparacionDetails({ token }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [imageError, setImageError] = useState(false);
   
   // Datos para formularios
   const [users, setUsers] = useState([]);
@@ -49,13 +43,7 @@ function ReparacionDetails({ token }) {
     fecha: '',
     maquinariaId: '',
     descripcion: '',
-    userId: '',
-    estado: '',
-    prioridad: '',
-    duracionEstimada: '',
-    costo: '',
-    imagen: null,
-    observaciones: ''
+    userId: ''
   });
 
   const fetchReparacion = async () => {
@@ -69,13 +57,7 @@ function ReparacionDetails({ token }) {
         fecha: formatDateForInput(new Date(data.fecha)),
         maquinariaId: data.maquinariaId || '',
         descripcion: data.descripcion || '',
-        userId: data.userId || '',
-        estado: data.estado || getDefaultEstado(),
-        prioridad: data.prioridad || getDefaultPrioridad(),
-        duracionEstimada: data.duracionEstimada || '',
-        costo: data.costo || '',
-        imagen: null,
-        observaciones: data.observaciones || ''
+        userId: data.userId || ''
       });
       
       // Configurar repuestos seleccionados
@@ -104,13 +86,6 @@ function ReparacionDetails({ token }) {
       setRepuestos(repuestosData || []);
     } catch (err) {
       console.error('Error al cargar datos del formulario:', err);
-    }
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setEditForm({ ...editForm, imagen: file });
     }
   };
 
@@ -149,27 +124,10 @@ function ReparacionDetails({ token }) {
         ...editForm,
         maquinariaId: Number(editForm.maquinariaId),
         userId: Number(editForm.userId),
-        costo: editForm.costo ? Number(editForm.costo) : 0,
-        duracionEstimada: editForm.duracionEstimada ? Number(editForm.duracionEstimada) : 0,
         repuestos: selectedRepuestos
       };
 
-      // Si hay imagen, crear FormData
-      if (editForm.imagen) {
-        const formData = new FormData();
-        Object.keys(reparacionData).forEach(key => {
-          if (key === 'repuestos') {
-            formData.append(key, JSON.stringify(reparacionData[key]));
-          } else {
-            formData.append(key, reparacionData[key]);
-          }
-        });
-        formData.append('imagen', editForm.imagen);
-        
-        await updateReparacion(id, formData, token);
-      } else {
-        await updateReparacion(id, reparacionData, token);
-      }
+      await updateReparacion(id, reparacionData, token);
 
       setSuccess('Reparación actualizada correctamente');
       setEditMode(false);
@@ -202,51 +160,26 @@ function ReparacionDetails({ token }) {
   if (loading) {
     return (
       <div className={CONTAINER_STYLES.main}>
-        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-          <div className={TEXT_STYLES.loading}>
-            <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
-            </svg>
-            Cargando detalles de la reparación...
-          </div>
+        <div className="flex justify-center items-center min-h-96">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
       </div>
     );
   }
 
-  if (error && !reparacion) {
+  if (!reparacion) {
     return (
       <div className={CONTAINER_STYLES.main}>
-        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-          <div className={ALERT_STYLES.error}>
-            {error}
+        <div className={CONTAINER_STYLES.maxWidth}>
+          <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+            <div className={ALERT_STYLES.error}>
+              Reparación no encontrada
+            </div>
           </div>
-          <button
-            onClick={() => navigate('/reparaciones')}
-            className={BUTTON_STYLES.secondary}
-          >
-            Volver a Reparaciones
-          </button>
         </div>
       </div>
     );
   }
-
-  const estadosDisponibles = [
-    'pendiente', 
-    'en_progreso', 
-    'completada', 
-    'cancelada', 
-    'pausada'
-  ];
-
-  const prioridadesDisponibles = [
-    'baja',
-    'media', 
-    'alta',
-    'critica'
-  ];
 
   return (
     <div className={CONTAINER_STYLES.main}>
@@ -270,9 +203,6 @@ function ReparacionDetails({ token }) {
                   {reparacion?.maquinaria?.nombre || 'Reparación'} - Detalles
                 </h1>
               </div>
-              <p className={TEXT_STYLES.subtitle}>
-                Información completa de la reparación
-              </p>
             </div>
             <div className="flex gap-2">
               {!editMode ? (
@@ -342,139 +272,67 @@ function ReparacionDetails({ token }) {
           <h2 className={TEXT_STYLES.sectionTitle}>Información General</h2>
           
           {editMode ? (
-            <div className={LAYOUT_STYLES.gridForm}>
-              <div>
-                <label className={INPUT_STYLES.label}>Fecha *</label>
-                <input
-                  type="date"
-                  value={editForm.fecha}
-                  onChange={(e) => setEditForm({...editForm, fecha: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  required
-                />
+            <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className={INPUT_STYLES.label}>Fecha *</label>
+                  <input
+                    type="date"
+                    value={editForm.fecha}
+                    onChange={(e) => setEditForm({...editForm, fecha: e.target.value})}
+                    className={INPUT_STYLES.base}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className={INPUT_STYLES.label}>Maquinaria *</label>
+                  <select
+                    value={editForm.maquinariaId}
+                    onChange={(e) => setEditForm({...editForm, maquinariaId: e.target.value})}
+                    className={INPUT_STYLES.base}
+                    required
+                  >
+                    <option value="">Seleccionar maquinaria</option>
+                    {maquinarias.map(maquinaria => (
+                      <option key={maquinaria.id} value={maquinaria.id}>
+                        {maquinaria.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className={INPUT_STYLES.label}>Responsable *</label>
+                  <select
+                    value={editForm.userId}
+                    onChange={(e) => setEditForm({...editForm, userId: e.target.value})}
+                    className={INPUT_STYLES.base}
+                    required
+                  >
+                    <option value="">Seleccionar responsable</option>
+                    {users.map(user => (
+                      <option key={user.id} value={user.id}>
+                        {user.username}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className={INPUT_STYLES.label}>Maquinaria *</label>
-                <select
-                  value={editForm.maquinariaId}
-                  onChange={(e) => setEditForm({...editForm, maquinariaId: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  required
-                >
-                  <option value="">Seleccionar maquinaria</option>
-                  {maquinarias.map(maquinaria => (
-                    <option key={maquinaria.id} value={maquinaria.id}>
-                      {maquinaria.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={INPUT_STYLES.label}>Responsable *</label>
-                <select
-                  value={editForm.userId}
-                  onChange={(e) => setEditForm({...editForm, userId: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  required
-                >
-                  <option value="">Seleccionar responsable</option>
-                  {users.map(user => (
-                    <option key={user.id} value={user.id}>
-                      {user.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={INPUT_STYLES.label}>Estado</label>
-                <select
-                  value={editForm.estado}
-                  onChange={(e) => setEditForm({...editForm, estado: e.target.value})}
-                  className={INPUT_STYLES.base}
-                >
-                  {estadosDisponibles.map(estado => (
-                    <option key={estado} value={estado}>
-                      {estado.charAt(0).toUpperCase() + estado.slice(1).replace('_', ' ')}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={INPUT_STYLES.label}>Prioridad</label>
-                <select
-                  value={editForm.prioridad}
-                  onChange={(e) => setEditForm({...editForm, prioridad: e.target.value})}
-                  className={INPUT_STYLES.base}
-                >
-                  {prioridadesDisponibles.map(prioridad => (
-                    <option key={prioridad} value={prioridad}>
-                      {prioridad.charAt(0).toUpperCase() + prioridad.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className={INPUT_STYLES.label}>Duración Estimada (horas)</label>
-                <input
-                  type="number"
-                  value={editForm.duracionEstimada}
-                  onChange={(e) => setEditForm({...editForm, duracionEstimada: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  min="0"
-                  step="0.5"
-                />
-              </div>
-
-              <div>
-                <label className={INPUT_STYLES.label}>Costo</label>
-                <input
-                  type="number"
-                  value={editForm.costo}
-                  onChange={(e) => setEditForm({...editForm, costo: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-
-              <div>
-                <label className={INPUT_STYLES.label}>Imagen</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className={INPUT_STYLES.base}
-                />
-              </div>
-
-              <div className="sm:col-span-2">
+              <div className="mt-4">
                 <label className={INPUT_STYLES.label}>Descripción</label>
                 <textarea
                   value={editForm.descripcion}
                   onChange={(e) => setEditForm({...editForm, descripcion: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  rows={3}
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className={INPUT_STYLES.label}>Observaciones</label>
-                <textarea
-                  value={editForm.observaciones}
-                  onChange={(e) => setEditForm({...editForm, observaciones: e.target.value})}
-                  className={INPUT_STYLES.base}
-                  rows={3}
-                  placeholder="Observaciones adicionales..."
+                  className={INPUT_STYLES.textarea}
+                  rows="4"
+                  placeholder="Describe los detalles de la reparación..."
                 />
               </div>
 
               {/* Selección de repuestos */}
-              <div className="sm:col-span-2">
+              <div className="mt-6">
                 <label className={INPUT_STYLES.label}>Repuestos Utilizados</label>
                 <div className="space-y-2">
                   <select
@@ -529,86 +387,47 @@ function ReparacionDetails({ token }) {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Información básica */}
-              <div className="lg:col-span-2 space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Fecha</label>
-                    <div className="mt-1 flex items-center">
-                      <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <p className="text-lg text-gray-900">{formatFecha(reparacion?.fecha)}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Días desde reparación</label>
-                    <div className="mt-1 flex items-center">
-                      <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <p className="text-lg text-gray-900">{diasDesdeReparacion(reparacion?.fecha)} días</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Maquinaria</label>
-                    <div className="mt-1 flex items-center">
-                      <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                      </svg>
-                      <p className="text-lg text-gray-900">{reparacion?.maquinaria?.nombre || 'No especificada'}</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Responsable</label>
-                    <div className="mt-1 flex items-center">
-                      <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      <p className="text-lg text-gray-900">{reparacion?.user?.name || 'No asignado'}</p>
-                    </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Fecha</label>
+                  <div className="mt-1 flex items-center">
+                    <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-lg text-gray-900">{formatFecha(reparacion?.fecha)}</p>
                   </div>
                 </div>
 
-                {/* Estados y prioridad */}
-                <div className="flex flex-wrap gap-3">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getEstadoReparacionColorClass(reparacion?.estado)}`}>
-                    <svg className={`${ICON_STYLES.small} mr-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Días desde reparación</label>
+                  <div className="mt-1 flex items-center">
+                    <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    {reparacion?.estado?.charAt(0).toUpperCase() + reparacion?.estado?.slice(1).replace('_', ' ')}
-                  </span>
+                    <p className="text-lg text-gray-900">{diasDesdeReparacion(reparacion?.fecha)} días</p>
+                  </div>
+                </div>
 
-                  {reparacion?.prioridad && (
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getPrioridadColorClass(reparacion?.prioridad)}`}>
-                      <svg className={`${ICON_STYLES.small} mr-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {reparacion?.prioridad.charAt(0).toUpperCase() + reparacion?.prioridad.slice(1)}
-                    </span>
-                  )}
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Maquinaria</label>
+                  <div className="mt-1 flex items-center">
+                    <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <p className="text-lg text-gray-900">{reparacion?.maquinaria?.nombre || 'No especificada'}</p>
+                  </div>
+                </div>
 
-                  {reparacion?.duracionEstimada > 0 && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
-                      <svg className={`${ICON_STYLES.small} mr-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {formatDuracion(reparacion?.duracionEstimada)}
-                    </span>
-                  )}
-
-                  {reparacion?.costo > 0 && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
-                      <svg className={`${ICON_STYLES.small} mr-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                      </svg>
-                      ${Number(reparacion?.costo).toLocaleString()}
-                    </span>
-                  )}
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Responsable</label>
+                  <div className="mt-1 flex items-center">
+                    <svg className={`${ICON_STYLES.small} text-gray-400 mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <p className="text-lg text-gray-900">{reparacion?.usuario?.username || 'No asignado'}</p>
+                  </div>
                 </div>
 
                 {/* Descripción */}
@@ -620,40 +439,6 @@ function ReparacionDetails({ token }) {
                     </div>
                   </div>
                 )}
-
-                {/* Observaciones */}
-                {reparacion?.observaciones && (
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Observaciones</label>
-                    <div className="mt-2 p-4 bg-gray-50 rounded-lg">
-                      <p className="text-gray-900 whitespace-pre-wrap">{reparacion.observaciones}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Imagen */}
-              <div className="lg:col-span-1">
-                <label className="text-sm font-medium text-gray-500">Imagen</label>
-                <div className="mt-2">
-                  {reparacion?.imagen && !imageError ? (
-                    <img
-                      src={reparacion.imagen}
-                      alt="Imagen de la reparación"
-                      className="w-full h-64 object-cover rounded-lg border border-gray-200"
-                      onError={() => setImageError(true)}
-                    />
-                  ) : (
-                    <div className="w-full h-64 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-                      <div className="text-center">
-                        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <p className="mt-2 text-sm text-gray-500">Sin imagen</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           )}
@@ -664,32 +449,26 @@ function ReparacionDetails({ token }) {
           <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
             <h2 className={TEXT_STYLES.sectionTitle}>Repuestos Utilizados</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {reparacion.repuestos.map((rr, index) => (
-                <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">
-                        {rr.repuesto?.nombre || 'Repuesto no especificado'}
-                      </h3>
-                      {rr.repuesto?.codigo && (
-                        <p className="text-sm text-gray-500">Código: {rr.repuesto.codigo}</p>
-                      )}
-                      <div className="mt-2 flex items-center text-sm text-gray-600">
-                        <svg className={`${ICON_STYLES.small} mr-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                        Cantidad: {rr.cantidad}
-                      </div>
-                      {rr.repuesto?.precio && (
-                        <div className="mt-1 flex items-center text-sm text-green-600">
-                          <svg className={`${ICON_STYLES.small} mr-1`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                          </svg>
-                          ${(Number(rr.repuesto.precio) * rr.cantidad).toLocaleString()}
-                        </div>
-                      )}
-                    </div>
+              {reparacion.repuestos.map((reparacionRepuesto, index) => (
+                <div key={index} className="bg-gray-50 p-4 rounded-lg border">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-gray-900">
+                      {reparacionRepuesto.repuesto?.nombre || 'Repuesto desconocido'}
+                    </h4>
+                    <span className="text-sm text-gray-500">
+                      x{reparacionRepuesto.cantidad}
+                    </span>
                   </div>
+                  {reparacionRepuesto.repuesto?.precio && (
+                    <p className="text-sm text-gray-600">
+                      Precio unitario: ${Number(reparacionRepuesto.repuesto.precio).toLocaleString()}
+                    </p>
+                  )}
+                  {reparacionRepuesto.repuesto?.precio && (
+                    <p className="text-sm font-medium text-gray-900">
+                      Subtotal: ${(Number(reparacionRepuesto.repuesto.precio) * reparacionRepuesto.cantidad).toLocaleString()}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

@@ -4,6 +4,8 @@ import { login } from './services/api';
 import Dashboard from './pages/Dashboard';
 import MaquinariaDetails from './pages/MaquinariaDetails';
 import RepuestoDetails from './pages/RepuestoDetails';
+import ReparacionDetails from './pages/ReparacionDetails';
+import ProveedorDetails from './pages/ProveedorDetails';
 import { jwtDecode } from 'jwt-decode';
 
 function App() {
@@ -64,6 +66,8 @@ function App() {
       <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
       <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
       <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
+      <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
+      <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
