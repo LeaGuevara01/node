@@ -103,6 +103,15 @@ function Dashboard({ token, role, onLogout }) {
     fetchData();
   }, [token]);
 
+  /**
+   * Maneja el click en las cartas de estadísticas
+   * Redirige al usuario a la sección correspondiente
+   * @param {string} type - Tipo de carta clickeada (maquinarias, repuestos, etc.)
+   */
+  const handleStatsCardClick = (type) => {
+    setActiveSection(type);
+  };
+
   // Mostrar indicador de carga mientras se obtienen los datos
   if (loading) return <div className="text-center mt-10">Cargando datos...</div>;
 
@@ -137,22 +146,26 @@ function Dashboard({ token, role, onLogout }) {
               <StatsCard 
                 type="maquinarias" 
                 title="Maquinarias" 
-                value={stats.maquinarias} 
+                value={stats.maquinarias}
+                onClick={handleStatsCardClick}
               />
               <StatsCard 
                 type="repuestos" 
                 title="Repuestos" 
-                value={stats.repuestos} 
+                value={stats.repuestos}
+                onClick={handleStatsCardClick}
               />
               <StatsCard 
                 type="proveedores" 
                 title="Proveedores" 
-                value={stats.proveedores} 
+                value={stats.proveedores}
+                onClick={handleStatsCardClick}
               />
               <StatsCard 
                 type="reparaciones" 
                 title="Reparaciones" 
-                value={stats.reparaciones} 
+                value={stats.reparaciones}
+                onClick={handleStatsCardClick}
               />
             </div>
             
