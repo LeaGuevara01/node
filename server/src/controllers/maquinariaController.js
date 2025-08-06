@@ -60,39 +60,106 @@ exports.getMaquinarias = async (req, res) => {
       sortOrder = 'asc'
     } = req.query;
 
+    console.log('🔍 Filtros recibidos en backend:', { search, categoria, ubicacion, estado, anioMin, anioMax });
+
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
 
     // Construir el where object para filtros
     const where = {};
+    const andConditions = [];
 
     if (search) {
-      where.OR = [
-        { nombre: { contains: search, mode: 'insensitive' } },
-        { modelo: { contains: search, mode: 'insensitive' } },
-        { descripcion: { contains: search, mode: 'insensitive' } },
-        { numero_serie: { contains: search, mode: 'insensitive' } },
-        { proveedor: { contains: search, mode: 'insensitive' } }
-      ];
+      // Handle multiple search terms (comma-separated or array)
+      let terminos = [];
+      
+      console.log('🔍 Valor de búsqueda RAW recibido:', search, 'Tipo:', typeof search);
+      
+      if (typeof search === 'string') {
+        // Si es string, dividir por comas para múltiples términos
+        terminos = search.split(',').map(t => t.trim()).filter(t => t);
+        console.log('🔍 String dividido en términos:', terminos);
+      } else if (Array.isArray(search)) {
+        terminos = search.filter(t => t && t.trim());
+        console.log('🔍 Array de términos filtrado:', terminos);
+      } else {
+        terminos = [search.toString()];
+        console.log('🔍 Término convertido a string:', terminos);
+      }
+      
+      console.log('🔍 Términos de búsqueda FINALES procesados:', terminos);
+      
+      if (terminos.length > 0) {
+        // Para todos los casos (único o múltiple), usar OR entre términos
+        // Cada término se busca en todos los campos (OR interno)
+        // Y entre términos también es OR (busca cualquier término)
+        const searchCondition = {
+          OR: terminos.flatMap(termino => [
+            { nombre: { contains: termino, mode: 'insensitive' } },
+            { modelo: { contains: termino, mode: 'insensitive' } },
+            { descripcion: { contains: termino, mode: 'insensitive' } },
+            { numero_serie: { contains: termino, mode: 'insensitive' } },
+            { proveedor: { contains: termino, mode: 'insensitive' } }
+          ])
+        };
+        andConditions.push(searchCondition);
+        console.log('🔍 Condición de búsqueda FLEXIBLE agregada:', JSON.stringify(searchCondition, null, 2));
+      }
     }
 
     if (categoria) {
-      where.categoria = { contains: categoria, mode: 'insensitive' };
+      // Handle comma-separated values for multiple category filters
+      const categorias = categoria.split(',').map(c => c.trim()).filter(c => c);
+      console.log('🏷️ Categorías procesadas:', categorias);
+      if (categorias.length === 1) {
+        andConditions.push({ categoria: { contains: categorias[0], mode: 'insensitive' } });
+      } else if (categorias.length > 1) {
+        andConditions.push({
+          OR: categorias.map(c => ({ categoria: { contains: c, mode: 'insensitive' } }))
+        });
+      }
     }
 
     if (ubicacion) {
-      where.ubicacion = { contains: ubicacion, mode: 'insensitive' };
+      // Handle comma-separated values for multiple location filters
+      const ubicaciones = ubicacion.split(',').map(u => u.trim()).filter(u => u);
+      console.log('📍 Ubicaciones procesadas:', ubicaciones);
+      if (ubicaciones.length === 1) {
+        andConditions.push({ ubicacion: { contains: ubicaciones[0], mode: 'insensitive' } });
+      } else if (ubicaciones.length > 1) {
+        andConditions.push({
+          OR: ubicaciones.map(u => ({ ubicacion: { contains: u, mode: 'insensitive' } }))
+        });
+      }
     }
 
     if (estado) {
-      where.estado = { contains: estado, mode: 'insensitive' };
+      // Handle comma-separated values for multiple status filters
+      const estados = estado.split(',').map(e => e.trim()).filter(e => e);
+      console.log('✅ Estados procesados:', estados);
+      if (estados.length === 1) {
+        andConditions.push({ estado: { contains: estados[0], mode: 'insensitive' } });
+      } else if (estados.length > 1) {
+        andConditions.push({
+          OR: estados.map(e => ({ estado: { contains: e, mode: 'insensitive' } }))
+        });
+      }
     }
 
     if (anioMin || anioMax) {
-      where.anio = {};
-      if (anioMin) where.anio.gte = parseInt(anioMin);
-      if (anioMax) where.anio.lte = parseInt(anioMax);
+      const anioCondition = {};
+      if (anioMin) anioCondition.gte = parseInt(anioMin);
+      if (anioMax) anioCondition.lte = parseInt(anioMax);
+      andConditions.push({ anio: anioCondition });
+      console.log('📅 Filtro de año agregado:', anioCondition);
     }
+
+    // Construir la cláusula where final
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
+    }
+
+    console.log('🔍 Query WHERE final:', JSON.stringify(where, null, 2));
 
     // Configurar ordenamiento
     const orderBy = {};

@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { login } from './services/api';
 import Dashboard from './pages/Dashboard';
 import MaquinariaDetails from './pages/MaquinariaDetails';
+import MaquinariasPage from './pages/MaquinariasPage';
+import MaquinariaFormulario from './pages/MaquinariaFormulario';
 import RepuestoDetails from './pages/RepuestoDetails';
 import ReparacionDetails from './pages/ReparacionDetails';
 import ProveedorDetails from './pages/ProveedorDetails';
@@ -64,6 +66,9 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+      <Route path="/maquinarias" element={<MaquinariasPage token={token} />} />
+      <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />
+      <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token} />} />
       <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
       <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
       <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />

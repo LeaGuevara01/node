@@ -12,6 +12,7 @@
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu } from 'lucide-react';
 
 // Configuración de las secciones disponibles en el sistema
@@ -24,8 +25,21 @@ const sections = [
 ];
 
 function Sidebar({ active, setActive }) {
+  const navigate = useNavigate();
   // Estado para controlar si el sidebar está abierto en mobile
   const [open, setOpen] = useState(false);
+  
+  /**
+   * Maneja la navegación en el sidebar
+   */
+  const handleNavigation = (key) => {
+    if (key === 'maquinarias') {
+      navigate('/maquinarias');
+    } else {
+      setActive(key);
+    }
+    setOpen(false);
+  };
   
   return (
     <>
@@ -80,7 +94,7 @@ function Sidebar({ active, setActive }) {
                 className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-md ${
                   active === s.key ? 'bg-gray-700 font-semibold border-l-4 border-blue-400' : ''
                 }`}
-                onClick={() => { setActive(s.key); setOpen(false); }}
+                onClick={() => handleNavigation(s.key)}
               >
                 <div className="flex items-center">
                   <s.icon size={18} className="mr-2" />

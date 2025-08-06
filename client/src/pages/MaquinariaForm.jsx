@@ -8,7 +8,13 @@ import { createMaquinaria, updateMaquinaria, getMaquinarias, deleteMaquinaria, g
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
 import EstadoIcon from '../components/EstadoIcon';
 import { getColorFromString } from '../utils/colorUtils';
-import { sortMaquinariasByCategory, buildMaquinariaQueryParams, clearMaquinariaFilters, getEstadoColorClass, formatAnio } from '../utils/maquinariaUtils';
+import { 
+  sortMaquinariasByCategory, 
+  buildMaquinariaQueryParams, 
+  clearMaquinariaFilters, 
+  getEstadoColorClass, 
+  formatAnio 
+} from '../utils/maquinariaUtils';
 import { 
   CONTAINER_STYLES, 
   INPUT_STYLES, 
@@ -72,8 +78,9 @@ function MaquinariaForm({ token, onCreated }) {
         setMaquinarias(maquinariasOrdenadas);
         setPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0 });
       } else {
-        // Respuesta legacy sin paginación
-        const maquinariasOrdenadas = sortMaquinariasByCategory(data || []);
+        // Respuesta legacy sin paginación o array directo
+        const maquinariasArray = Array.isArray(data) ? data : [];
+        const maquinariasOrdenadas = sortMaquinariasByCategory(maquinariasArray);
         setMaquinarias(maquinariasOrdenadas);
         setPaginacion({ current: 1, total: 1, totalItems: maquinariasOrdenadas.length });
       }

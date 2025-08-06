@@ -13,6 +13,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMaquinarias, getRepuestos, getProveedores, getReparaciones } from '../services/api';
 import MaquinariaForm from './MaquinariaForm';
 import RepuestoForm from './RepuestoForm';
@@ -25,6 +26,8 @@ import StatsCard from '../components/StatsCard';
 import WelcomeCard from '../components/WelcomeCard';
 
 function Dashboard({ token, role, onLogout }) {
+  const navigate = useNavigate();
+  
   // Estados para almacenar los datos de cada entidad
   const [maquinarias, setMaquinarias] = useState([]);
   const [repuestos, setRepuestos] = useState([]);
@@ -105,11 +108,16 @@ function Dashboard({ token, role, onLogout }) {
 
   /**
    * Maneja el click en las cartas de estadísticas
-   * Redirige al usuario a la sección correspondiente
+   * Para maquinarias, redirige a la nueva página de listado
+   * Para otras secciones, redirige al usuario a la sección correspondiente
    * @param {string} type - Tipo de carta clickeada (maquinarias, repuestos, etc.)
    */
   const handleStatsCardClick = (type) => {
-    setActiveSection(type);
+    if (type === 'maquinarias') {
+      navigate('/maquinarias');
+    } else {
+      setActiveSection(type);
+    }
   };
 
   // Mostrar indicador de carga mientras se obtienen los datos

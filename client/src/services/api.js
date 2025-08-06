@@ -54,12 +54,13 @@ export async function register(username, password, role) {
  * @param {string} token - Token de autenticación
  * @param {Object} filtros - Filtros a aplicar (opcional)
  * @param {number} pagina - Página a obtener (opcional)
+ * @param {boolean} forStats - Si es para estadísticas, retorna todos los elementos
  * @returns {Promise<Object>} Objeto con maquinarias y paginación
  */
 export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats = false) {
   const params = new URLSearchParams({
     page: pagina.toString(),
-    limit: forStats ? '10000' : '10',
+    limit: forStats ? '10000' : '20',
     sortBy: 'categoria',
     sortOrder: 'asc'
   });
@@ -67,17 +68,35 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
   // Agregar filtros activos
   Object.keys(filtros).forEach(key => {
     if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
-      params.append(key, filtros[key].toString());
+      // Si es un array, convertir a string separado por comas
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) {
+          const valorArray = filtros[key].join(',');
+          params.append(key, valorArray);
+          console.log(`🔗 Agregando filtro array ${key}:`, filtros[key], '→', valorArray);
+        }
+      } else {
+        params.append(key, filtros[key].toString());
+        console.log(`🔗 Agregando filtro simple ${key}:`, filtros[key]);
+      }
     }
   });
+
+  console.log('🌐 API Request URL:', `${API_URL}/maquinaria?${params}`);
+  console.log('🔍 Filtros enviados completos:', filtros);
 
   const res = await fetch(`${API_URL}/maquinaria?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await res.json();
-  // El backend devuelve { maquinarias: [...], pagination: {...} }
-  // Siempre retornamos solo el array de maquinarias
-  return data.maquinarias || data || [];
+  
+  // Si es para estadísticas, retornar solo el array
+  if (forStats) {
+    return data.maquinarias || data || [];
+  }
+  
+  // Para uso normal, retornar el objeto completo con paginación
+  return data;
 }
 
 /**
