@@ -143,7 +143,6 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
    * Consolida todos los tokens en un objeto de filtros para la API
    */
   const consolidarFiltrosDeTokens = useCallback((tokens) => {
-    console.log('🔧 Consolidando tokens:', tokens);
     const consolidados = {};
     
     tokens.forEach(token => {
@@ -189,7 +188,6 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
       }
     });
 
-    console.log('🔹 Resultado final de consolidación:', consolidados);
     return consolidados;
   }, []);
 
@@ -204,7 +202,6 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
    * Aplica los filtros temporales como tokens
    */
   const aplicarFiltrosActuales = useCallback(() => {
-    console.log('🚀 Aplicando filtros temporales:', filtrosTemporales);
     const nuevosTokens = [...tokensActivos];
     let cambiosRealizados = false;
     
@@ -331,7 +328,16 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
       
       const valor = filtrosTemporales[campo];
       if (valor && valor.trim() !== '') {
-        const tokenExistente = nuevosTokens.find(t => t.tipo === campo && t.valor === valor);
+        // Para campos que permiten múltiples valores (search, codigo, nombre, contacto), 
+        // solo verificar que no existe el mismo valor exacto
+        let tokenExistente;
+        if (['search', 'codigo', 'nombre', 'contacto'].includes(campo)) {
+          tokenExistente = nuevosTokens.find(t => t.tipo === campo && t.valor === valor);
+        } else {
+          // Para otros campos categóricos, verificar que no existe el mismo tipo y valor
+          tokenExistente = nuevosTokens.find(t => t.tipo === campo && t.valor === valor);
+        }
+        
         if (!tokenExistente) {
           const nuevoToken = {
             id: generarTokenId(campo, valor),

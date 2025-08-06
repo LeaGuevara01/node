@@ -1,0 +1,349 @@
+// client/src/pages/ReparacionesPage.jsx
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  getReparaciones, 
+  getReparacionFilters, 
+  createReparacion, 
+  updateReparacion, 
+  deleteReparacion 
+} from '../services/api';
+import ReparacionEditModal from '../components/ReparacionEditModal';
+import BaseListPage from '../components/shared/BaseListPage';
+import { useAdvancedFilters } from '../hooks/useAdvancedFilters.jsx';
+import { usePagination } from '../hooks/usePagination';
+import { REPARACION_FILTERS_CONFIG } from '../config/filtersConfig';
+import { getColorFromString } from '../utils/colorUtils';
+import { 
+  BUTTON_STYLES, 
+  ICON_STYLES,
+  LIST_STYLES
+} from '../styles/repuestoStyles';
+
+function ReparacionesPage({ token, onCreated }) {
+  const navigate = useNavigate();
+  
+  // Estados principales
+  const [reparaciones, setReparaciones] = useState([]);
+  const [selectedReparacion, setSelectedReparacion] = useState(null);
+  const [error, setError] = useState('');
+  const [bulkError, setBulkError] = useState('');
+  const [bulkSuccess, setBulkSuccess] = useState('');
+
+  // Hook de paginación
+  const { 
+    paginacion, 
+    loading, 
+    setLoading, 
+    handlePaginacion, 
+    actualizarPaginacion 
+  } = usePagination({ limit: 20 });
+
+  /**
+   * Carga las reparaciones con filtros aplicados
+   */
+  const fetchReparaciones = async (filtrosActuales = {}, pagina = 1) => {
+    setLoading(true);
+    try {
+      const data = await getReparaciones(token, filtrosActuales, pagina);
+      
+      if (data.reparaciones) {
+        setReparaciones(data.reparaciones);
+        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
+      } else {
+        setReparaciones(data || []);
+        actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 20 });
+      }
+      setError('');
+    } catch (err) {
+      console.error('Error al cargar reparaciones:', err);
+      setReparaciones([]);
+      setError('Error al cargar reparaciones: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Carga las opciones de filtros
+   */
+  const fetchOpcionesFiltros = async () => {
+    try {
+      const data = await getReparacionFilters(token);
+      return data;
+    } catch (err) {
+      console.error('Error al cargar opciones de filtros:', err);
+      return {};
+    }
+  };
+
+  // Hook de filtros avanzados
+  const {
+    filtrosTemporales,
+    tokensActivos,
+    filtrosConsolidados,
+    opcionesFiltros,
+    handleFiltroChange,
+    aplicarFiltrosActuales,
+    removerToken,
+    limpiarTodosFiltros,
+    cargarOpcionesFiltros
+  } = useAdvancedFilters({}, fetchReparaciones, fetchOpcionesFiltros);
+
+  /**
+   * Maneja la carga masiva de CSV
+   */
+  const handleFileUpload = async (csvData) => {
+    const validRows = csvData.filter(row => row.descripcion);
+    let successCount = 0, failCount = 0;
+    
+    for (const row of validRows) {
+      try {
+        await createReparacion({
+          descripcion: row.descripcion || '',
+          tipo: row.tipo || '',
+          estado: row.estado || 'Pendiente',
+          prioridad: row.prioridad || 'Media',
+          fecha_inicio: row.fecha_inicio || new Date().toISOString().split('T')[0],
+          fecha_estimada: row.fecha_estimada || '',
+          costo_estimado: row.costo_estimado ? Number(row.costo_estimado) : 0,
+          maquinaria_id: row.maquinaria_id ? Number(row.maquinaria_id) : null,
+          tecnico: row.tecnico || '',
+          notas: row.notas || ''
+        }, token);
+        successCount++;
+      } catch (err) {
+        console.error('Error creating reparacion:', err);
+        failCount++;
+      }
+    }
+    
+    setBulkSuccess(`Creadas: ${successCount}`);
+    setBulkError(failCount ? `Fallidas: ${failCount}` : '');
+    
+    if (successCount > 0) {
+      if (onCreated) onCreated();
+      fetchReparaciones(filtrosConsolidados, 1);
+      cargarOpcionesFiltros();
+    }
+  };
+
+  /**
+   * Abre modal de edición
+   */
+  const openEditModal = (reparacion) => {
+    setSelectedReparacion(reparacion);
+  };
+
+  /**
+   * Cierra modal de edición
+   */
+  const closeEditModal = () => {
+    setSelectedReparacion(null);
+  };
+
+  /**
+   * Navega a la vista de detalles
+   */
+  const handleView = (reparacion) => {
+    navigate(`/reparaciones/${reparacion.id}`);
+  };
+
+  /**
+   * Actualiza una reparación
+   */
+  const handleUpdateReparacion = async (id, reparacionData) => {
+    try {
+      await updateReparacion(id, reparacionData, token);
+      fetchReparaciones(filtrosConsolidados, paginacion.current);
+      cargarOpcionesFiltros();
+      if (onCreated) onCreated();
+    } catch (err) {
+      setError('Error al actualizar: ' + err.message);
+    }
+  };
+
+  /**
+   * Elimina una reparación
+   */
+  const handleDeleteReparacion = async (id) => {
+    try {
+      await deleteReparacion(id, token);
+      fetchReparaciones(filtrosConsolidados, paginacion.current);
+      cargarOpcionesFiltros();
+      if (onCreated) onCreated();
+    } catch (err) {
+      setError('Error al eliminar: ' + err.message);
+    }
+  };
+
+  const getEstadoBadge = (estado) => {
+    switch (estado?.toLowerCase()) {
+      case 'completada':
+        return 'bg-green-100 text-green-800';
+      case 'en_progreso':
+      case 'en progreso':
+        return 'bg-blue-100 text-blue-800';
+      case 'pendiente':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'cancelada':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPrioridadBadge = (prioridad) => {
+    switch (prioridad?.toLowerCase()) {
+      case 'alta':
+        return 'bg-red-100 text-red-800';
+      case 'media':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'baja':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  /**
+   * Renderiza un elemento de reparación
+   */
+  const renderReparacion = (reparacion) => (
+    <>
+      <div className={LIST_STYLES.itemHeader}>
+        <div className="flex items-center gap-2">
+          <h3 className={LIST_STYLES.itemTitle}>{reparacion.descripcion}</h3>
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getEstadoBadge(reparacion.estado)}`}>
+            {reparacion.estado}
+          </span>
+        </div>
+        <div className={LIST_STYLES.itemActions}>
+          <button
+            onClick={() => handleView(reparacion)}
+            className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
+            title="Ver detalles"
+          >
+            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => openEditModal(reparacion)}
+            className={BUTTON_STYLES.edit}
+            title="Editar reparación"
+          >
+            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {reparacion.notas && (
+        <div className={LIST_STYLES.itemDescription}>
+          {reparacion.notas}
+        </div>
+      )}
+      <div className={LIST_STYLES.itemTagsRow}>
+        <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
+          {reparacion.tipo && (
+            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(reparacion.tipo, 'tipo')}`} title={reparacion.tipo}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="tag-truncate">{reparacion.tipo}</span>
+            </span>
+          )}
+          {reparacion.prioridad && (
+            <span className={`${LIST_STYLES.itemTag} ${getPrioridadBadge(reparacion.prioridad)}`}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {reparacion.prioridad}
+            </span>
+          )}
+          {reparacion.tecnico && (
+            <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-700`} title={reparacion.tecnico}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="tag-truncate">{reparacion.tecnico}</span>
+            </span>
+          )}
+          {reparacion.fecha_inicio && (
+            <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {new Date(reparacion.fecha_inicio).toLocaleDateString()}
+            </span>
+          )}
+        </div>
+        <div className={LIST_STYLES.itemTagsRight}>
+          {reparacion.costo_estimado && (
+            <span className={`${LIST_STYLES.itemTag} bg-green-100 text-green-800`}>
+              ${reparacion.costo_estimado?.toFixed(2) || '0.00'}
+            </span>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
+  // Efectos
+  useEffect(() => {
+    fetchReparaciones();
+    cargarOpcionesFiltros();
+  }, []);
+
+  return (
+    <>
+      <BaseListPage
+        title="Listado de Reparaciones"
+        subtitle="Gestiona y filtra todas las reparaciones del sistema"
+        entityName="Reparación"
+        entityNamePlural="Reparaciones"
+        createRoute="/reparaciones/formulario"
+        
+        items={reparaciones}
+        loading={loading}
+        error={error}
+        
+        filtrosTemporales={filtrosTemporales}
+        handleFiltroChange={handleFiltroChange}
+        aplicarFiltrosActuales={aplicarFiltrosActuales}
+        limpiarTodosFiltros={limpiarTodosFiltros}
+        tokensActivos={tokensActivos}
+        removerToken={removerToken}
+        opcionesFiltros={opcionesFiltros}
+        camposFiltros={REPARACION_FILTERS_CONFIG(opcionesFiltros)}
+        
+        paginacion={paginacion}
+        handlePaginacion={(pagina) => fetchReparaciones(filtrosConsolidados, pagina)}
+        
+        onFileUpload={handleFileUpload}
+        bulkError={bulkError}
+        setBulkError={setBulkError}
+        bulkSuccess={bulkSuccess}
+        setBulkSuccess={setBulkSuccess}
+        
+        renderItem={renderReparacion}
+      />
+
+      {/* Modal de edición */}
+      {selectedReparacion && (
+        <ReparacionEditModal
+          reparacion={selectedReparacion}
+          onClose={closeEditModal}
+          onUpdate={handleUpdateReparacion}
+          onDelete={handleDeleteReparacion}
+          token={token}
+        />
+      )}
+    </>
+  );
+}
+
+export default ReparacionesPage;

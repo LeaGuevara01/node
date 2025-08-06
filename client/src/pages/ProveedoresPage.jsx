@@ -1,18 +1,18 @@
-// client/src/pages/RepuestosPage.jsx
+// client/src/pages/ProveedoresPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  getRepuestos, 
-  getRepuestoFilters, 
-  createRepuesto, 
-  updateRepuesto, 
-  deleteRepuesto 
+  getProveedores, 
+  getProveedorFilters, 
+  createProveedor, 
+  updateProveedor, 
+  deleteProveedor 
 } from '../services/api';
-import RepuestoEditModal from '../components/RepuestoEditModal';
+import ProveedorEditModal from '../components/ProveedorEditModal';
 import BaseListPage from '../components/shared/BaseListPage';
 import { useAdvancedFilters } from '../hooks/useAdvancedFilters.jsx';
 import { usePagination } from '../hooks/usePagination';
-import { REPUESTO_FILTERS_CONFIG } from '../config/filtersConfig';
+import { PROVEEDOR_FILTERS_CONFIG } from '../config/filtersConfig';
 import { getColorFromString } from '../utils/colorUtils';
 import { 
   BUTTON_STYLES, 
@@ -20,12 +20,12 @@ import {
   LIST_STYLES
 } from '../styles/repuestoStyles';
 
-function RepuestosPage({ token, onCreated }) {
+function ProveedoresPage({ token, onCreated }) {
   const navigate = useNavigate();
   
   // Estados principales
-  const [repuestos, setRepuestos] = useState([]);
-  const [selectedRepuesto, setSelectedRepuesto] = useState(null);
+  const [proveedores, setProveedores] = useState([]);
+  const [selectedProveedor, setSelectedProveedor] = useState(null);
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
@@ -40,25 +40,25 @@ function RepuestosPage({ token, onCreated }) {
   } = usePagination({ limit: 20 });
 
   /**
-   * Carga los repuestos con filtros aplicados
+   * Carga los proveedores con filtros aplicados
    */
-  const fetchRepuestos = async (filtrosActuales = {}, pagina = 1) => {
+  const fetchProveedores = async (filtrosActuales = {}, pagina = 1) => {
     setLoading(true);
     try {
-      const data = await getRepuestos(token, filtrosActuales, pagina);
+      const data = await getProveedores(token, filtrosActuales, pagina);
       
-      if (data.repuestos) {
-        setRepuestos(data.repuestos);
+      if (data.proveedores) {
+        setProveedores(data.proveedores);
         actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
       } else {
-        setRepuestos(data || []);
+        setProveedores(data || []);
         actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 20 });
       }
       setError('');
     } catch (err) {
-      console.error('Error al cargar repuestos:', err);
-      setRepuestos([]);
-      setError('Error al cargar repuestos: ' + err.message);
+      console.error('Error al cargar proveedores:', err);
+      setProveedores([]);
+      setError('Error al cargar proveedores: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ function RepuestosPage({ token, onCreated }) {
    */
   const fetchOpcionesFiltros = async () => {
     try {
-      const data = await getRepuestoFilters(token);
+      const data = await getProveedorFilters(token);
       return data;
     } catch (err) {
       console.error('Error al cargar opciones de filtros:', err);
@@ -88,29 +88,29 @@ function RepuestosPage({ token, onCreated }) {
     removerToken,
     limpiarTodosFiltros,
     cargarOpcionesFiltros
-  } = useAdvancedFilters({}, fetchRepuestos, fetchOpcionesFiltros);
+  } = useAdvancedFilters({}, fetchProveedores, fetchOpcionesFiltros);
 
   /**
    * Maneja la carga masiva de CSV
    */
   const handleFileUpload = async (csvData) => {
-    const validRows = csvData.filter(row => row.nombre && row.codigo);
+    const validRows = csvData.filter(row => row.nombre);
     let successCount = 0, failCount = 0;
     
     for (const row of validRows) {
       try {
-        await createRepuesto({
+        await createProveedor({
           nombre: row.nombre || '',
-          codigo: row.codigo || '',
-          categoria: row.categoria || '',
+          contacto: row.contacto || '',
+          telefono: row.telefono || '',
+          email: row.email || '',
+          direccion: row.direccion || '',
           ubicacion: row.ubicacion || '',
-          stock: row.stock ? Number(row.stock) : 0,
-          precio: row.precio ? Number(row.precio) : 0,
-          descripcion: row.descripcion || ''
+          notas: row.notas || ''
         }, token);
         successCount++;
       } catch (err) {
-        console.error('Error creating repuesto:', err);
+        console.error('Error creating proveedor:', err);
         failCount++;
       }
     }
@@ -120,7 +120,7 @@ function RepuestosPage({ token, onCreated }) {
     
     if (successCount > 0) {
       if (onCreated) onCreated();
-      fetchRepuestos(filtrosConsolidados, 1);
+      fetchProveedores(filtrosConsolidados, 1);
       cargarOpcionesFiltros();
     }
   };
@@ -128,31 +128,31 @@ function RepuestosPage({ token, onCreated }) {
   /**
    * Abre modal de edición
    */
-  const openEditModal = (repuesto) => {
-    setSelectedRepuesto(repuesto);
+  const openEditModal = (proveedor) => {
+    setSelectedProveedor(proveedor);
   };
 
   /**
    * Cierra modal de edición
    */
   const closeEditModal = () => {
-    setSelectedRepuesto(null);
+    setSelectedProveedor(null);
   };
 
   /**
    * Navega a la vista de detalles
    */
-  const handleView = (repuesto) => {
-    navigate(`/repuestos/${repuesto.id}`);
+  const handleView = (proveedor) => {
+    navigate(`/proveedores/${proveedor.id}`);
   };
 
   /**
-   * Actualiza un repuesto
+   * Actualiza un proveedor
    */
-  const handleUpdateRepuesto = async (id, repuestoData) => {
+  const handleUpdateProveedor = async (id, proveedorData) => {
     try {
-      await updateRepuesto(id, repuestoData, token);
-      fetchRepuestos(filtrosConsolidados, paginacion.current);
+      await updateProveedor(id, proveedorData, token);
+      fetchProveedores(filtrosConsolidados, paginacion.current);
       cargarOpcionesFiltros();
       if (onCreated) onCreated();
     } catch (err) {
@@ -161,12 +161,12 @@ function RepuestosPage({ token, onCreated }) {
   };
 
   /**
-   * Elimina un repuesto
+   * Elimina un proveedor
    */
-  const handleDeleteRepuesto = async (id) => {
+  const handleDeleteProveedor = async (id) => {
     try {
-      await deleteRepuesto(id, token);
-      fetchRepuestos(filtrosConsolidados, paginacion.current);
+      await deleteProveedor(id, token);
+      fetchProveedores(filtrosConsolidados, paginacion.current);
       cargarOpcionesFiltros();
       if (onCreated) onCreated();
     } catch (err) {
@@ -174,24 +174,18 @@ function RepuestosPage({ token, onCreated }) {
     }
   };
 
-  const getStockBadge = (stock) => {
-    if (stock <= 0) return 'bg-red-100 text-red-800';
-    if (stock <= 5) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-green-100 text-green-800';
-  };
-
   /**
-   * Renderiza un elemento de repuesto
+   * Renderiza un elemento de proveedor
    */
-  const renderRepuesto = (repuesto) => (
+  const renderProveedor = (proveedor) => (
     <>
       <div className={LIST_STYLES.itemHeader}>
         <div className="flex items-center gap-2">
-          <h3 className={LIST_STYLES.itemTitle}>{repuesto.nombre}</h3>
+          <h3 className={LIST_STYLES.itemTitle}>{proveedor.nombre}</h3>
         </div>
         <div className={LIST_STYLES.itemActions}>
           <button
-            onClick={() => handleView(repuesto)}
+            onClick={() => handleView(proveedor)}
             className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
             title="Ver detalles"
           >
@@ -201,9 +195,9 @@ function RepuestosPage({ token, onCreated }) {
             </svg>
           </button>
           <button
-            onClick={() => openEditModal(repuesto)}
+            onClick={() => openEditModal(proveedor)}
             className={BUTTON_STYLES.edit}
-            title="Editar repuesto"
+            title="Editar proveedor"
           >
             <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -211,44 +205,46 @@ function RepuestosPage({ token, onCreated }) {
           </button>
         </div>
       </div>
-      {repuesto.descripcion && (
+      {proveedor.direccion && (
         <div className={LIST_STYLES.itemDescription}>
-          {repuesto.descripcion}
+          {proveedor.direccion}
         </div>
       )}
       <div className={LIST_STYLES.itemTagsRow}>
         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
-          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={repuesto.codigo || 'Sin código'}>
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <span className="tag-truncate">{repuesto.codigo || 'Sin código'}</span>
-          </span>
-          {repuesto.ubicacion && (
-            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
+          {proveedor.contacto && (
+            <span className={`${LIST_STYLES.itemTagCode} bg-blue-100 text-blue-700`} title={proveedor.contacto}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="tag-truncate">{proveedor.contacto}</span>
+            </span>
+          )}
+          {proveedor.telefono && (
+            <span className={`${LIST_STYLES.itemTag} bg-green-100 text-green-700`} title={proveedor.telefono}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span className="tag-truncate">{proveedor.telefono}</span>
+            </span>
+          )}
+          {proveedor.email && (
+            <span className={`${LIST_STYLES.itemTag} bg-purple-100 text-purple-700`} title={proveedor.email}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span className="tag-truncate">{proveedor.email}</span>
+            </span>
+          )}
+          {proveedor.ubicacion && (
+            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(proveedor.ubicacion, 'ubicacion')}`} title={proveedor.ubicacion}>
               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span className="tag-truncate">{repuesto.ubicacion}</span>
+              <span className="tag-truncate">{proveedor.ubicacion}</span>
             </span>
           )}
-          {repuesto.categoria && (
-            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <span className="tag-truncate">{repuesto.categoria}</span>
-            </span>
-          )}
-        </div>
-        <div className={LIST_STYLES.itemTagsRight}>
-          <span className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock)}`}>
-            Stock: {repuesto.stock}
-          </span>
-          <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-800`}>
-            ${repuesto.precio?.toFixed(2) || '0.00'}
-          </span>
         </div>
       </div>
     </>
@@ -256,20 +252,20 @@ function RepuestosPage({ token, onCreated }) {
 
   // Efectos
   useEffect(() => {
-    fetchRepuestos();
+    fetchProveedores();
     cargarOpcionesFiltros();
   }, []);
 
   return (
     <>
       <BaseListPage
-        title="Listado de Repuestos"
-        subtitle="Gestiona y filtra todos los repuestos del inventario"
-        entityName="Repuesto"
-        entityNamePlural="Repuestos"
-        createRoute="/repuestos/formulario"
+        title="Listado de Proveedores"
+        subtitle="Gestiona y filtra todos los proveedores del sistema"
+        entityName="Proveedor"
+        entityNamePlural="Proveedores"
+        createRoute="/proveedores/formulario"
         
-        items={repuestos}
+        items={proveedores}
         loading={loading}
         error={error}
         
@@ -280,10 +276,10 @@ function RepuestosPage({ token, onCreated }) {
         tokensActivos={tokensActivos}
         removerToken={removerToken}
         opcionesFiltros={opcionesFiltros}
-        camposFiltros={REPUESTO_FILTERS_CONFIG(opcionesFiltros)}
+        camposFiltros={PROVEEDOR_FILTERS_CONFIG(opcionesFiltros)}
         
         paginacion={paginacion}
-        handlePaginacion={(pagina) => fetchRepuestos(filtrosConsolidados, pagina)}
+        handlePaginacion={(pagina) => fetchProveedores(filtrosConsolidados, pagina)}
         
         onFileUpload={handleFileUpload}
         bulkError={bulkError}
@@ -291,16 +287,16 @@ function RepuestosPage({ token, onCreated }) {
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
         
-        renderItem={renderRepuesto}
+        renderItem={renderProveedor}
       />
 
       {/* Modal de edición */}
-      {selectedRepuesto && (
-        <RepuestoEditModal
-          repuesto={selectedRepuesto}
+      {selectedProveedor && (
+        <ProveedorEditModal
+          proveedor={selectedProveedor}
           onClose={closeEditModal}
-          onUpdate={handleUpdateRepuesto}
-          onDelete={handleDeleteRepuesto}
+          onUpdate={handleUpdateProveedor}
+          onDelete={handleDeleteProveedor}
           token={token}
         />
       )}
@@ -308,4 +304,4 @@ function RepuestosPage({ token, onCreated }) {
   );
 }
 
-export default RepuestosPage;
+export default ProveedoresPage;

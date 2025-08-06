@@ -195,22 +195,8 @@ export const PROVEEDOR_FILTERS_CONFIG = (opcionesFiltros) => [
   {
     name: 'contacto',
     type: 'text',
-    placeholder: 'Contacto...',
+    placeholder: 'Email o teléfono...',
     icon: ICONS.contacto
-  },
-  {
-    name: 'ubicacion',
-    type: 'select',
-    placeholder: 'Todas las ubicaciones',
-    icon: ICONS.ubicacion,
-    options: opcionesFiltros.ubicaciones || []
-  },
-  {
-    name: 'estado',
-    type: 'select',
-    placeholder: 'Todos los estados',
-    icon: ICONS.estado,
-    options: opcionesFiltros.estados || []
   }
 ];
 

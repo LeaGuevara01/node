@@ -5,6 +5,10 @@ import Dashboard from './pages/Dashboard';
 import MaquinariaDetails from './pages/MaquinariaDetails';
 import MaquinariasPage from './pages/MaquinariasPage';
 import MaquinariaFormulario from './pages/MaquinariaFormulario';
+import RepuestosPage from './pages/RepuestosPage';
+import ProveedoresPage from './pages/ProveedoresPage';
+import ReparacionesPage from './pages/ReparacionesPage';
+import UsuariosPage from './pages/UsuariosPage';
 import RepuestoDetails from './pages/RepuestoDetails';
 import ReparacionDetails from './pages/ReparacionDetails';
 import ProveedorDetails from './pages/ProveedorDetails';
@@ -66,13 +70,22 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      <Route path="/maquinarias" element={<MaquinariasPage token={token} />} />
+      
+      {/* Páginas de listado con filtros avanzados */}
+      <Route path="/maquinarias" element={<MaquinariasPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+      <Route path="/repuestos" element={<RepuestosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+      <Route path="/proveedores" element={<ProveedoresPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+      <Route path="/reparaciones" element={<ReparacionesPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+      <Route path="/usuarios" element={<UsuariosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+      
+      {/* Formularios y páginas de detalles */}
       <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />
       <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token} />} />
       <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
       <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
       <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
       <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

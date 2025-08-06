@@ -14,6 +14,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMaquinarias, getRepuestos, getProveedores, getReparaciones } from '../services/api';
 import MaquinariaForm from './MaquinariaForm';
 import RepuestoForm from './RepuestoForm';
@@ -23,6 +24,7 @@ import RoleGuard from '../components/RoleGuard';
 import UserRegisterForm from './UserRegisterForm';
 import Sidebar from '../components/Sidebar';
 import WelcomeCard from '../components/WelcomeCard';
+import { useNavigation } from '../hooks/useNavigation';
 
 // Importar componentes del nuevo sistema de design
 import {
@@ -36,6 +38,9 @@ import {
 } from '../styles';
 
 function DashboardModern({ token, role, onLogout }) {
+  const navigate = useNavigate();
+  const { navigateToListPage } = useNavigation();
+  
   // Estados para almacenar los datos de cada entidad
   const [data, setData] = useState({
     maquinarias: [],
@@ -95,11 +100,31 @@ function DashboardModern({ token, role, onLogout }) {
 
   /**
    * Maneja el click en las cartas de estadísticas
+   * Redirige a las nuevas páginas de listado con filtros avanzados
    * @param {string} type - Tipo de carta clickeada
    */
   const handleStatsCardClick = (type) => {
-    console.log(`Navegando a sección: ${type}`);
-    setActiveSection(type);
+    console.log(`Navegando a página de listado: ${type}`);
+    switch (type) {
+      case 'maquinarias':
+        navigateToListPage('maquinarias');
+        break;
+      case 'repuestos':
+        navigateToListPage('repuestos');
+        break;
+      case 'proveedores':
+        navigateToListPage('proveedores');
+        break;
+      case 'reparaciones':
+        navigateToListPage('reparaciones');
+        break;
+      case 'usuarios':
+        navigateToListPage('usuarios');
+        break;
+      default:
+        // Fallback al comportamiento anterior para secciones no implementadas
+        setActiveSection(type);
+    }
   };
 
   /**

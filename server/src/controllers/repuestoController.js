@@ -67,16 +67,24 @@ exports.getRepuestos = async (req, res) => {
 
     // Filtro de búsqueda por nombre, código o descripción
     if (search) {
-      where.OR = [
-        { nombre: { contains: search, mode: 'insensitive' } },
-        { codigo: { contains: search, mode: 'insensitive' } },
-        { descripcion: { contains: search, mode: 'insensitive' } }
-      ];
+      const searchTerms = Array.isArray(search) ? search : search.split(',');
+      where.OR = searchTerms.flatMap(term => [
+        { nombre: { contains: term.trim(), mode: 'insensitive' } },
+        { codigo: { contains: term.trim(), mode: 'insensitive' } },
+        { descripcion: { contains: term.trim(), mode: 'insensitive' } }
+      ]);
     }
 
-    // Filtro por código específico
+    // Filtro por código específico (puede ser múltiple)
     if (codigo) {
-      where.codigo = { contains: codigo, mode: 'insensitive' };
+      const codigoTerms = Array.isArray(codigo) ? codigo : codigo.split(',');
+      if (codigoTerms.length === 1) {
+        where.codigo = { contains: codigoTerms[0].trim(), mode: 'insensitive' };
+      } else {
+        where.OR = [...(where.OR || []), ...codigoTerms.map(term => ({
+          codigo: { contains: term.trim(), mode: 'insensitive' }
+        }))];
+      }
     }
 
     // Filtro por categoría

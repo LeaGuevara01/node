@@ -170,14 +170,49 @@ export async function deleteMaquinaria(id, token) {
   return res.json();
 }
 
-export async function getRepuestos(token) {
-  const res = await fetch(`${API_URL}/repuestos?limit=10000`, {
+// ===== REPUESTOS =====
+
+/**
+ * Obtener todos los repuestos con filtros y paginación
+ * @param {string} token - Token de autenticación
+ * @param {Object} filtros - Filtros a aplicar (opcional)
+ * @param {number} pagina - Página a obtener (opcional)
+ * @param {boolean} forStats - Si es para estadísticas, retorna todos los elementos
+ * @returns {Promise<Object>} Objeto con repuestos y paginación
+ */
+export async function getRepuestos(token, filtros = {}, pagina = 1, forStats = false) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: forStats ? '10000' : '20',
+    sortBy: 'nombre',
+    sortOrder: 'asc'
+  });
+
+  // Agregar filtros activos
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) {
+          params.append(key, filtros[key].join(','));
+        }
+      } else {
+        params.append(key, filtros[key].toString());
+      }
+    }
+  });
+
+  const res = await fetch(`${API_URL}/repuestos?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await res.json();
-  // El backend devuelve { repuestos: [...], pagination: {...} }
-  // Retornamos solo el array de repuestos para compatibilidad
-  return data.repuestos || [];
+
+  // Si es para estadísticas, retornar solo el array
+  if (forStats) {
+    return data.repuestos || data || [];
+  }
+
+  // Para uso normal, retornar el objeto completo con paginación
+  return data;
 }
 
 /**
@@ -244,7 +279,7 @@ export async function deleteRepuesto(id, token) {
  * @param {string} token - Token de autenticación
  * @returns {Promise<Object>} Opciones de filtros (categorías, ubicaciones, etc.)
  */
-export async function getOpcionesFiltrosRepuestos(token) {
+export async function getRepuestoFilters(token) {
   const res = await fetch(`${API_URL}/repuestos/filtros`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
@@ -276,13 +311,49 @@ export async function busquedaRapidaRepuestos(query, token) {
   return res.json();
 }
 
-export async function getProveedores(token) {
-  const res = await fetch(`${API_URL}/proveedores?limit=10000`, {
+// ===== PROVEEDORES =====
+
+/**
+ * Obtener todos los proveedores con filtros y paginación
+ * @param {string} token - Token de autenticación
+ * @param {Object} filtros - Filtros a aplicar (opcional)
+ * @param {number} pagina - Página a obtener (opcional)
+ * @param {boolean} forStats - Si es para estadísticas, retorna todos los elementos
+ * @returns {Promise<Object>} Objeto con proveedores y paginación
+ */
+export async function getProveedores(token, filtros = {}, pagina = 1, forStats = false) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: forStats ? '10000' : '20',
+    sortBy: 'nombre',
+    sortOrder: 'asc'
+  });
+
+  // Agregar filtros activos
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) {
+          params.append(key, filtros[key].join(','));
+        }
+      } else {
+        params.append(key, filtros[key].toString());
+      }
+    }
+  });
+
+  const res = await fetch(`${API_URL}/proveedores?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await res.json();
-  // El backend puede devolver { proveedores: [...], pagination: {...} } o directamente el array
-  return data.proveedores || data || [];
+
+  // Si es para estadísticas, retornar solo el array
+  if (forStats) {
+    return data.proveedores || data || [];
+  }
+
+  // Para uso normal, retornar el objeto completo con paginación
+  return data;
 }
 
 export async function getProveedorById(id, token) {
@@ -326,13 +397,61 @@ export async function deleteProveedor(id, token) {
   return res.json();
 }
 
-export async function getReparaciones(token) {
-  const res = await fetch(`${API_URL}/reparaciones?limit=10000`, {
+/**
+ * Obtener opciones de filtros para proveedores
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Opciones de filtros disponibles
+ */
+export async function getProveedorFilters(token) {
+  const res = await fetch(`${API_URL}/proveedores/filtros`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+// ===== REPARACIONES =====
+
+/**
+ * Obtener todas las reparaciones con filtros y paginación
+ * @param {string} token - Token de autenticación
+ * @param {Object} filtros - Filtros a aplicar (opcional)
+ * @param {number} pagina - Página a obtener (opcional)
+ * @param {boolean} forStats - Si es para estadísticas, retorna todos los elementos
+ * @returns {Promise<Object>} Objeto con reparaciones y paginación
+ */
+export async function getReparaciones(token, filtros = {}, pagina = 1, forStats = false) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: forStats ? '10000' : '20',
+    sortBy: 'fecha',
+    sortOrder: 'desc'
+  });
+
+  // Agregar filtros activos
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) {
+          params.append(key, filtros[key].join(','));
+        }
+      } else {
+        params.append(key, filtros[key].toString());
+      }
+    }
+  });
+
+  const res = await fetch(`${API_URL}/reparaciones?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await res.json();
-  // El backend puede devolver { reparaciones: [...], pagination: {...} } o directamente el array
-  return data.reparaciones || data || [];
+
+  // Si es para estadísticas, retornar solo el array
+  if (forStats) {
+    return data.reparaciones || data || [];
+  }
+
+  // Para uso normal, retornar el objeto completo con paginación
+  return data;
 }
 
 export async function getReparacion(id, token) {
@@ -384,6 +503,159 @@ export async function deleteReparacion(id, token) {
     headers: {
       'Authorization': `Bearer ${token}`
     }
+  });
+  return res.json();
+}
+
+/**
+ * Obtener opciones de filtros para reparaciones
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Opciones de filtros disponibles
+ */
+export async function getReparacionFilters(token) {
+  const res = await fetch(`${API_URL}/reparaciones/filtros`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+// ===== USUARIOS =====
+
+/**
+ * Obtener todos los usuarios con filtros y paginación
+ * @param {string} token - Token de autenticación
+ * @param {Object} filtros - Filtros a aplicar (opcional)
+ * @param {number} pagina - Página a obtener (opcional)
+ * @param {boolean} forStats - Si es para estadísticas, retorna todos los elementos
+ * @returns {Promise<Object>} Objeto con usuarios y paginación
+ */
+export async function getUsuarios(token, filtros = {}, pagina = 1, forStats = false) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: forStats ? '10000' : '20',
+    sortBy: 'username',
+    sortOrder: 'asc'
+  });
+
+  // Agregar filtros activos
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) {
+          params.append(key, filtros[key].join(','));
+        }
+      } else {
+        params.append(key, filtros[key].toString());
+      }
+    }
+  });
+
+  const res = await fetch(`${API_URL}/usuarios?${params}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await res.json();
+
+  // Si es para estadísticas, retornar solo el array
+  if (forStats) {
+    return data.usuarios || data || [];
+  }
+
+  // Para uso normal, retornar el objeto completo con paginación
+  return data;
+}
+
+/**
+ * Obtener un usuario por ID
+ * @param {string} id - ID del usuario
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Usuario encontrado
+ */
+export async function getUsuarioById(id, token) {
+  const res = await fetch(`${API_URL}/usuarios/${id}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+/**
+ * Crear nuevo usuario
+ * @param {Object} data - Datos del usuario
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Usuario creado
+ */
+export async function createUsuario(data, token) {
+  const res = await fetch(`${API_URL}/usuarios`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
+  return res.json();
+}
+
+/**
+ * Actualizar usuario existente
+ * @param {string} id - ID del usuario
+ * @param {Object} data - Datos actualizados
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Usuario actualizado
+ */
+export async function updateUsuario(id, data, token) {
+  const res = await fetch(`${API_URL}/usuarios/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(data)
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
+  return res.json();
+}
+
+/**
+ * Eliminar usuario
+ * @param {string} id - ID del usuario
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Respuesta de confirmación
+ */
+export async function deleteUsuario(id, token) {
+  const res = await fetch(`${API_URL}/usuarios/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
+  }
+  
+  return res.json();
+}
+
+/**
+ * Obtener opciones de filtros para usuarios
+ * @param {string} token - Token de autenticación
+ * @returns {Promise<Object>} Opciones de filtros disponibles
+ */
+export async function getUsuarioFilters(token) {
+  const res = await fetch(`${API_URL}/usuarios/filtros`, {
+    headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
 }

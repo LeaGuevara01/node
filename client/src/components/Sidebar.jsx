@@ -14,6 +14,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu } from 'lucide-react';
+import { useNavigation } from '../hooks/useNavigation';
 
 // Configuración de las secciones disponibles en el sistema
 const sections = [
@@ -26,6 +27,7 @@ const sections = [
 
 function Sidebar({ active, setActive }) {
   const navigate = useNavigate();
+  const { navigateToListPage } = useNavigation();
   // Estado para controlar si el sidebar está abierto en mobile
   const [open, setOpen] = useState(false);
   
@@ -33,11 +35,8 @@ function Sidebar({ active, setActive }) {
    * Maneja la navegación en el sidebar
    */
   const handleNavigation = (key) => {
-    if (key === 'maquinarias') {
-      navigate('/maquinarias');
-    } else {
-      setActive(key);
-    }
+    // Navegar directamente a las páginas de listado con filtros avanzados
+    navigateToListPage(key);
     setOpen(false);
   };
   

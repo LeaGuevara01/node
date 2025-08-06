@@ -1,18 +1,18 @@
-// client/src/pages/RepuestosPage.jsx
+// client/src/pages/UsuariosPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  getRepuestos, 
-  getRepuestoFilters, 
-  createRepuesto, 
-  updateRepuesto, 
-  deleteRepuesto 
+  getUsuarios, 
+  getUsuarioFilters, 
+  createUsuario, 
+  updateUsuario, 
+  deleteUsuario 
 } from '../services/api';
-import RepuestoEditModal from '../components/RepuestoEditModal';
+import UserEditModal from '../components/UserEditModal';
 import BaseListPage from '../components/shared/BaseListPage';
 import { useAdvancedFilters } from '../hooks/useAdvancedFilters.jsx';
 import { usePagination } from '../hooks/usePagination';
-import { REPUESTO_FILTERS_CONFIG } from '../config/filtersConfig';
+import { USUARIO_FILTERS_CONFIG } from '../config/filtersConfig';
 import { getColorFromString } from '../utils/colorUtils';
 import { 
   BUTTON_STYLES, 
@@ -20,12 +20,12 @@ import {
   LIST_STYLES
 } from '../styles/repuestoStyles';
 
-function RepuestosPage({ token, onCreated }) {
+function UsuariosPage({ token, onCreated }) {
   const navigate = useNavigate();
   
   // Estados principales
-  const [repuestos, setRepuestos] = useState([]);
-  const [selectedRepuesto, setSelectedRepuesto] = useState(null);
+  const [usuarios, setUsuarios] = useState([]);
+  const [selectedUsuario, setSelectedUsuario] = useState(null);
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
@@ -40,25 +40,25 @@ function RepuestosPage({ token, onCreated }) {
   } = usePagination({ limit: 20 });
 
   /**
-   * Carga los repuestos con filtros aplicados
+   * Carga los usuarios con filtros aplicados
    */
-  const fetchRepuestos = async (filtrosActuales = {}, pagina = 1) => {
+  const fetchUsuarios = async (filtrosActuales = {}, pagina = 1) => {
     setLoading(true);
     try {
-      const data = await getRepuestos(token, filtrosActuales, pagina);
+      const data = await getUsuarios(token, filtrosActuales, pagina);
       
-      if (data.repuestos) {
-        setRepuestos(data.repuestos);
+      if (data.usuarios) {
+        setUsuarios(data.usuarios);
         actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
       } else {
-        setRepuestos(data || []);
+        setUsuarios(data || []);
         actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 20 });
       }
       setError('');
     } catch (err) {
-      console.error('Error al cargar repuestos:', err);
-      setRepuestos([]);
-      setError('Error al cargar repuestos: ' + err.message);
+      console.error('Error al cargar usuarios:', err);
+      setUsuarios([]);
+      setError('Error al cargar usuarios: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ function RepuestosPage({ token, onCreated }) {
    */
   const fetchOpcionesFiltros = async () => {
     try {
-      const data = await getRepuestoFilters(token);
+      const data = await getUsuarioFilters(token);
       return data;
     } catch (err) {
       console.error('Error al cargar opciones de filtros:', err);
@@ -88,29 +88,28 @@ function RepuestosPage({ token, onCreated }) {
     removerToken,
     limpiarTodosFiltros,
     cargarOpcionesFiltros
-  } = useAdvancedFilters({}, fetchRepuestos, fetchOpcionesFiltros);
+  } = useAdvancedFilters({}, fetchUsuarios, fetchOpcionesFiltros);
 
   /**
    * Maneja la carga masiva de CSV
    */
   const handleFileUpload = async (csvData) => {
-    const validRows = csvData.filter(row => row.nombre && row.codigo);
+    const validRows = csvData.filter(row => row.username && row.password);
     let successCount = 0, failCount = 0;
     
     for (const row of validRows) {
       try {
-        await createRepuesto({
+        await createUsuario({
+          username: row.username || '',
+          password: row.password || '',
+          email: row.email || '',
           nombre: row.nombre || '',
-          codigo: row.codigo || '',
-          categoria: row.categoria || '',
-          ubicacion: row.ubicacion || '',
-          stock: row.stock ? Number(row.stock) : 0,
-          precio: row.precio ? Number(row.precio) : 0,
-          descripcion: row.descripcion || ''
+          rol: row.rol || 'User',
+          activo: row.activo !== 'false'
         }, token);
         successCount++;
       } catch (err) {
-        console.error('Error creating repuesto:', err);
+        console.error('Error creating usuario:', err);
         failCount++;
       }
     }
@@ -120,7 +119,7 @@ function RepuestosPage({ token, onCreated }) {
     
     if (successCount > 0) {
       if (onCreated) onCreated();
-      fetchRepuestos(filtrosConsolidados, 1);
+      fetchUsuarios(filtrosConsolidados, 1);
       cargarOpcionesFiltros();
     }
   };
@@ -128,31 +127,31 @@ function RepuestosPage({ token, onCreated }) {
   /**
    * Abre modal de edición
    */
-  const openEditModal = (repuesto) => {
-    setSelectedRepuesto(repuesto);
+  const openEditModal = (usuario) => {
+    setSelectedUsuario(usuario);
   };
 
   /**
    * Cierra modal de edición
    */
   const closeEditModal = () => {
-    setSelectedRepuesto(null);
+    setSelectedUsuario(null);
   };
 
   /**
    * Navega a la vista de detalles
    */
-  const handleView = (repuesto) => {
-    navigate(`/repuestos/${repuesto.id}`);
+  const handleView = (usuario) => {
+    navigate(`/usuarios/${usuario.id}`);
   };
 
   /**
-   * Actualiza un repuesto
+   * Actualiza un usuario
    */
-  const handleUpdateRepuesto = async (id, repuestoData) => {
+  const handleUpdateUsuario = async (id, usuarioData) => {
     try {
-      await updateRepuesto(id, repuestoData, token);
-      fetchRepuestos(filtrosConsolidados, paginacion.current);
+      await updateUsuario(id, usuarioData, token);
+      fetchUsuarios(filtrosConsolidados, paginacion.current);
       cargarOpcionesFiltros();
       if (onCreated) onCreated();
     } catch (err) {
@@ -161,12 +160,12 @@ function RepuestosPage({ token, onCreated }) {
   };
 
   /**
-   * Elimina un repuesto
+   * Elimina un usuario
    */
-  const handleDeleteRepuesto = async (id) => {
+  const handleDeleteUsuario = async (id) => {
     try {
-      await deleteRepuesto(id, token);
-      fetchRepuestos(filtrosConsolidados, paginacion.current);
+      await deleteUsuario(id, token);
+      fetchUsuarios(filtrosConsolidados, paginacion.current);
       cargarOpcionesFiltros();
       if (onCreated) onCreated();
     } catch (err) {
@@ -174,24 +173,41 @@ function RepuestosPage({ token, onCreated }) {
     }
   };
 
-  const getStockBadge = (stock) => {
-    if (stock <= 0) return 'bg-red-100 text-red-800';
-    if (stock <= 5) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-green-100 text-green-800';
+  const getRolBadge = (rol) => {
+    switch (rol?.toLowerCase()) {
+      case 'admin':
+        return 'bg-purple-100 text-purple-800';
+      case 'manager':
+        return 'bg-blue-100 text-blue-800';
+      case 'user':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getActivoBadge = (activo) => {
+    return activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   };
 
   /**
-   * Renderiza un elemento de repuesto
+   * Renderiza un elemento de usuario
    */
-  const renderRepuesto = (repuesto) => (
+  const renderUsuario = (usuario) => (
     <>
       <div className={LIST_STYLES.itemHeader}>
         <div className="flex items-center gap-2">
-          <h3 className={LIST_STYLES.itemTitle}>{repuesto.nombre}</h3>
+          <h3 className={LIST_STYLES.itemTitle}>{usuario.username}</h3>
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getRolBadge(usuario.rol)}`}>
+            {usuario.rol}
+          </span>
+          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getActivoBadge(usuario.activo)}`}>
+            {usuario.activo ? 'Activo' : 'Inactivo'}
+          </span>
         </div>
         <div className={LIST_STYLES.itemActions}>
           <button
-            onClick={() => handleView(repuesto)}
+            onClick={() => handleView(usuario)}
             className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
             title="Ver detalles"
           >
@@ -201,9 +217,9 @@ function RepuestosPage({ token, onCreated }) {
             </svg>
           </button>
           <button
-            onClick={() => openEditModal(repuesto)}
+            onClick={() => openEditModal(usuario)}
             className={BUTTON_STYLES.edit}
-            title="Editar repuesto"
+            title="Editar usuario"
           >
             <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -211,44 +227,37 @@ function RepuestosPage({ token, onCreated }) {
           </button>
         </div>
       </div>
-      {repuesto.descripcion && (
+      {usuario.nombre && (
         <div className={LIST_STYLES.itemDescription}>
-          {repuesto.descripcion}
+          {usuario.nombre}
         </div>
       )}
       <div className={LIST_STYLES.itemTagsRow}>
         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
-          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={repuesto.codigo || 'Sin código'}>
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <span className="tag-truncate">{repuesto.codigo || 'Sin código'}</span>
-          </span>
-          {repuesto.ubicacion && (
-            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
+          {usuario.email && (
+            <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-700`} title={usuario.email}>
               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span className="tag-truncate">{repuesto.ubicacion}</span>
+              <span className="tag-truncate">{usuario.email}</span>
             </span>
           )}
-          {repuesto.categoria && (
-            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
+          {usuario.ultimo_acceso && (
+            <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}>
               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="tag-truncate">{repuesto.categoria}</span>
+              Último: {new Date(usuario.ultimo_acceso).toLocaleDateString()}
             </span>
           )}
-        </div>
-        <div className={LIST_STYLES.itemTagsRight}>
-          <span className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock)}`}>
-            Stock: {repuesto.stock}
-          </span>
-          <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-800`}>
-            ${repuesto.precio?.toFixed(2) || '0.00'}
-          </span>
+          {usuario.creado_en && (
+            <span className={`${LIST_STYLES.itemTag} bg-green-100 text-green-700`}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Creado: {new Date(usuario.creado_en).toLocaleDateString()}
+            </span>
+          )}
         </div>
       </div>
     </>
@@ -256,20 +265,20 @@ function RepuestosPage({ token, onCreated }) {
 
   // Efectos
   useEffect(() => {
-    fetchRepuestos();
+    fetchUsuarios();
     cargarOpcionesFiltros();
   }, []);
 
   return (
     <>
       <BaseListPage
-        title="Listado de Repuestos"
-        subtitle="Gestiona y filtra todos los repuestos del inventario"
-        entityName="Repuesto"
-        entityNamePlural="Repuestos"
-        createRoute="/repuestos/formulario"
+        title="Listado de Usuarios"
+        subtitle="Gestiona y filtra todos los usuarios del sistema"
+        entityName="Usuario"
+        entityNamePlural="Usuarios"
+        createRoute="/usuarios/formulario"
         
-        items={repuestos}
+        items={usuarios}
         loading={loading}
         error={error}
         
@@ -280,10 +289,10 @@ function RepuestosPage({ token, onCreated }) {
         tokensActivos={tokensActivos}
         removerToken={removerToken}
         opcionesFiltros={opcionesFiltros}
-        camposFiltros={REPUESTO_FILTERS_CONFIG(opcionesFiltros)}
+        camposFiltros={USUARIO_FILTERS_CONFIG(opcionesFiltros)}
         
         paginacion={paginacion}
-        handlePaginacion={(pagina) => fetchRepuestos(filtrosConsolidados, pagina)}
+        handlePaginacion={(pagina) => fetchUsuarios(filtrosConsolidados, pagina)}
         
         onFileUpload={handleFileUpload}
         bulkError={bulkError}
@@ -291,16 +300,16 @@ function RepuestosPage({ token, onCreated }) {
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
         
-        renderItem={renderRepuesto}
+        renderItem={renderUsuario}
       />
 
       {/* Modal de edición */}
-      {selectedRepuesto && (
-        <RepuestoEditModal
-          repuesto={selectedRepuesto}
+      {selectedUsuario && (
+        <UserEditModal
+          usuario={selectedUsuario}
           onClose={closeEditModal}
-          onUpdate={handleUpdateRepuesto}
-          onDelete={handleDeleteRepuesto}
+          onUpdate={handleUpdateUsuario}
+          onDelete={handleDeleteUsuario}
           token={token}
         />
       )}
@@ -308,4 +317,4 @@ function RepuestosPage({ token, onCreated }) {
   );
 }
 
-export default RepuestosPage;
+export default UsuariosPage;
