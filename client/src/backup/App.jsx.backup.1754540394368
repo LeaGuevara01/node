@@ -1,20 +1,10 @@
-/**
- * ACTUALIZADO PARA USAR NAVEGACIÓN REFACTORIZADA
- * Fecha: 2025-08-07T04:19:54.386Z
- * 
- * Cambios:
- * - Dashboard → DashboardRefactored
- * - MaquinariasPage → MaquinariasPageRefactored
- * - MaquinariaDetails → MaquinariaDetailsRefactored
- */
-
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { login } from './services/api';
 import { NavigationProvider } from './contexts/NavigationContext';
-import Dashboard from './pages/DashboardRefactored';
-import MaquinariaDetails from './pages/MaquinariaDetailsRefactored';
-import MaquinariasPage from './pages/MaquinariasPageRefactored';
+import Dashboard from './pages/Dashboard';
+import MaquinariaDetails from './pages/MaquinariaDetails';
+import MaquinariasPage from './pages/MaquinariasPage';
 import MaquinariaFormulario from './pages/MaquinariaFormulario';
 import RepuestosPage from './pages/RepuestosPage';
 import ProveedoresPage from './pages/ProveedoresPage';

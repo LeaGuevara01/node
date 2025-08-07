@@ -17,7 +17,11 @@ import { getColorFromString } from '../utils/colorUtils';
 import { 
   BUTTON_STYLES, 
   ICON_STYLES,
-  LIST_STYLES
+  LIST_STYLES,
+  MODAL_STYLES,
+  INPUT_STYLES,
+  LAYOUT_STYLES,
+  ALERT_STYLES
 } from '../styles/repuestoStyles';
 
 function RepuestosPage({ token, onCreated }) {
@@ -29,6 +33,12 @@ function RepuestosPage({ token, onCreated }) {
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  
+  // Estado del formulario
+  const [form, setForm] = useState({
+    nombre: '', stock: '', codigo: '', descripcion: '', precio: '', proveedor: '', ubicacion: '', categoria: ''
+  });
 
   // Hook de paginación
   const { 
@@ -174,6 +184,30 @@ function RepuestosPage({ token, onCreated }) {
     }
   };
 
+  /**
+   * Maneja el envío del formulario de agregar repuesto
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const repuestoData = {
+        ...form,
+        precio: Number(form.precio),
+        stock: Number(form.stock),
+      };
+      await createRepuesto(repuestoData, token);
+      setForm({ nombre: '', stock: '', codigo: '', descripcion: '', precio: '', proveedor: '', ubicacion: '', categoria: '' });
+      setShowAddModal(false);
+      if (onCreated) onCreated();
+      fetchRepuestos(filtrosConsolidados, 1);
+      cargarOpcionesFiltros();
+      setBulkSuccess('Repuesto creado exitosamente');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const getStockBadge = (stock) => {
     if (stock <= 0) return 'bg-red-100 text-red-800';
     if (stock <= 5) return 'bg-yellow-100 text-yellow-800';
@@ -267,7 +301,7 @@ function RepuestosPage({ token, onCreated }) {
         subtitle="Gestiona y filtra todos los repuestos del inventario"
         entityName="Repuesto"
         entityNamePlural="Repuestos"
-        createRoute="/repuestos/formulario"
+        showNewButton={false}
         
         items={repuestos}
         loading={loading}
@@ -292,7 +326,141 @@ function RepuestosPage({ token, onCreated }) {
         setBulkSuccess={setBulkSuccess}
         
         renderItem={renderRepuesto}
+        
+        headerActions={
+          <button
+            onClick={() => setShowAddModal(true)}
+            className={BUTTON_STYLES.newItem}
+          >
+            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Nuevo Repuesto
+          </button>
+        }
       />
+
+      {/* Modal de agregar repuesto */}
+      {showAddModal && (
+        <div className={MODAL_STYLES.overlay}>
+          <div className={MODAL_STYLES.container}>
+            <div className={MODAL_STYLES.content}>
+              <div className={MODAL_STYLES.header}>
+                <h2 className={MODAL_STYLES.title}>Nuevo Repuesto</h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className={MODAL_STYLES.closeButton}
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className={MODAL_STYLES.form}>
+                <div className={LAYOUT_STYLES.gridForm}>
+                  <div>
+                    <label className={INPUT_STYLES.label}>Nombre</label>
+                    <input
+                      type="text"
+                      value={form.nombre}
+                      onChange={(e) => setForm({...form, nombre: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className={INPUT_STYLES.label}>Stock</label>
+                    <input
+                      type="number"
+                      value={form.stock}
+                      onChange={(e) => setForm({...form, stock: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className={INPUT_STYLES.label}>Código</label>
+                    <input
+                      type="text"
+                      value={form.codigo}
+                      onChange={(e) => setForm({...form, codigo: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className={INPUT_STYLES.label}>Precio</label>
+                    <input
+                      type="number"
+                      value={form.precio}
+                      onChange={(e) => setForm({...form, precio: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label className={INPUT_STYLES.label}>Proveedor</label>
+                    <input
+                      type="text"
+                      value={form.proveedor}
+                      onChange={(e) => setForm({...form, proveedor: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className={INPUT_STYLES.label}>Ubicación</label>
+                    <input
+                      type="text"
+                      value={form.ubicacion}
+                      onChange={(e) => setForm({...form, ubicacion: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={INPUT_STYLES.label}>Categoría</label>
+                    <input
+                      type="text"
+                      value={form.categoria}
+                      onChange={(e) => setForm({...form, categoria: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      required
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={INPUT_STYLES.label}>Descripción</label>
+                    <textarea
+                      value={form.descripcion}
+                      onChange={(e) => setForm({...form, descripcion: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <div className={ALERT_STYLES.errorModal}>
+                    {error}
+                  </div>
+                )}
+
+                <div className={MODAL_STYLES.buttonGroup}>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className={BUTTON_STYLES.secondary}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className={BUTTON_STYLES.primary}
+                  >
+                    Crear Repuesto
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de edición */}
       {selectedRepuesto && (

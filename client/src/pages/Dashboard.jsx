@@ -58,9 +58,9 @@ function Dashboard({ token, role, onLogout }) {
       // Cargar datos en paralelo para mejor rendimiento
       const [maquinariasData, repuestosData, proveedoresData, reparacionesData] = await Promise.all([
         getMaquinarias(token, {}, 1, true), // forStats = true para obtener todos
-        getRepuestos(token),
-        getProveedores(token),
-        getReparaciones(token)
+        getRepuestos(token, {}, 1, true), // forStats = true para obtener todos
+        getProveedores(token, {}, 1, true), // forStats = true para obtener todos
+        getReparaciones(token, {}, 1, true) // forStats = true para obtener todos
       ]);
       
       // Actualizar estados con los datos obtenidos

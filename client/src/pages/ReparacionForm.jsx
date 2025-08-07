@@ -657,7 +657,7 @@ function ReparacionForm({ token, onCreated }) {
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reparaciones ({paginacion.totalItems || reparaciones.length})</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Reparaciones</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenadas por fecha descendente</p>
               </div>
               {loading && (

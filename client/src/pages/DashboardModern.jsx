@@ -63,10 +63,10 @@ function DashboardModern({ token, role, onLogout }) {
     setLoading(true);
     try {
       const [maquinariasData, repuestosData, proveedoresData, reparacionesData] = await Promise.all([
-        getMaquinarias(token, {}, 1, true),
-        getRepuestos(token),
-        getProveedores(token),
-        getReparaciones(token)
+        getMaquinarias(token, {}, 1, true), // forStats = true para obtener todos
+        getRepuestos(token, {}, 1, true), // forStats = true para obtener todos
+        getProveedores(token, {}, 1, true), // forStats = true para obtener todos
+        getReparaciones(token, {}, 1, true) // forStats = true para obtener todos
       ]);
       
       // Procesar y normalizar datos

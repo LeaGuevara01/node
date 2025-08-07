@@ -406,7 +406,7 @@ function MaquinariaForm({ token, onCreated }) {
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Maquinarias ({paginacion.totalItems})</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Maquinarias</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenadas por categoría y modelo</p>
               </div>
               {loading && (
