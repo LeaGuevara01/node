@@ -20,6 +20,9 @@ import RepuestosPage from './pages/RepuestosPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import ReparacionesPage from './pages/ReparacionesPage';
 import UsuariosPage from './pages/UsuariosPage';
+import ComprasPage from './pages/ComprasPage';
+import CompraForm from './pages/CompraForm';
+import CompraDetails from './pages/CompraDetails';
 import RepuestoDetails from './pages/RepuestoDetails';
 import ReparacionDetails from './pages/ReparacionDetails';
 import ProveedorDetails from './pages/ProveedorDetails';
@@ -89,6 +92,9 @@ function App() {
         <Route path="/proveedores" element={<ProveedoresPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
         <Route path="/reparaciones" element={<ReparacionesPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
         <Route path="/usuarios" element={<UsuariosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  <Route path="/compras" element={<ComprasPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  <Route path="/compras/nueva" element={<CompraForm token={token} />} />
+        <Route path="/compras/:id" element={<CompraDetails token={token} />} />
         
         {/* Formularios y páginas de detalles */}
         <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />

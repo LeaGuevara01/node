@@ -104,6 +104,51 @@ paths:
           description: Repuesto creado
         "400":
           description: Error de validación
+  /compras:
+    get:
+      summary: Listado de compras
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Crear compra
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Creada
+  /compras/stats:
+    get:
+      summary: Estadísticas de compras
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+  /compras/{id}:
+    get:
+      summary: Obtener compra por ID
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    put:
+      summary: Actualizar compra
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+    delete:
+      summary: Eliminar compra
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Eliminada
   /proveedores:
     get:
       summary: Listar proveedores

@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu, X, Wheat } from 'lucide-react';
+import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu, X, Wheat, ShoppingCart } from 'lucide-react';
 import { useNavigation } from '../hooks/useNavigation';
 
 // Configuración de las secciones disponibles en el sistema
@@ -22,6 +22,7 @@ const sections = [
   { key: 'repuestos', label: 'Repuestos', icon: Settings },
   { key: 'proveedores', label: 'Proveedores', icon: Building2 },
   { key: 'reparaciones', label: 'Reparaciones', icon: Wrench },
+  { key: 'compras', label: 'Compras', icon: ShoppingCart },
   { key: 'usuarios', label: 'Usuarios', icon: Users },
 ];
 

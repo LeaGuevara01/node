@@ -19,6 +19,7 @@ model Maquinaria {
   proveedor    String?
   ubicacion    String?
   reparaciones Reparacion[]
+  compraDetalles CompraDetalle[]
 }
 
 model Repuesto {
@@ -34,6 +35,7 @@ model Repuesto {
   ubicacion    String?
   reparaciones ReparacionRepuesto[]
   proveedorRel Proveedor?           @relation(fields: [proveedorId], references: [id])
+  compraDetalles CompraDetalle[]
 }
 
 model Proveedor {
@@ -46,6 +48,7 @@ model Proveedor {
   telefono  String?
   web       String?
   repuestos Repuesto[]
+  compras   Compra[]
 }
 
 model Reparacion {
@@ -57,6 +60,7 @@ model Reparacion {
   maquinaria   Maquinaria           @relation(fields: [maquinariaId], references: [id], onDelete: Cascade)
   usuario      User?                @relation(fields: [userId], references: [id])
   repuestos    ReparacionRepuesto[]
+  compraDetalles CompraDetalle[]
 }
 
 model ReparacionRepuesto {
@@ -74,4 +78,34 @@ model User {
   password     String
   role         String
   reparaciones Reparacion[]
+}
+
+/// Compras a proveedores
+model Compra {
+  id         Int             @id @default(autoincrement())
+  fecha      DateTime        @default(now())
+  proveedorId Int
+  estado     String          @default("PENDIENTE") // PENDIENTE | RECIBIDA | CANCELADA
+  total      Int?
+  notas      String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  proveedor  Proveedor       @relation(fields: [proveedorId], references: [id])
+  detalles   CompraDetalle[]
+}
+
+model CompraDetalle {
+  id            Int         @id @default(autoincrement())
+  compraId      Int
+  repuestoId    Int
+  cantidad      Int
+  precioUnitario Int?
+  maquinariaId  Int?
+  reparacionId  Int?
+
+  compra        Compra      @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  repuesto      Repuesto    @relation(fields: [repuestoId], references: [id])
+  maquinaria    Maquinaria? @relation(fields: [maquinariaId], references: [id])
+  reparacion    Reparacion? @relation(fields: [reparacionId], references: [id])
 }

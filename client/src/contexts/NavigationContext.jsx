@@ -30,8 +30,9 @@ export const NavigationProvider = ({ children }) => {
       maquinarias: '/maquinarias',
       repuestos: '/repuestos', 
       proveedores: '/proveedores',
-      reparaciones: '/reparaciones',
-      usuarios: '/usuarios'
+  reparaciones: '/reparaciones',
+  usuarios: '/usuarios',
+  compras: '/compras'
     };
 
     const route = routes[type];
@@ -56,13 +57,19 @@ export const NavigationProvider = ({ children }) => {
       repuestos: '/repuestos', 
       proveedores: '/proveedores',
       reparaciones: '/reparaciones',
-      usuarios: '/usuarios'
+      usuarios: '/usuarios',
+      compras: '/compras'
     };
 
     let targetRoute = baseRoutes[section];
     
     if (action === 'create') {
-      targetRoute += '/nuevo';
+      // Para compras la ruta de creación es '/nueva'
+      if (section === 'compras') {
+        targetRoute += '/nueva';
+      } else {
+        targetRoute += '/nuevo';
+      }
     } else if (action === 'edit' && itemId) {
       targetRoute += `/${itemId}/editar`;
     } else if (action === 'detail' && itemId) {
@@ -86,8 +93,9 @@ export const NavigationProvider = ({ children }) => {
       maquinarias: `/maquinarias/${id}`,
       repuestos: `/repuestos/${id}`,
       proveedores: `/proveedores/${id}`,
-      reparaciones: `/reparaciones/${id}`,
-      usuarios: `/usuarios/${id}`
+  reparaciones: `/reparaciones/${id}`,
+  usuarios: `/usuarios/${id}`,
+  compras: `/compras/${id}`
     };
 
     const route = routes[type];
@@ -103,7 +111,9 @@ export const NavigationProvider = ({ children }) => {
       repuestos: id ? `/repuestos/editar/${id}` : '/repuestos/formulario',
       proveedores: id ? `/proveedores/editar/${id}` : '/proveedores/formulario',
       reparaciones: id ? `/reparaciones/editar/${id}` : '/reparaciones/formulario',
-      usuarios: id ? `/usuarios/editar/${id}` : '/usuarios/formulario'
+  usuarios: id ? `/usuarios/editar/${id}` : '/usuarios/formulario',
+  // Para compras aún no hay edición dedicada; ambas rutas apuntan a creación
+  compras: '/compras/nueva'
     };
 
     const route = routes[type];

@@ -689,3 +689,65 @@ export async function getUsuarioFilters(token) {
   });
   return res.json();
 }
+
+// ===== COMPRAS =====
+
+export async function getCompras(token, filtros = {}, pagina = 1, forStats = false) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: forStats ? '10000' : '20'
+  });
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) params.append(key, filtros[key].join(','));
+      } else {
+        params.append(key, filtros[key].toString());
+      }
+    }
+  });
+  const res = await fetch(`${API_URL}/compras?${params}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await res.json();
+  return forStats ? (data.data || data || []) : data;
+}
+
+export async function getCompra(id, token) {
+  const res = await fetch(`${API_URL}/compras/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+  return res.json();
+}
+
+export async function createCompra(data, token) {
+  const res = await fetch(`${API_URL}/compras`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error al crear compra');
+  return res.json();
+}
+
+export async function updateCompra(id, data, token) {
+  const res = await fetch(`${API_URL}/compras/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error al actualizar compra');
+  return res.json();
+}
+
+export async function deleteCompra(id, token) {
+  const res = await fetch(`${API_URL}/compras/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error al eliminar compra');
+  return res.json();
+}
+
+export async function getComprasStats(token) {
+  const res = await fetch(`${API_URL}/compras/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+  return res.json();
+}
