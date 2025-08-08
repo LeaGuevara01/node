@@ -6,9 +6,12 @@
  * - NavigationButtons para botones estándar
  * - Contexto de navegación para manejo de rutas
  * - Componentes modulares para funcionalidad
+ * - Sistema de logging centralizado y modular
+ * - Prevención de llamadas API duplicadas
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Calendar, MapPin, Tag } from 'lucide-react';
 import { createMaquinaria, getMaquinarias, getMaquinariaFilters, updateMaquinaria, deleteMaquinaria } from '../services/api';
 import AppLayout from '../components/navigation/AppLayout';
 import { CreateButton, ExportButton, ImportButton } from '../components/navigation/NavigationButtons';
@@ -21,11 +24,16 @@ import { useNavigation } from '../hooks/useNavigation';
 import { MAQUINARIA_FILTERS_CONFIG } from '../config/filtersConfig';
 import { getColorFromString } from '../utils/colorUtils';
 import { sortMaquinariasByCategory, getEstadoColorClass, formatAnio } from '../utils/maquinariaUtils';
+import { createLogger } from '../utils/logger';
+import { logFilterApplication, logPaginationChange, logBulkOperation } from '../utils/apiLogger';
 import { 
   BUTTON_STYLES, 
   ICON_STYLES,
   LIST_STYLES
 } from '../styles/repuestoStyles';
+
+// Logger específico para este componente
+const logger = createLogger('MaquinariasPage');
 
 function MaquinariasPage({ token, role, onLogout }) {
   const { navigateToDetailPage } = useNavigation();
@@ -36,6 +44,10 @@ function MaquinariasPage({ token, role, onLogout }) {
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
+  
+  // Ref para prevenir llamadas duplicadas
+  const fetchingRef = useRef(false);
+  const lastFetchParamsRef = useRef(null);
 
   // Hook de paginación
   const { 
@@ -64,31 +76,57 @@ function MaquinariasPage({ token, role, onLogout }) {
 
   /**
    * Carga las maquinarias con filtros aplicados
+   * Incluye prevención de llamadas duplicadas
    */
   const fetchMaquinarias = async (filtrosActuales = {}, pagina = 1) => {
+    // Generar clave única para esta llamada
+    const fetchKey = JSON.stringify({ filtros: filtrosActuales, pagina });
+    
+    // Prevenir llamadas duplicadas
+    if (fetchingRef.current && lastFetchParamsRef.current === fetchKey) {
+      logger.debug('🔄 Llamada duplicada prevenida', { filtros: filtrosActuales, pagina });
+      return;
+    }
+    
+    fetchingRef.current = true;
+    lastFetchParamsRef.current = fetchKey;
     setLoading(true);
+    
     try {
-      console.log('Fetching maquinarias with consolidated filters:', filtrosActuales, 'page:', pagina);
+      logger.data('📊 Cargando maquinarias', { 
+        filtros: Object.keys(filtrosActuales).length,
+        pagina 
+      });
 
       const data = await getMaquinarias(token, filtrosActuales, pagina);
-      console.log('API Response:', data);
       
       if (data.maquinarias) {
         setMaquinarias(data.maquinarias);
-        actualizarPaginacion(data.paginacion);
-        console.log(`✅ Loaded ${data.maquinarias.length} maquinarias for page ${pagina}`);
+        actualizarPaginacion(data.paginacion || data.pagination);
+        
+        logger.success(`Cargadas ${data.maquinarias.length} maquinarias`, {
+          pagina,
+          total: data.paginacion?.totalElementos || data.pagination?.total || 0
+        });
       } else {
-        console.warn('No maquinarias data in response:', data);
+        logger.warn('Respuesta API sin datos de maquinarias', data);
         setMaquinarias([]);
       }
       
       setError('');
     } catch (err) {
-      console.error('Error fetching maquinarias:', err);
+      logger.error('Error al cargar maquinarias', { error: err.message, filtros: filtrosActuales, pagina });
       setError('Error al cargar las maquinarias');
       setMaquinarias([]);
     } finally {
       setLoading(false);
+      fetchingRef.current = false;
+      // Limpiar la clave después de un breve delay
+      setTimeout(() => {
+        if (lastFetchParamsRef.current === fetchKey) {
+          lastFetchParamsRef.current = null;
+        }
+      }, 1000);
     }
   };
 
@@ -96,13 +134,20 @@ function MaquinariasPage({ token, role, onLogout }) {
    * Cargar opciones para filtros
    */
   const cargarOpcionesFiltros = async () => {
-    await cargarOpcionesFiltrosMaquinaria();
+    try {
+      logger.debug('🔧 Cargando opciones de filtros');
+      await cargarOpcionesFiltrosMaquinaria();
+      logger.success('Opciones de filtros cargadas');
+    } catch (error) {
+      logger.error('Error al cargar opciones de filtros', { error: error.message });
+    }
   };
 
   /**
    * Aplicar filtros y recargar datos
    */
   const aplicarFiltros = () => {
+    logFilterApplication(filtrosConsolidados, tokensActivos);
     aplicarFiltrosActuales();
     fetchMaquinarias(filtrosConsolidados, 1);
   };
@@ -111,6 +156,7 @@ function MaquinariasPage({ token, role, onLogout }) {
    * Navegar a detalles de maquinaria
    */
   const handleMaquinariaClick = (maquinaria) => {
+    logger.navigation('Navegando a detalle de maquinaria', { id: maquinaria.id, nombre: maquinaria.nombre });
     navigateToDetailPage('maquinarias', maquinaria.id);
   };
 
@@ -118,6 +164,7 @@ function MaquinariasPage({ token, role, onLogout }) {
    * Maneja la apertura del modal de edición
    */
   const openEditModal = (maquinaria) => {
+    logger.user('Abriendo modal de edición', { id: maquinaria.id });
     setSelectedMaquinaria(maquinaria);
   };
 
@@ -126,10 +173,13 @@ function MaquinariasPage({ token, role, onLogout }) {
    */
   const handleUpdate = async (id, updatedMaquinaria) => {
     try {
+      logger.data('Actualizando maquinaria', { id });
       await updateMaquinaria(id, updatedMaquinaria, token);
       fetchMaquinarias(filtrosConsolidados, paginacion.paginaActual);
       setSelectedMaquinaria(null);
+      logger.success('Maquinaria actualizada correctamente');
     } catch (err) {
+      logger.error('Error al actualizar maquinaria', { error: err.message, id });
       setError('Error al actualizar la maquinaria');
     }
   };
@@ -143,9 +193,12 @@ function MaquinariasPage({ token, role, onLogout }) {
     }
 
     try {
+      logger.data('Eliminando maquinaria', { id });
       await deleteMaquinaria(id, token);
       fetchMaquinarias(filtrosConsolidados, paginacion.paginaActual);
+      logger.success('Maquinaria eliminada correctamente');
     } catch (err) {
+      logger.error('Error al eliminar maquinaria', { error: err.message, id });
       setError('Error al eliminar la maquinaria');
     }
   };
@@ -158,6 +211,8 @@ function MaquinariasPage({ token, role, onLogout }) {
     formData.append('file', file);
 
     try {
+      logger.data('🗂️ Iniciando importación masiva', { fileName: file.name, size: file.size });
+      
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/maquinarias/bulk`, {
         method: 'POST',
         headers: {
@@ -168,15 +223,34 @@ function MaquinariasPage({ token, role, onLogout }) {
 
       if (response.ok) {
         const data = await response.json();
-        setBulkSuccess(`✅ ${data.count} maquinarias importadas correctamente`);
+        const successMessage = `✅ ${data.count} maquinarias importadas correctamente`;
+        setBulkSuccess(successMessage);
         setBulkError('');
+        
+        logBulkOperation('IMPORT', 'maquinarias', data.count, { success: true });
+        logger.success('Importación masiva completada', { count: data.count });
+        
         fetchMaquinarias(filtrosConsolidados, 1);
       } else {
         const errorData = await response.json();
-        setBulkError(`❌ Error: ${errorData.error || 'Error desconocido'}`);
+        const errorMessage = `❌ Error: ${errorData.error || 'Error desconocido'}`;
+        setBulkError(errorMessage);
+        
+        logBulkOperation('IMPORT', 'maquinarias', 0, { 
+          success: false, 
+          error: errorData.error 
+        });
+        logger.error('Error en importación masiva', { error: errorData.error });
       }
     } catch (err) {
-      setBulkError('❌ Error de conexión al importar');
+      const errorMessage = '❌ Error de conexión al importar';
+      setBulkError(errorMessage);
+      
+      logBulkOperation('IMPORT', 'maquinarias', 0, { 
+        success: false, 
+        error: err.message 
+      });
+      logger.error('Error de conexión en importación', { error: err.message });
     }
   };
 
@@ -198,15 +272,15 @@ function MaquinariasPage({ token, role, onLogout }) {
             {/* Información adicional */}
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
               {maquinaria.anio && (
-                <span>📅 Año: {formatAnio(maquinaria.anio)}</span>
+                <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Año: {formatAnio(maquinaria.anio)}</span>
               )}
               {maquinaria.categoria && (
-                <span className={`px-2 py-1 rounded text-xs font-medium ${getColorFromString(maquinaria.categoria)}`}>
-                  🏷️ {maquinaria.categoria}
+                <span className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getColorFromString(maquinaria.categoria)}`}>
+                  <Tag className="w-3 h-3" /> {maquinaria.categoria}
                 </span>
               )}
               {maquinaria.ubicacion && (
-                <span>📍 {maquinaria.ubicacion}</span>
+                <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {maquinaria.ubicacion}</span>
               )}
             </div>
           </div>
@@ -226,14 +300,32 @@ function MaquinariasPage({ token, role, onLogout }) {
     </>
   );
 
-  // Efectos
+  // Efectos con logging mejorado
   useEffect(() => {
+    logger.info('🚀 Componente MaquinariasPage inicializado');
     fetchMaquinarias();
     cargarOpcionesFiltros();
+    
+    return () => {
+      logger.debug('🧹 Componente MaquinariasPage desmontado');
+    };
   }, []);
 
   useEffect(() => {
-    fetchMaquinarias(filtrosConsolidados, 1);
+    // Solo ejecutar si hay filtros consolidados válidos
+    const hasValidFilters = Object.keys(filtrosConsolidados).some(key => {
+      const value = filtrosConsolidados[key];
+      return value !== '' && 
+             value !== false && 
+             value !== null && 
+             value !== undefined &&
+             !(Array.isArray(value) && value.length === 0);
+    });
+
+    if (hasValidFilters) {
+      logger.filter('🔍 Filtros consolidados cambiados, recargando datos');
+      fetchMaquinarias(filtrosConsolidados, 1);
+    }
   }, [filtrosConsolidados]);
 
   // Definir breadcrumbs
@@ -246,14 +338,21 @@ function MaquinariasPage({ token, role, onLogout }) {
   const pageActions = (
     <div className="flex items-center space-x-3">
       <ExportButton 
-        onClick={() => console.log('Exportar maquinarias')}
+        onClick={() => {
+          logger.user('🚀 Exportar maquinarias solicitado');
+          // TODO: Implementar exportación
+        }}
       />
       <ImportButton 
-        onClick={() => document.getElementById('file-upload').click()}
+        onClick={() => {
+          logger.user('📥 Importar maquinarias solicitado');
+          document.getElementById('file-upload').click();
+        }}
       />
       <CreateButton 
         entity="maquinarias"
         label="Nueva Maquinaria"
+        onClick={() => logger.user('➕ Crear nueva maquinaria solicitado')}
       />
     </div>
   );
@@ -290,7 +389,10 @@ function MaquinariasPage({ token, role, onLogout }) {
         camposFiltros={MAQUINARIA_FILTERS_CONFIG(opcionesFiltros)}
         
         paginacion={paginacion}
-        handlePaginacion={(pagina) => fetchMaquinarias(filtrosConsolidados, pagina)}
+        handlePaginacion={(pagina) => {
+          logPaginationChange(pagina, paginacion.totalPaginas, paginacion.totalElementos);
+          fetchMaquinarias(filtrosConsolidados, pagina);
+        }}
         
         onFileUpload={handleFileUpload}
         bulkError={bulkError}

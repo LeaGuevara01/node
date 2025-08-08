@@ -6,6 +6,7 @@
  */
 
 import React, { useState } from 'react';
+import { BarChart3, Palette, Lightbulb, Target } from 'lucide-react';
 import StatsCard from '../components/StatsCard'; // Original mejorado
 import { StatsCard as NewStatsCard, StatsGrid } from '../styles'; // Nuevo sistema
 
@@ -47,8 +48,9 @@ function StatsCardDemo() {
           <>
             {/* Versión Original Mejorada */}
             <section>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                📊 StatsCard Original (Mejorado)
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <BarChart3 className="w-6 h-6 text-blue-600" />
+                StatsCard Original (Mejorado)
               </h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatsCard 
@@ -80,8 +82,9 @@ function StatsCardDemo() {
 
             {/* Nuevo Sistema con Design Tokens */}
             <section>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                🎨 StatsCard Nuevo (Design Tokens)
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <Palette className="w-6 h-6 text-purple-600" />
+                StatsCard Nuevo (Design Tokens)
               </h2>
               
               {/* Variante Default */}
@@ -168,8 +171,9 @@ function StatsCardDemo() {
 
             {/* Instrucciones */}
             <section className="bg-blue-50 p-6 rounded-xl border border-blue-200">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">
-                💡 Cómo usar en tu Dashboard
+              <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-yellow-600" />
+                Cómo usar en tu Dashboard
               </h3>
               <div className="text-sm text-blue-700 space-y-2">
                 <p><strong>1. Importa el componente:</strong></p>
@@ -215,8 +219,9 @@ function StatsCardDemo() {
             </div>
             
             <div className="bg-gray-50 p-6 rounded-lg text-center">
-              <p className="text-gray-600 mb-4">
-                🎯 ¡Perfecto! Has navegado a la sección de <strong>{activeSection}</strong>
+              <p className="text-gray-600 mb-4 flex items-center justify-center gap-2">
+                <Target className="w-5 h-5 text-green-600" />
+                ¡Perfecto! Has navegado a la sección de <strong>{activeSection}</strong>
               </p>
               <p className="text-sm text-gray-500">
                 Aquí cargarías el componente específico (MaquinariaForm, RepuestoForm, etc.)

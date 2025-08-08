@@ -1,11 +1,24 @@
 /**
- * Sistema de Auto-Aplicación de Estilos
+ * @deprecated ⚠️ SISTEMA DEPRECADO - NO USAR EN NUEVOS DESARROLLOS
  * 
- * Este componente wrapper aplica automáticamente estilos consistentes
- * a cualquier página, asegurando uniformidad visual en toda la aplicación.
+ * Este archivo contiene componentes de auto-aplicación de estilos que están siendo
+ * reemplazados por el nuevo sistema de componentes modulares con logging centralizado.
+ * 
+ * 🔄 PLAN DE MIGRACIÓN:
+ * - StyledPageWrapper → usar AppLayout + PageContainer
+ * - StyledForm → usar FormLayout + componentes de Form modulares  
+ * - StyledList → usar UniversalList + ListLayout
+ * - StyledDashboard → usar PageContainer + StatsGrid
+ * 
+ * 📅 DEPRECADO: Agosto 2025
+ * 🗓️ ELIMINACIÓN PLANEADA: Septiembre 2025
+ * 
+ * Para migrar código existente, consulte: /docs/MIGRATION_STYLED_COMPONENTS.md
+ * Sistema de logging: Implementado con utils/logger.js y utils/apiLogger.js
  */
 
 import React from 'react';
+import { ClipboardList } from 'lucide-react';
 import { 
   PageLayout, 
   PageHeader, 
@@ -15,8 +28,13 @@ import {
   PAGE_STYLES,
   usePageState 
 } from './pageStyles';
+import { createLogger } from '../utils/logger';
+
+// Logger específico para componentes deprecados
+const deprecationLogger = createLogger('DeprecatedComponents');
 
 /**
+ * @deprecated Usar AppLayout + PageContainer en su lugar
  * Wrapper principal que aplica estilos automáticamente
  */
 export function StyledPageWrapper({ 
@@ -31,6 +49,17 @@ export function StyledPageWrapper({
   className = '',
   layout = 'sidebar' // 'sidebar', 'full', 'centered'
 }) {
+  
+  // Warning de deprecación en desarrollo con logging centralizado
+  if (process.env.NODE_ENV === 'development') {
+    deprecationLogger.warn('StyledPageWrapper está DEPRECADO', {
+      component: 'StyledPageWrapper',
+      replacement: 'AppLayout + PageContainer',
+      migrationGuide: '/docs/MIGRATION_STYLED_COMPONENTS.md',
+      deprecatedSince: 'Agosto 2025',
+      removalPlanned: 'Septiembre 2025'
+    });
+  }
   
   const layoutClasses = {
     sidebar: PAGE_STYLES.mainContent,
@@ -75,9 +104,18 @@ export function StyledPageWrapper({
 }
 
 /**
+ * @deprecated Usar AppLayout directamente
  * HOC (Higher Order Component) para aplicar estilos automáticamente
  */
 export function withStyledPage(WrappedComponent, pageConfig = {}) {
+  if (process.env.NODE_ENV === 'development') {
+    deprecationLogger.warn('withStyledPage está DEPRECADO', {
+      component: 'withStyledPage',
+      replacement: 'AppLayout directo',
+      wrappedComponent: WrappedComponent.name || 'UnknownComponent'
+    });
+  }
+  
   return function StyledComponent(props) {
     const pageState = usePageState(pageConfig.initialLoading);
     
@@ -102,9 +140,18 @@ export function withStyledPage(WrappedComponent, pageConfig = {}) {
 }
 
 /**
+ * @deprecated Usar AppLayout + PageContainer con hooks de estado
  * Hook para manejar estilos de página de forma declarativa
  */
 export function useStyledPage(config = {}) {
+  if (process.env.NODE_ENV === 'development') {
+    deprecationLogger.warn('useStyledPage está DEPRECADO', {
+      component: 'useStyledPage',
+      replacement: 'AppLayout + PageContainer',
+      migrationGuide: '/docs/MIGRATION_STYLED_COMPONENTS.md'
+    });
+  }
+  
   const pageState = usePageState(config.initialLoading);
   
   const StyledPage = ({ children, ...props }) => (
@@ -125,6 +172,7 @@ export function useStyledPage(config = {}) {
 }
 
 /**
+ * @deprecated Usar FormLayout + componentes de formulario modulares
  * Componente para formularios con estilos automáticos
  */
 export function StyledForm({ 
@@ -136,6 +184,14 @@ export function StyledForm({
   success = null,
   className = ''
 }) {
+  if (process.env.NODE_ENV === 'development') {
+    deprecationLogger.warn('StyledForm está DEPRECADO', {
+      component: 'StyledForm',
+      replacement: 'FormLayout + componentes modulares',
+      title: title || 'Sin título'
+    });
+  }
+  
   return (
     <ContentSection 
       title={title}
@@ -167,6 +223,7 @@ export function StyledForm({
 }
 
 /**
+ * @deprecated Usar UniversalList + ListLayout
  * Componente para listas con estilos automáticos
  */
 export function StyledList({ 
@@ -174,12 +231,21 @@ export function StyledList({
   items = [],
   renderItem,
   emptyMessage = "No hay elementos para mostrar",
-  emptyIcon = "📋",
+  emptyIcon = <ClipboardList className="w-12 h-12 text-gray-400" />,
   loading = false,
   error = null,
   className = '',
   gridColumns = 'default'
 }) {
+  
+  if (process.env.NODE_ENV === 'development') {
+    deprecationLogger.warn('StyledList está DEPRECADO', {
+      component: 'StyledList',
+      replacement: 'UniversalList + ListLayout',
+      itemCount: items?.length || 0,
+      title: title || 'Sin título'
+    });
+  }
   
   if (loading) {
     return (
@@ -216,6 +282,7 @@ export function StyledList({
 }
 
 /**
+ * @deprecated Usar PageContainer + StatsGrid + componentes modulares
  * Componente para dashboard con estilos automáticos
  */
 export function StyledDashboard({ 
@@ -227,12 +294,25 @@ export function StyledDashboard({
   loading = false,
   error = null 
 }) {
+  if (process.env.NODE_ENV === 'development') {
+    deprecationLogger.warn('StyledDashboard está DEPRECADO', {
+      component: 'StyledDashboard',
+      replacement: 'PageContainer + StatsGrid',
+      statsCount: Object.keys(stats).length,
+      title: title || 'Dashboard'
+    });
+  }
+  
   // Importar StatsCard si está disponible
   let StatsCard;
   try {
     StatsCard = require('../components/StatsCard').default;
   } catch (e) {
-    console.warn('StatsCard no encontrado, usando placeholder');
+    deprecationLogger.warn('StatsCard no encontrado', {
+      component: 'StatsCard',
+      action: 'using placeholder',
+      suggestion: 'Instalar o importar StatsCard correctamente'
+    });
   }
   
   return (

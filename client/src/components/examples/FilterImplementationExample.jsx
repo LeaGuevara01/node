@@ -9,6 +9,7 @@
  */
 
 import React, { useState } from 'react';
+import { Lightbulb } from 'lucide-react';
 import FilterDropdownV2 from '../FilterDropdownV2';
 
 const FilterImplementationExample = () => {
@@ -109,7 +110,10 @@ const FilterImplementationExample = () => {
 
       {/* Guía de implementación */}
       <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-        <h3 className="font-bold text-gray-800 mb-3">💡 Guía de Implementación:</h3>
+        <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <Lightbulb className="w-5 h-5 text-yellow-600" />
+          Guía de Implementación:
+        </h3>
         <div className="space-y-2 text-sm text-gray-700">
           <p><strong>1. Importar:</strong> <code className="bg-white px-1 rounded">import FilterDropdownV2 from '../FilterDropdownV2';</code></p>
           <p><strong>2. Estado:</strong> <code className="bg-white px-1 rounded">const [filters, setFilters] = useState({});</code></p>

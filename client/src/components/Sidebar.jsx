@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu, X } from 'lucide-react';
+import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu, X, Wheat } from 'lucide-react';
 import { useNavigation } from '../hooks/useNavigation';
 
 // Configuración de las secciones disponibles en el sistema
@@ -53,11 +53,12 @@ function Sidebar({ active, setActive, isMobileMenuOpen = false, setIsMobileMenuO
       } border-r-2 border-gray-700`}>
         {/* Header del sidebar con título y botón de cerrar en mobile */}
         <div className="py-4 px-6 border-b border-gray-700 bg-gray-800 flex items-center justify-between">
-          <div 
-            className="font-bold text-xl cursor-pointer hover:text-gray-300 transition-colors flex-1"
+            <div 
+            className="font-bold text-xl cursor-pointer hover:text-gray-300 transition-colors flex-1 flex items-center gap-2"
             onClick={() => { setActive(null); setIsOpen(false); }}
           >
-            🌾 Sistema Agrícola
+            <Wheat className="w-6 h-6 text-green-400" />
+            Sistema Agrícola
           </div>
           
           {/* Botón cerrar solo en mobile */}

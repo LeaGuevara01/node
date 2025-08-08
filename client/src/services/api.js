@@ -7,10 +7,19 @@
  * - Operaciones CRUD en todas las entidades
  * - Manejo consistente de headers y tokens
  * - Configuración del endpoint base
+ * - Sistema de logging centralizado y modular
  * 
  * Todas las funciones retornan el resultado parseado de la respuesta JSON
  * y manejan automáticamente los headers de autorización cuando se requiere.
  */
+
+import { 
+  logApiRequest, 
+  logApiSuccess, 
+  logApiError, 
+  formatFiltersForLog,
+  logCrudOperation 
+} from '../utils/apiLogger';
 
 // Configuración del endpoint base de la API
 // Utiliza variable de entorno o fallback a desarrollo local
@@ -71,32 +80,53 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
       // Si es un array, convertir a string separado por comas
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
-          const valorArray = filtros[key].join(',');
-          params.append(key, valorArray);
-          console.log(`🔗 Agregando filtro array ${key}:`, filtros[key], '→', valorArray);
+          params.append(key, filtros[key].join(','));
         }
       } else {
         params.append(key, filtros[key].toString());
-        console.log(`🔗 Agregando filtro simple ${key}:`, filtros[key]);
       }
     }
   });
 
-  console.log('🌐 API Request URL:', `${API_URL}/maquinaria?${params}`);
-  console.log('🔍 Filtros enviados completos:', filtros);
-
-  const res = await fetch(`${API_URL}/maquinaria?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  const data = await res.json();
+  const url = `${API_URL}/maquinaria?${params}`;
   
-  // Si es para estadísticas, retornar solo el array
-  if (forStats) {
-    return data.maquinarias || data || [];
+  // Logging con sistema centralizado
+  const startTime = logApiRequest(url, 'GET', filtros);
+  
+  // Si es un request duplicado, aún ejecutarlo pero no loggearlo como nuevo
+  if (startTime === null && process.env.NODE_ENV === 'development') {
+    // En desarrollo, cancelar requests duplicados recientes
+    throw new Error('Request duplicado cancelado');
   }
-  
-  // Para uso normal, retornar el objeto completo con paginación
-  return data;
+
+  try {
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    
+    // Log de éxito con información específica
+    logApiSuccess(url, 'GET', data, startTime, {
+      expectedField: 'maquinarias'
+    });
+    
+    // Si es para estadísticas, retornar solo el array
+    if (forStats) {
+      return data.maquinarias || data || [];
+    }
+    
+    // Para uso normal, retornar el objeto completo con paginación
+    return data;
+    
+  } catch (error) {
+    logApiError(url, 'GET', error, startTime);
+    throw error;
+  }
 }
 
 /**

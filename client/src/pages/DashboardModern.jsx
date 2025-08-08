@@ -15,6 +15,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Wheat, BarChart3, Wrench, Package } from 'lucide-react';
 import { getMaquinarias, getRepuestos, getProveedores, getReparaciones } from '../services/api';
 import MaquinariaForm from './MaquinariaForm';
 import RepuestoForm from './RepuestoForm';
@@ -164,8 +165,9 @@ function DashboardModern({ token, role, onLogout }) {
                 {/* Header del sistema */}
                 <Card variant="agricultural" padding="lg" className="text-center border-l-4 border-agricultural-crop-500">
                   <div className="space-y-2">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-                      🌾 Sistema de Gestión Agrícola
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex items-center justify-center gap-3">
+                      <Wheat className="w-8 h-8 text-green-600" />
+                      Sistema de Gestión Agrícola
                     </h1>
                     <p className="text-gray-600 text-lg max-w-2xl mx-auto">
                       Gestión integral de maquinarias, repuestos, proveedores y reparaciones
@@ -182,8 +184,9 @@ function DashboardModern({ token, role, onLogout }) {
                 
                 {/* Grid de estadísticas */}
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    📊 Resumen del Sistema
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-blue-600" />
+                    Resumen del Sistema
                     <span className="ml-2 text-sm font-normal text-gray-500">
                       (Haz click en una carta para ver detalles)
                     </span>
@@ -198,8 +201,9 @@ function DashboardModern({ token, role, onLogout }) {
                 {/* Resumen de estados */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card variant="default" padding="lg">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                      🔧 Estado de Maquinarias
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <Wrench className="w-5 h-5 text-orange-600" />
+                      Estado de Maquinarias
                     </h3>
                     <StatusSummary
                       type="maquinaria"
@@ -209,8 +213,9 @@ function DashboardModern({ token, role, onLogout }) {
                   </Card>
 
                   <Card variant="default" padding="lg">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                      📦 Estado de Stock
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <Package className="w-5 h-5 text-purple-600" />
+                      Estado de Stock
                     </h3>
                     <StatusSummary
                       type="stock"

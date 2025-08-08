@@ -6,6 +6,7 @@
  */
 
 import React, { useState } from 'react';
+import { Hand, RotateCcw, Lightbulb, Monitor } from 'lucide-react';
 import useSwipeGestures from '../hooks/useSwipeGestures';
 
 const SwipeDemo = () => {
@@ -35,8 +36,9 @@ const SwipeDemo = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-        🖐️ Demostración de Gestos Táctiles
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center flex items-center justify-center gap-2">
+        <Hand className="w-5 h-5 text-blue-600" />
+        Demostración de Gestos Táctiles
       </h3>
       
       <div
@@ -93,15 +95,19 @@ const SwipeDemo = () => {
       <div className="flex space-x-2">
         <button
           onClick={resetDemo}
-          className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+          className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center gap-1"
         >
-          🔄 Resetear
+          <RotateCcw className="w-4 h-4" />
+          Resetear
         </button>
       </div>
 
       {/* Instrucciones */}
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-        <h4 className="font-medium text-blue-900 mb-2">💡 Instrucciones:</h4>
+        <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-1">
+          <Lightbulb className="w-4 h-4 text-yellow-600" />
+          Instrucciones:
+        </h4>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• En móvil: Usa tu dedo para deslizar</li>
           <li>• En desktop: Haz click y arrastra</li>
@@ -112,11 +118,11 @@ const SwipeDemo = () => {
 
       {/* Estado del dispositivo */}
       <div className="mt-4 text-center">
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
           Dispositivo: {
             'ontouchstart' in window 
-              ? '📱 Táctil' 
-              : '🖱️ Desktop'
+              ? (<><Monitor className="w-3 h-3" /> Táctil</>) 
+              : (<><Monitor className="w-3 h-3" /> Desktop</>)
           }
         </div>
       </div>

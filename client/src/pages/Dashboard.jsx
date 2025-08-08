@@ -14,6 +14,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Wheat } from 'lucide-react';
 import { getMaquinarias, getRepuestos, getProveedores, getReparaciones } from '../services/api';
 import { useNavigation } from '../hooks/useNavigation';
 import MaquinariaForm from './MaquinariaForm';
@@ -158,8 +159,9 @@ function Dashboard({ token, role, onLogout }) {
           <div className="space-y-4">
             {/* Título de la aplicación */}
             <div className="text-center bg-white rounded-lg shadow-sm p-2 mt-3 border-l-4 border-green-600">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
-                🌾 Sistema de Gestión Agrícola
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
+                <Wheat className="w-8 h-8 text-green-600" />
+                Sistema de Gestión Agrícola
               </h1>
               <p className="text-gray-600 text-lg">
                 Gestión integral de maquinarias, repuestos, proveedores y reparaciones
