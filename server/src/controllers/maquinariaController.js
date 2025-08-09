@@ -1,3 +1,7 @@
+// Módulo: Maquinaria Controller
+// Rol: listar/CRUD, filtros avanzados, opciones de filtros
+// Notas: paginación (page/limit), orden (sortBy/sortOrder), búsqueda flexible
+
 const prisma = require('../lib/prisma');
 
 // Función para parsear rangos de año

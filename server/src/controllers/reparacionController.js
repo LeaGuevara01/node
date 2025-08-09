@@ -1,3 +1,7 @@
+// Módulo: Reparación Controller
+// Rol: listar/CRUD de reparaciones, incluye relaciones (maquinaria, usuario, repuestos)
+// Notas: filtros por fechas, usuario, maquinaria y repuesto
+
 const prisma = require('../lib/prisma');
 
 exports.getReparaciones = async (req, res) => {
@@ -9,6 +13,8 @@ exports.getReparaciones = async (req, res) => {
       repuestoId,
       fechaInicio, 
       fechaFin, 
+      fechaMin, 
+      fechaMax,
       estado,
       page = 1, 
       limit = 20 
@@ -49,13 +55,15 @@ exports.getReparaciones = async (req, res) => {
     }
 
     // Filtro por rango de fechas
-    if (fechaInicio || fechaFin) {
+    const fechaDesde = fechaInicio || fechaMin;
+    const fechaHasta = fechaFin || fechaMax;
+    if (fechaDesde || fechaHasta) {
       where.fecha = {};
-      if (fechaInicio) {
-        where.fecha.gte = new Date(fechaInicio);
+      if (fechaDesde) {
+        where.fecha.gte = new Date(fechaDesde);
       }
-      if (fechaFin) {
-        where.fecha.lte = new Date(fechaFin);
+      if (fechaHasta) {
+        where.fecha.lte = new Date(fechaHasta);
       }
     }
 
@@ -213,5 +221,37 @@ exports.deleteReparacion = async (req, res) => {
     } else {
       res.status(400).json({ error: err.message });
     }
+  }
+};
+
+// Opciones de filtros para reparaciones
+// Nota: el modelo de Reparacion no incluye campos tipo/estado/prioridad en la BD,
+// por lo que devolvemos opciones estándar y el rango de fechas real desde los datos.
+exports.getReparacionFilters = async (req, res) => {
+  try {
+    const stats = await prisma.reparacion.aggregate({
+      _min: { fecha: true },
+      _max: { fecha: true },
+      _count: { id: true }
+    });
+
+    const fechaMin = stats._min.fecha ? stats._min.fecha.toISOString().slice(0, 10) : null;
+    const fechaMax = stats._max.fecha ? stats._max.fecha.toISOString().slice(0, 10) : null;
+
+    // Opciones predefinidas comunes para mantenimiento
+    const tipos = ['Correctivo', 'Preventivo', 'Predictivo'];
+    const estados = ['Pendiente', 'En Progreso', 'Completada', 'Cancelada'];
+    const prioridades = ['Alta', 'Media', 'Baja'];
+
+    return res.json({
+      tipos,
+      estados,
+      prioridades,
+      fechaRange: { min: fechaMin, max: fechaMax },
+      totalReparaciones: stats._count.id
+    });
+  } catch (err) {
+    console.error('Error en getReparacionFilters:', err);
+    return res.status(500).json({ error: err.message });
   }
 };

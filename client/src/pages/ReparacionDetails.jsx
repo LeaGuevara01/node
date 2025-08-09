@@ -1,3 +1,8 @@
+/**
+ * Módulo: ReparacionDetails
+ * Rol: Vista de detalle con edición inline y resumen de repuestos
+ * Notas: Normaliza ids numéricos y valida fecha antes de guardar
+ */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReparacion, updateReparacion, deleteReparacion, getMaquinarias, getRepuestos } from '../services/api';

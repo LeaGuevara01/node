@@ -7,6 +7,9 @@
  * - Formateo consistente de filtros y parámetros
  * - Detección y logging de duplicados
  * - Métricas de performance
+ * 
+ * Utilidad: apiLogger
+ * Rol: logging centralizado para requests/responses y métricas de latencia
  */
 
 import { createLogger } from './logger';

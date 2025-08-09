@@ -1,5 +1,6 @@
 /**
- * Utilidades compartidas para páginas de detalles
+ * Utilidad: detailsUtils
+ * Rol: helpers de UI para páginas de detalles (iconos, upload, validaciones light)
  */
 
 /**

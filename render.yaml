@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sistemagestionagricola
+    name: sistemagestionagricola-api
     env: node
     region: oregon
     plan: starter
@@ -8,13 +8,13 @@ services:
     buildCommand: npm install && npx prisma generate && npx prisma db push
     startCommand: npm start
     healthCheckPath: /api/health
-    envVars:
+  envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 4000
       - key: CORS_ORIGIN
-        value: https://sistemagestionagricola-frontend.onrender.com
+        value: https://sistemagestionagricola.onrender.com
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
@@ -25,14 +25,14 @@ services:
         value: 1
     autoDeploy: true
   - type: web
-    name: sistemagestionagricola-frontend
+    name: sistemagestionagricola
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     rootDir: ./client
     envVars:
       - key: VITE_API_URL
-        value: https://sistemagestionagricola.onrender.com/api
+        value: https://sistemagestionagricola-api.onrender.com/api
     headers:
       - path: /*
         name: Cache-Control
@@ -40,4 +40,8 @@ services:
       - path: /assets/*
         name: Cache-Control
         value: max-age=31536000
+    redirects:
+      - source: /favicon.ico
+        destination: /favicon-elorza.ico
+        type: 200
     autoDeploy: true

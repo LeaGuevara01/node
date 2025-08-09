@@ -64,16 +64,38 @@ const AdvancedFilters = ({
           {campo.icon}
         </div>
         <select
-          value={filtrosTemporales[campo.name] || ''}
-          onChange={(e) => handleFiltroChange(campo.name, e.target.value)}
+          /*
+           * Normalizamos el value del select a string para el DOM,
+           * y convertimos de vuelta a primitivo (string|number) en onChange.
+           */
+          value={
+            filtrosTemporales[campo.name] === 0
+              ? '0'
+              : (filtrosTemporales[campo.name] ?? '') + ''
+          }
+          onChange={(e) => {
+            const raw = e.target.value;
+            const normalized = raw === ''
+              ? ''
+              : (campo.valueType === 'number' ? Number(raw) : raw);
+            handleFiltroChange(campo.name, normalized);
+          }}
           className={INPUT_STYLES.select}
         >
           <option value="" className={INPUT_STYLES.selectPlaceholder}>
             {campo.placeholder}
           </option>
-          {campo.options?.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
+          {campo.options?.map((option, idx) => {
+            const isObj = typeof option === 'object' && option !== null;
+            const value = isObj ? option.value : option;
+            const label = isObj ? (option.label ?? String(option.value)) : String(option);
+            const domValue = value === 0 ? '0' : String(value ?? '');
+            return (
+              <option key={isObj ? `${value}-${idx}` : String(option)} value={domValue}>
+                {label}
+              </option>
+            );
+          })}
         </select>
         <div className={POSITION_STYLES.iconRight}>
           <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,8 +119,16 @@ const AdvancedFilters = ({
           <div className="flex items-center gap-2">
             <input
               type={campo.inputType || "number"}
-              value={filtrosTemporales[campo.minField] || ''}
-              onChange={(e) => handleFiltroChange(campo.minField, e.target.value)}
+              value={
+                filtrosTemporales[campo.minField] === 0
+                  ? 0
+                  : (filtrosTemporales[campo.minField] ?? '')
+              }
+              onChange={(e) => {
+                const raw = e.target.value;
+                const normalized = raw === '' ? '' : Number(raw);
+                handleFiltroChange(campo.minField, normalized);
+              }}
               placeholder={campo.minPlaceholder}
               className="flex-1 border-0 p-0 text-sm placeholder-gray-500 focus:outline-none focus:ring-0"
               min={campo.min}
@@ -108,8 +138,16 @@ const AdvancedFilters = ({
             <span className="text-gray-400 text-sm">-</span>
             <input
               type={campo.inputType || "number"}
-              value={filtrosTemporales[campo.maxField] || ''}
-              onChange={(e) => handleFiltroChange(campo.maxField, e.target.value)}
+              value={
+                filtrosTemporales[campo.maxField] === 0
+                  ? 0
+                  : (filtrosTemporales[campo.maxField] ?? '')
+              }
+              onChange={(e) => {
+                const raw = e.target.value;
+                const normalized = raw === '' ? '' : Number(raw);
+                handleFiltroChange(campo.maxField, normalized);
+              }}
               placeholder={campo.maxPlaceholder}
               className="flex-1 border-0 p-0 text-sm placeholder-gray-500 focus:outline-none focus:ring-0"
               min={campo.min}
@@ -174,7 +212,7 @@ const AdvancedFilters = ({
           type="button"
           onClick={aplicarFiltrosActuales}
           className={`${BUTTON_STYLES.primary} w-full flex items-center justify-center gap-2`}
-          disabled={Object.values(filtrosTemporales).every(val => !val || val === '')}
+          disabled={Object.values(filtrosTemporales).every(val => val === '' || val === null || val === undefined)}
         >
           <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />

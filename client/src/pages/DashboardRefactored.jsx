@@ -6,6 +6,9 @@
  * - NavigationButtons para acciones estándar
  * - Contexto de navegación para manejo de rutas
  * - Componentes modulares para mejor mantenibilidad
+ * 
+ * Página: Dashboard (refactor)
+ * Rol: vista principal con navegación rápida y métricas
  */
 
 import React, { useEffect, useState } from 'react';

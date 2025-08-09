@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCompras, getComprasStats, deleteCompra } from '../services/api';
+import AppLayout from '../components/navigation/AppLayout';
 
 export default function ComprasPage({ token, role, onLogout }) {
   const navigate = useNavigate();
@@ -25,14 +26,31 @@ export default function ComprasPage({ token, role, onLogout }) {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [page]);
 
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Compras' }
+  ];
+
+  const pageActions = (
+    <>
+      {isAdmin && (
+        <button onClick={() => navigate('/compras/nueva')} className="bg-green-600 text-white px-3 py-2 rounded">Nueva compra</button>
+      )}
+    </>
+  );
+
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold">Compras</h1>
-        {isAdmin && (
-          <button onClick={() => navigate('/compras/nueva')} className="bg-green-600 text-white px-3 py-2 rounded">Nueva compra</button>
-        )}
-      </div>
+    <AppLayout
+      currentSection="compras"
+      breadcrumbs={breadcrumbs}
+      title="Gestión de Compras"
+      subtitle="Registra y revisa las compras realizadas"
+      actions={pageActions}
+      token={token}
+      role={role}
+      onLogout={onLogout}
+    >
+      <div className="p-0">
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         <select value={filtros.estado} onChange={e => setFiltros({ ...filtros, estado: e.target.value })} className="border p-2 rounded">
@@ -51,7 +69,7 @@ export default function ComprasPage({ token, role, onLogout }) {
         </div>
       )}
 
-      <div className="bg-white rounded shadow">
+  <div className="bg-white rounded shadow">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b">
@@ -88,6 +106,7 @@ export default function ComprasPage({ token, role, onLogout }) {
       </div>
 
       {loading && <div className="mt-2 text-gray-500">Cargando...</div>}
-    </div>
+      </div>
+    </AppLayout>
   );
 }

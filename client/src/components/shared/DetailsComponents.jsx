@@ -1,5 +1,7 @@
 /**
  * Componentes compartidos para páginas de detalles
+ * Rol: layout, estados y elementos reutilizables
+ * Notas: prioriza composición y accesibilidad
  */
 import React from 'react';
 import { 
@@ -15,7 +17,7 @@ import {
 } from '../../styles/detailsStyles';
 import { COMMON_ICONS } from '../../utils/detailsUtils.jsx';
 
-// Componente de header con botón de volver
+// Header con botón de volver
 export const DetailsHeader = ({ title, onBack, backTooltip = "Volver" }) => {
   return (
     <div className={`${DETAILS_CONTAINER.card} ${DETAILS_CONTAINER.cardPadding}`}>
@@ -33,7 +35,7 @@ export const DetailsHeader = ({ title, onBack, backTooltip = "Volver" }) => {
   );
 };
 
-// Componente de alertas
+// Alertas de estado
 export const DetailsAlert = ({ type = 'info', children }) => {
   return (
     <div className={DETAILS_ALERTS[type]}>
@@ -42,7 +44,7 @@ export const DetailsAlert = ({ type = 'info', children }) => {
   );
 };
 
-// Componente de carga
+// Estado de carga
 export const DetailsLoading = ({ message = "Cargando..." }) => {
   return (
     <div className={`${DETAILS_CONTAINER.main} ${DETAILS_LOADING.container}`}>
@@ -57,7 +59,7 @@ export const DetailsLoading = ({ message = "Cargando..." }) => {
   );
 };
 
-// Componente de sección de información
+// Sección con título
 export const DetailsSection = ({ title, children, className }) => {
   return (
     <div className={`${DETAILS_CONTAINER.card} ${DETAILS_CONTAINER.cardPadding} ${className || ''}`}>
@@ -67,7 +69,7 @@ export const DetailsSection = ({ title, children, className }) => {
   );
 };
 
-// Componente de campo con icono
+// Campo con icono
 export const FieldWithIcon = ({ label, value, icon, link, className = "" }) => {
   if (!value) return null;
 
@@ -92,7 +94,7 @@ export const FieldWithIcon = ({ label, value, icon, link, className = "" }) => {
   );
 };
 
-// Componente de campo simple
+// Campo simple
 export const SimpleField = ({ label, value, className = "" }) => {
   if (!value) return null;
 
@@ -106,7 +108,7 @@ export const SimpleField = ({ label, value, className = "" }) => {
   );
 };
 
-// Componente de estadística
+// Tarjeta de estadística
 export const StatCard = ({ value, label, bgColor = "bg-blue-50", textColor = "text-blue-600" }) => {
   return (
     <div className={`text-center p-4 ${bgColor} rounded-lg`}>
@@ -118,7 +120,7 @@ export const StatCard = ({ value, label, bgColor = "bg-blue-50", textColor = "te
   );
 };
 
-// Componente de botón de acción
+// Botón de acción
 export const ActionButton = ({ onClick, type = 'secondary', icon, children, className = "" }) => {
   const baseClasses = `${DETAILS_ACTIONS.button} ${DETAILS_ACTIONS[type]} ${className}`;
   
@@ -130,7 +132,7 @@ export const ActionButton = ({ onClick, type = 'secondary', icon, children, clas
   );
 };
 
-// Componente de imagen con upload
+// Imagen con upload
 export const ImageUpload = ({ 
   image, 
   alt, 

@@ -1,3 +1,7 @@
+// Módulo: Repuesto Controller
+// Rol: listar/CRUD, filtros (categoría, ubicacion, stock), estadísticas
+// Notas: respuestas con { repuestos, pagination } y endpoints auxiliares
+
 const prisma = require('../lib/prisma');
 
 // Función para parsear rangos de stock/año

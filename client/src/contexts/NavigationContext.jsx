@@ -1,8 +1,6 @@
 /**
- * NavigationProvider - Proveedor de contexto de navegación
- * 
- * Proporciona estado global de navegación y funciones de utilidad
- * para toda la aplicación
+ * Contexto de Navegación
+ * Rol: estado global y helpers de rutas
  */
 
 import React, { createContext, useContext, useState, useCallback } from 'react';

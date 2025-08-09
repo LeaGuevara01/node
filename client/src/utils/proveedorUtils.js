@@ -1,4 +1,6 @@
-// Utilidades para gestión de proveedores
+// Utilidad: proveedorUtils
+// Rol: parsing de direcciones/productos y normalizaciones
+
 // Funciones de ordenamiento, filtrado y formateo de datos
 
 /**

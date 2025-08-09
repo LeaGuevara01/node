@@ -1,3 +1,6 @@
+// Utilidad: reparacionUtils
+// Rol: helpers para transformaciones y resúmenes de reparaciones
+
 // Utilidades para gestión de reparaciones
 // Funciones de ordenamiento, filtrado y formateo de datos
 

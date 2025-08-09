@@ -1,44 +1,38 @@
-# Backend - Sistema de Gestión Agrícola
+# Backend — API REST
 
-API RESTful para gestión de taller agrícola.
+Node.js + Express + Prisma (PostgreSQL). JWT para auth.
 
-## 🚀 **Inicio Rápido**
+## Correr
 
 ```bash
-# Instalar dependencias
-npm install
-
-# Configurar .env
+npm i
 cp .env.example .env
-
-# Ejecutar en desarrollo
-npm run dev
-
-# Ejecutar en producción
-npm start
+npx prisma generate && npx prisma db push
+npm run dev   # desarrollo
+# npm start   # producción
 ```
 
-## 📚 **Endpoints Principales**
+## Endpoints
 
-- `/api/auth/register` — Registro de usuario
-- `/api/auth/login` — Login y obtención de token JWT
-- `/api/maquinaria` — Gestión de maquinaria
-- `/api/repuestos` — Gestión de repuestos
-- `/api/proveedores` — Gestión de proveedores
-- `/api/reparaciones` — Gestión de reparaciones
+- POST /api/auth/register
+- POST /api/auth/login
+- CRUD /api/maquinaria
+- CRUD /api/repuestos
+- CRUD /api/proveedores
+- CRUD /api/reparaciones
+- GET /api/health
 
-## 🔧 **Stack Tecnológico**
+Docs: /api/docs (si existe openapi.yaml)
 
-- **Node.js + Express** - Servidor web
-- **Prisma ORM** - Base de datos
-- **PostgreSQL** - Base de datos
-- **JWT + bcrypt** - Autenticación
-- **Jest + Supertest** - Testing
-- **Swagger UI** - Documentación
+## Config (.env)
 
-## 📖 **Documentación API**
+- PORT=4000
+- DATABASE_URL=...
+- JWT_SECRET=...
+- CORS_ORIGIN=http://localhost:5173
 
-- **Desarrollo**: http://localhost:4000/api/docs
-- **Producción**: https://sistemagestionagricola.onrender.com/api/docs
+## Notas
 
-Ver el README principal para más información.
+- Respuestas JSON consistentes (404/400/500).
+- Paginación simple: page, limit. Orden: sortBy, sortOrder.
+- Ver docs/SECURITY.md para prácticas recomendadas.
