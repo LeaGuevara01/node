@@ -327,7 +327,16 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
       if (['anioMin', 'anioMax', 'precioMin', 'precioMax', 'fechaMin', 'fechaMax'].includes(campo)) return;
       
       const valor = filtrosTemporales[campo];
-      if (valor && valor.trim() !== '') {
+      // Validar valor no vacío y de tipo string/number/boolean seguro
+      const isNonEmpty = (v) => {
+        if (v === null || v === undefined) return false;
+        if (typeof v === 'string') return v.trim() !== '';
+        if (typeof v === 'number') return !Number.isNaN(v);
+        if (typeof v === 'boolean') return v === true;
+        return false; // ignorar objetos/funciones
+      };
+
+      if (isNonEmpty(valor)) {
         // Para campos que permiten múltiples valores (search, codigo, nombre, contacto), 
         // solo verificar que no existe el mismo valor exacto
         let tokenExistente;

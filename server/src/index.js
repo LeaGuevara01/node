@@ -2,6 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const config = require('./config');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
@@ -46,6 +49,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(helmet());
+app.use(compression());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json());
 
 // Health check endpoint for Render
@@ -81,6 +87,7 @@ app.use('/api/repuestos', require('./routes/repuestos'));
 app.use('/api/proveedores', require('./routes/proveedores'));
 app.use('/api/reparaciones', require('./routes/reparaciones'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/compras', require('./routes/compras'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

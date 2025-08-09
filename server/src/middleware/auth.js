@@ -1,15 +1,18 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = function (req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token requerido' });
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const authHeader = req.headers['authorization'] || '';
+    const parts = authHeader.split(' ');
+    const token = parts.length === 2 && /^Bearer$/i.test(parts[0]) ? parts[1] : parts[0];
+    if (!token) return res.status(401).json({ error: 'Token requerido' });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { clockTolerance: 5 });
     req.user = decoded;
-    req.isAdmin = decoded.role === 'Admin';
-    next();
+    req.isAdmin = decoded.role === 'Admin' || decoded.role === 'ADMIN' || decoded.role === 'admin';
+    return next();
   } catch (err) {
-    res.status(403).json({ error: 'Token inválido' });
+    const code = err.name === 'TokenExpiredError' ? 401 : 403;
+    return res.status(code).json({ error: 'Token inválido o expirado' });
   }
 };

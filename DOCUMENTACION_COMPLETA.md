@@ -30,6 +30,7 @@ Sistema completo de gestión agrícola desarrollado con:
 - ✅ **Dashboard con estadísticas**
 - ✅ **Sistema de roles** (Admin/Usuario)
 - ✅ **Importación de CSV**
+- ✅ **Compras** integrales y relaciones con proveedores, repuestos, maquinaria y reparaciones
 
 ## 🏗 Arquitectura
 
@@ -169,6 +170,27 @@ GET /api/repuestos/busqueda          # Búsqueda rápida
 
 ### 📊 Dashboard con Estadísticas
 
+### 🛒 Compras (nuevo módulo)
+
+Relaciones y reglas:
+
+- Compra pertenece a un proveedor y tiene múltiples detalles.
+- Cada detalle referencia un repuesto y puede asociarse opcionalmente a maquinaria y/o reparación.
+- Al marcar una compra como RECIBIDA, el stock de los repuestos se incrementa automáticamente según cantidades recibidas.
+
+API principal:
+
+```
+GET    /api/compras           # Listar con filtros (proveedor, estado, fechas, búsqueda)
+GET    /api/compras/stats     # Estadísticas por proveedor/estado y total mensual
+GET    /api/compras/:id       # Detalle
+POST   /api/compras           # Crear (admin)
+PUT    /api/compras/:id       # Actualizar (admin)
+DELETE /api/compras/:id       # Eliminar (admin)
+```
+
+Estados: PENDIENTE | RECIBIDA | CANCELADA.
+
 - **Resumen general**: Totales de repuestos, maquinaria, etc.
 - **Gráficos visuales**: Distribución por categorías
 - **Alertas de stock**: Notificaciones de stock bajo
@@ -187,14 +209,7 @@ GET /api/repuestos/busqueda          # Búsqueda rápida
 - Información de infraestructura expuesta
 - Credenciales en texto plano
 
-**Archivos afectados**:
-
-- `deploy.ps1` (líneas 82, 83, 112)
-- `DEPLOY_FINAL.md`
-- `DEPLOYMENT_COMMANDS.md`
-- `DATABASE_CONNECTION_GUIDE.md`
-- `RENDER_DEPLOY_GUIDE.md`
-- `README.md`
+Evita exponer credenciales, hosts o URLs internas en documentación pública. Utiliza variables de entorno y ejemplos genéricos.
 
 **Solución**:
 
@@ -243,8 +258,8 @@ GET /api/repuestos/busqueda          # Búsqueda rápida
 1. **Inmediato**:
 
    - [ ] Cambiar password de base de datos
-   - [ ] Rotar JWT_SECRET
-   - [ ] Sanitizar documentación
+   - [ ] Rotar JWT_SECRET (>= 32 chars)
+   - [ ] Sanitizar documentación y eliminar URLs sensibles
 
 2. **Corto plazo**:
 
@@ -264,16 +279,23 @@ GET /api/repuestos/busqueda          # Búsqueda rápida
 ```yaml
 # render.yaml
 services:
-  - type: web
-    name: sistemagestionagricola
-    env: node
-    buildCommand: "cd server && npm install && cd ../client && npm install && npm run build"
-    startCommand: "cd server && npm start"
+   - type: web
+      name: <backend-service-name>
+      env: node
+      buildCommand: "cd server && npm ci && npx prisma generate"
+      startCommand: "cd server && npm run deploy"
+      envVars:
+         - key: DATABASE_URL
+            sync: false
+         - key: JWT_SECRET
+            sync: false
+         - key: CORS_ORIGIN
+            value: https://<your-frontend-domain>
 
-  - type: static
-    name: sistemagestionagricola-frontend
-    buildCommand: "cd client && npm install && npm run build"
-    staticPublishPath: ./client/dist
+   - type: static
+      name: <frontend-service-name>
+      buildCommand: "cd client && npm ci && npm run build"
+      staticPublishPath: ./client/dist
 ```
 
 ### Pasos de Deployment
@@ -305,9 +327,9 @@ git push origin main
 
 ### URLs de Deployment
 
-- **Backend**: https://sistemagestionagricola.onrender.com
-- **Frontend**: https://sistemagestionagricola-frontend.onrender.com
-- **API Health**: https://sistemagestionagricola.onrender.com/api/health
+- Backend: https://<backend-service-name>.onrender.com
+- Frontend: https://<frontend-service-name>.onrender.com
+- API Health: https://<backend-service-name>.onrender.com/api/health
 
 ## 📚 API Documentation
 
@@ -402,8 +424,14 @@ npx prisma generate       # Generar cliente Prisma
 npx prisma studio        # Abrir interface visual
 
 # Deployment
-./deploy.ps1         # Script de deployment
-./verify-deploy.ps1  # Verificar deployment
+./deploy.ps1         # Script de deployment (opcional)
+./verify-deploy.ps1  # Verificar deployment (opcional)
+
+### Contenerización
+
+- Backend: Dockerfile en `server/` preparado para producción.
+- Monorepo: Dockerfile raíz opcional para construir ambos servicios.
+- Recuerda configurar variables de entorno en Render.
 ```
 
 ### Backup de Base de Datos

@@ -56,12 +56,12 @@ function StatsCard({ type, title, value, onClick, clickable = true }) {
   const style = cardStyles[type];
   const IconComponent = iconMap[type];
 
-  // Determinar clases CSS según si es clickeable
+  // Determinar clases CSS según si es clickeable - Responsive optimizado
   const cardClasses = `
-    bg-white p-4 rounded-lg shadow-md border border-gray-200 
-    transition-all duration-200 group
+    bg-white p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 
+    transition-all duration-200 group min-h-[80px] sm:min-h-[90px]
     ${clickable && onClick ? 
-      'hover:shadow-xl hover:scale-105 cursor-pointer hover:border-gray-300 active:scale-100' : 
+      'hover:shadow-xl hover:scale-105 cursor-pointer hover:border-gray-300 active:scale-100 touch-manipulation' : 
       'hover:shadow-lg'
     }
   `.trim();
@@ -86,17 +86,16 @@ function StatsCard({ type, title, value, onClick, clickable = true }) {
         }
       }}
     >
-      <div className="flex items-center justify-between">
-        {/* Contenedor del icono con colores temáticos */}
-        <div className="flex items-center">
-          <div className={`p-2 rounded-full ${style.bgColor} ${style.textColor} mr-3`}>
-            <IconComponent size={20} />
+      <div className="flex items-center justify-between h-full">
+        {/* Contenedor del icono con colores temáticos - Responsive */}
+        <div className="flex items-center w-full">
+          <div className={`p-2 sm:p-2.5 rounded-full ${style.bgColor} ${style.textColor} mr-2 sm:mr-3 flex-shrink-0`}>
+            <IconComponent size={16} className="sm:w-5 sm:h-5" />
           </div>
           
-          {/* Información textual */}
-          <div>
-            <p className="text-sm font-medium text-gray-600">{title}</p>
-            <p className="text-xl font-semibold text-gray-900">{value || 0}</p>
+          {/* Información textual - Responsive */}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{title}</p>
           </div>
         </div>
       </div>

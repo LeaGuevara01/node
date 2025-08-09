@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Tractor } from 'lucide-react';
 import Papa from 'papaparse';
 import { 
   createMaquinaria, 
@@ -424,7 +425,7 @@ function MaquinariaFormModular({ token, onCreated }) {
   
   return (
     <StyledPageWrapper
-      title="🚜 Gestión de Maquinarias"
+      title="Gestión de Maquinarias"
       subtitle="Administra el inventario de maquinarias agrícolas"
       loading={pageState.loading}
       error={pageState.error}
@@ -584,7 +585,7 @@ function MaquinariaFormModular({ token, onCreated }) {
         
         {maquinarias.length === 0 && (
           <div className="text-center py-12 text-gray-500">
-            <div className="text-4xl mb-4">🚜</div>
+            <Tractor className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <p>No se encontraron maquinarias</p>
           </div>
         )}

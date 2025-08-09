@@ -17,7 +17,11 @@ import { getColorFromString } from '../utils/colorUtils';
 import { 
   BUTTON_STYLES, 
   ICON_STYLES,
-  LIST_STYLES
+  LIST_STYLES,
+  MODAL_STYLES,
+  INPUT_STYLES,
+  LAYOUT_STYLES,
+  ALERT_STYLES
 } from '../styles/repuestoStyles';
 
 function ProveedoresPage({ token, onCreated }) {
@@ -29,6 +33,12 @@ function ProveedoresPage({ token, onCreated }) {
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  
+  // Estado del formulario
+  const [form, setForm] = useState({
+    nombre: '', contacto: '', telefono: '', email: '', direccion: '', ubicacion: '', notas: ''
+  });
 
   // Hook de paginación
   const { 
@@ -175,6 +185,26 @@ function ProveedoresPage({ token, onCreated }) {
   };
 
   /**
+   * Maneja el envío del formulario de agregar proveedor
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const proveedorData = { ...form };
+      await createProveedor(proveedorData, token);
+      setForm({ nombre: '', contacto: '', telefono: '', email: '', direccion: '', ubicacion: '', notas: '' });
+      setShowAddModal(false);
+      if (onCreated) onCreated();
+      fetchProveedores(filtrosConsolidados, 1);
+      cargarOpcionesFiltros();
+      setBulkSuccess('Proveedor creado exitosamente');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  /**
    * Renderiza un elemento de proveedor
    */
   const renderProveedor = (proveedor) => (
@@ -263,7 +293,7 @@ function ProveedoresPage({ token, onCreated }) {
         subtitle="Gestiona y filtra todos los proveedores del sistema"
         entityName="Proveedor"
         entityNamePlural="Proveedores"
-        createRoute="/proveedores/formulario"
+        showNewButton={false}
         
         items={proveedores}
         loading={loading}
@@ -288,7 +318,129 @@ function ProveedoresPage({ token, onCreated }) {
         setBulkSuccess={setBulkSuccess}
         
         renderItem={renderProveedor}
+        
+        headerActions={
+          <button
+            onClick={() => setShowAddModal(true)}
+            className={BUTTON_STYLES.newItem}
+          >
+            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Nuevo Proveedor
+          </button>
+        }
       />
+
+      {/* Modal de agregar proveedor */}
+      {showAddModal && (
+        <div className={MODAL_STYLES.overlay}>
+          <div className={MODAL_STYLES.container}>
+            <div className={MODAL_STYLES.content}>
+              <div className={MODAL_STYLES.header}>
+                <h2 className={MODAL_STYLES.title}>Nuevo Proveedor</h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className={MODAL_STYLES.closeButton}
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className={MODAL_STYLES.form}>
+                <div className={LAYOUT_STYLES.gridForm}>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input
+                      type="text"
+                      value={form.nombre}
+                      onChange={(e) => setForm({...form, nombre: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Contacto</label>
+                    <input
+                      type="text"
+                      value={form.contacto}
+                      onChange={(e) => setForm({...form, contacto: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                    <input
+                      type="tel"
+                      value={form.telefono}
+                      onChange={(e) => setForm({...form, telefono: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({...form, email: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                    <input
+                      type="text"
+                      value={form.ubicacion}
+                      onChange={(e) => setForm({...form, ubicacion: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                    <input
+                      type="text"
+                      value={form.direccion}
+                      onChange={(e) => setForm({...form, direccion: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                    <textarea
+                      value={form.notas}
+                      onChange={(e) => setForm({...form, notas: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <div className={ALERT_STYLES.errorModal}>
+                    {error}
+                  </div>
+                )}
+
+                <div className={MODAL_STYLES.buttonGroup}>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className={BUTTON_STYLES.secondary}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className={BUTTON_STYLES.primary}
+                  >
+                    Crear Proveedor
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de edición */}
       {selectedProveedor && (

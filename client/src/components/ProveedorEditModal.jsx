@@ -7,7 +7,6 @@ import {
   ALERT_STYLES,
   MODAL_STYLES
 } from '../styles/repuestoStyles';
-import { DETAILS_CONTAINER } from '../styles/detailsStyles';
 
 function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
   // Validación de props
@@ -17,12 +16,12 @@ function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
 
   const initialForm = {
     nombre: proveedor.nombre ?? '',
-    cuit: proveedor.cuit ?? '',
+    contacto: proveedor.contacto ?? '',
     telefono: proveedor.telefono ?? '',
     email: proveedor.email ?? '',
     direccion: proveedor.direccion ?? '',
-    web: proveedor.web ?? '',
-    productos: Array.isArray(proveedor.productos) ? proveedor.productos.join(', ') : (proveedor.productos ?? ''),
+    ubicacion: proveedor.ubicacion ?? '',
+    notas: proveedor.notas ?? '',
     id: proveedor.id
   };
   
@@ -30,8 +29,12 @@ function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -40,10 +43,7 @@ function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
     setLoading(true);
     
     try {
-      const updateData = {
-        ...form,
-        productos: form.productos.split(',').map(p => p.trim()).filter(p => p)
-      };
+      const updateData = { ...form };
       await onUpdate(proveedor.id, updateData);
       onClose();
     } catch (err) {
@@ -56,14 +56,12 @@ function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
 
   const handleDelete = async () => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este proveedor?')) {
-      setLoading(true);
       try {
         await onDelete(proveedor.id);
         onClose();
       } catch (err) {
         console.error('Error deleting proveedor:', err);
         setError(err.message || 'Error al eliminar el proveedor');
-        setLoading(false);
       }
     }
   };
@@ -80,91 +78,103 @@ function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
               onClick={onClose}
               className={MODAL_STYLES.closeButton}
             >
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              ×
             </button>
           </div>
 
           {/* Formulario */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className={MODAL_STYLES.form}>
             <div className={LAYOUT_STYLES.gridForm}>
               <div>
-                <label className={INPUT_STYLES.label}>Nombre *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                 <input 
+                  type="text"
                   name="nombre" 
                   value={form.nombre} 
                   onChange={handleChange} 
-                  placeholder="Nombre del proveedor" 
-                  className={INPUT_STYLES.input} 
+                  className={INPUT_STYLES.base}
                   required 
                 />
               </div>
 
               <div>
-                <label className={INPUT_STYLES.label}>CUIT</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contacto</label>
                 <input 
-                  name="cuit" 
-                  value={form.cuit || ''} 
+                  type="text"
+                  name="contacto" 
+                  value={form.contacto} 
                   onChange={handleChange} 
-                  placeholder="20-12345678-9" 
-                  className={INPUT_STYLES.input} 
+                  className={INPUT_STYLES.base}
                 />
               </div>
 
               <div>
-                <label className={INPUT_STYLES.label}>Teléfono</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
                 <input 
+                  type="tel"
                   name="telefono" 
-                  value={form.telefono || ''} 
+                  value={form.telefono} 
                   onChange={handleChange} 
-                  placeholder="+54 9 11 1234-5678" 
-                  className={INPUT_STYLES.input} 
+                  className={INPUT_STYLES.base}
                 />
               </div>
 
               <div>
-                <label className={INPUT_STYLES.label}>Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input 
+                  type="email"
                   name="email" 
-                  value={form.email || ''} 
+                  value={form.email} 
                   onChange={handleChange} 
-                  placeholder="contacto@proveedor.com" 
-                  className={INPUT_STYLES.input} 
-                  type="email" 
+                  className={INPUT_STYLES.base}
                 />
               </div>
 
-              <div className="sm:col-span-2">
-                <label className={INPUT_STYLES.label}>Dirección</label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
                 <input 
-                  name="direccion" 
-                  value={form.direccion || ''} 
+                  type="text"
+                  name="ubicacion" 
+                  value={form.ubicacion} 
                   onChange={handleChange} 
-                  placeholder="Calle 123, Ciudad, Provincia" 
-                  className={INPUT_STYLES.input} 
+                  className={INPUT_STYLES.base}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                <input 
+                  type="text"
+                  name="direccion" 
+                  value={form.direccion} 
+                  onChange={handleChange} 
+                  className={INPUT_STYLES.base}
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className={INPUT_STYLES.label}>Productos (separados por comas)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
                 <textarea 
-                  name="productos" 
-                  value={form.productos || ''} 
+                  name="notas" 
+                  value={form.notas} 
                   onChange={handleChange} 
-                  placeholder="Ejemplo: Filtros, Aceites, Repuestos hidráulicos, Neumáticos" 
-                  className={INPUT_STYLES.input}
+                  className={INPUT_STYLES.base}
                   rows={3}
                 />
               </div>
             </div>
 
-            {/* Botones de Acción */}
+            {error && (
+              <div className={ALERT_STYLES.errorModal}>
+                {error}
+              </div>
+            )}
+
             <div className={MODAL_STYLES.buttonGroup}>
               <button 
                 type="button" 
                 onClick={handleDelete} 
-                className={`${BUTTON_STYLES.danger}`}
+                className={BUTTON_STYLES.danger}
               >
                 <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -172,24 +182,31 @@ function ProveedorEditModal({ proveedor, onClose, onUpdate, onDelete, token }) {
                 Eliminar
               </button>
               
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button 
-                  type="button" 
-                  onClick={onClose} 
-                  className={BUTTON_STYLES.secondary}
-                >
-                  Cancelar
-                </button>
-                <button 
-                  type="submit" 
-                  className={BUTTON_STYLES.primary}
-                >
-                  <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Guardar Cambios
-                </button>
-              </div>
+              <button 
+                type="button" 
+                onClick={onClose} 
+                className={BUTTON_STYLES.secondary}
+              >
+                Cancelar
+              </button>
+              
+              <button 
+                type="submit" 
+                disabled={loading}
+                className={BUTTON_STYLES.primary}
+              >
+                {loading ? (
+                  <>
+                    <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                      <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                    </svg>
+                    Guardando...
+                  </>
+                ) : (
+                  'Guardar Cambios'
+                )}
+              </button>
             </div>
           </form>
         </div>

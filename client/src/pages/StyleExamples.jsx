@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { ClipboardList } from 'lucide-react';
 import {
   StyledPageWrapper,
   withStyledPage,
@@ -206,7 +207,7 @@ function AutoStyledListExample() {
         loading={loading}
         error={error}
         emptyMessage="No hay elementos disponibles"
-        emptyIcon="📋"
+        emptyIcon={<ClipboardList className="w-12 h-12 text-gray-400" />}
       />
     </PageLayout>
   );
