@@ -26,8 +26,9 @@ import {
   LAYOUT_STYLES,
   ALERT_STYLES
 } from '../styles/repuestoStyles';
+import AppLayout from '../components/navigation/AppLayout';
 
-function RepuestosPage({ token, onCreated }) {
+function RepuestosPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
   
   // Estados principales
@@ -297,8 +298,35 @@ function RepuestosPage({ token, onCreated }) {
     cargarOpcionesFiltros();
   }, []);
 
+  // Breadcrumbs y acciones para el encabezado
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Repuestos' }
+  ];
+
+  const pageActions = (
+    <button
+      onClick={() => setShowAddModal(true)}
+      className={BUTTON_STYLES.newItem}
+    >
+      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      </svg>
+      Nuevo Repuesto
+    </button>
+  );
+
   return (
-    <>
+    <AppLayout
+      currentSection="repuestos"
+      breadcrumbs={breadcrumbs}
+      title="Gestión de Repuestos"
+      subtitle="Administra el inventario de repuestos"
+      actions={pageActions}
+      token={token}
+      role={role}
+      onLogout={onLogout}
+    >
       <BaseListPage
         title="Listado de Repuestos"
         subtitle="Gestiona y filtra todos los repuestos del inventario"
@@ -330,17 +358,7 @@ function RepuestosPage({ token, onCreated }) {
         
         renderItem={renderRepuesto}
         
-        headerActions={
-          <button
-            onClick={() => setShowAddModal(true)}
-            className={BUTTON_STYLES.newItem}
-          >
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Nuevo Repuesto
-          </button>
-        }
+  headerActions={pageActions}
       />
 
       {/* Modal de agregar repuesto */}
@@ -475,7 +493,7 @@ function RepuestosPage({ token, onCreated }) {
           token={token}
         />
       )}
-    </>
+  </AppLayout>
   );
 }
 

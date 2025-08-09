@@ -19,8 +19,9 @@ import {
   ICON_STYLES,
   LIST_STYLES
 } from '../styles/repuestoStyles';
+import AppLayout from '../components/navigation/AppLayout';
 
-function UsuariosPage({ token, onCreated }) {
+function UsuariosPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
   
   // Estados principales
@@ -269,8 +270,21 @@ function UsuariosPage({ token, onCreated }) {
     cargarOpcionesFiltros();
   }, []);
 
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Usuarios' }
+  ];
+
   return (
-    <>
+    <AppLayout
+      currentSection="usuarios"
+      breadcrumbs={breadcrumbs}
+      title="Gestión de Usuarios"
+      subtitle="Administra roles y accesos"
+      token={token}
+      role={role}
+      onLogout={onLogout}
+    >
       <BaseListPage
         title="Listado de Usuarios"
         subtitle="Gestiona y filtra todos los usuarios del sistema"
@@ -313,7 +327,7 @@ function UsuariosPage({ token, onCreated }) {
           token={token}
         />
       )}
-    </>
+  </AppLayout>
   );
 }
 

@@ -73,8 +73,8 @@ const urlConfig = {
  * Configuración de servicios de Render
  */
 const renderConfig = {
-  backendServiceName: getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola', false),
-  frontendServiceName: getEnvVar('RENDER_FRONTEND_SERVICE_NAME', 'sistemagestionagricola-frontend', false),
+  backendServiceName: getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola-api', false),
+  frontendServiceName: getEnvVar('RENDER_FRONTEND_SERVICE_NAME', 'sistemagestionagricola', false),
   
   // Genera URLs automáticamente basado en nombres de servicios
   getBackendUrl() {

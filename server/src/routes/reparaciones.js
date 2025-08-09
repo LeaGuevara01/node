@@ -6,9 +6,10 @@ const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 const auth = require('../middleware/auth');
-const { getReparaciones, getReparacion, createReparacion, updateReparacion, deleteReparacion } = require('../controllers/reparacionController');
+const { getReparaciones, getReparacion, createReparacion, updateReparacion, deleteReparacion, getReparacionFilters } = require('../controllers/reparacionController');
 
 router.get('/', auth, getReparaciones);
+router.get('/filtros', auth, getReparacionFilters);
 router.get('/:id', auth, getReparacion);
 
 router.post('/', auth, (req, res, next) => {

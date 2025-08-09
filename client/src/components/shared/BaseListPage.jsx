@@ -210,7 +210,7 @@ const BaseListPage = ({
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {entityNamePlural} ({paginacion?.totalItems || 0})
+                  {entityNamePlural} ({paginacion?.totalItems ?? (Array.isArray(items) ? items.length : 0)})
                 </h3>
               </div>
               {loading && (
@@ -232,7 +232,7 @@ const BaseListPage = ({
                 {loading ? 'Cargando...' : `No hay ${entityNamePlural.toLowerCase()} que coincidan con los filtros aplicados`}
               </div>
             ) : (
-              items?.map((item) => (
+              (Array.isArray(items) ? items : []).map((item) => (
                 <div key={item.id} className={LIST_STYLES.item}>
                   <div className={`${LIST_STYLES.itemContent} list-item-content`}>
                     <div className="flex-1">

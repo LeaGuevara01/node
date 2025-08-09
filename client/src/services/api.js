@@ -474,14 +474,27 @@ export async function getReparaciones(token, filtros = {}, pagina = 1, forStats 
   const res = await fetch(`${API_URL}/reparaciones?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.json()).error || res.statusText; } catch {}
+    throw new Error(`Error ${res.status}: ${detail}`);
+  }
   const data = await res.json();
 
   // Si es para estadísticas, retornar solo el array
   if (forStats) {
-    return data.reparaciones || data || [];
+    // El backend actual responde { data: [...], pagination: {...} }
+    return data.reparaciones || data.data || data || [];
   }
 
   // Para uso normal, retornar el objeto completo con paginación
+  // Normalizar para que las páginas puedan manejar ambos formatos
+  if (Array.isArray(data)) {
+    return { reparaciones: data, pagination: { current: Number(pagina) || 1, total: 1, totalItems: data.length, limit: Number(params.get('limit')) || 20 } };
+  }
+  if (data && (data.data || data.reparaciones)) {
+    return { reparaciones: data.reparaciones || data.data, pagination: data.pagination };
+  }
   return data;
 }
 
@@ -547,6 +560,11 @@ export async function getReparacionFilters(token) {
   const res = await fetch(`${API_URL}/reparaciones/filtros`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.json()).error || res.statusText; } catch {}
+    throw new Error(`Error ${res.status}: ${detail}`);
+  }
   return res.json();
 }
 

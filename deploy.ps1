@@ -112,8 +112,8 @@ Write-Host "   - Agregar variable: DATABASE_URL"
 Write-Host "   - Valor: postgresql://[usuario]:[password]@[host]:[puerto]/[database]"
 Write-Host ""
 Write-Host "4. URLs de deployment:" -ForegroundColor Yellow
-Write-Host "   - API: https://sistemagestionagricola.onrender.com"
-Write-Host "   - Frontend: https://sistemagestionagricola-frontend.onrender.com"
-Write-Host "   - Health Check: https://sistemagestionagricola.onrender.com/api/health"
+Write-Host "   - API: https://sistemagestionagricola-api.onrender.com"
+Write-Host "   - Frontend: https://sistemagestionagricola.onrender.com"
+Write-Host "   - Health Check: https://sistemagestionagricola-api.onrender.com/api/health"
 Write-Host ""
 Write-Host "Deployment preparado correctamente!" -ForegroundColor Green

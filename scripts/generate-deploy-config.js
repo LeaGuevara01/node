@@ -25,8 +25,8 @@ function getEnvVar(name, defaultValue = null, required = true) {
  * Template para render.yaml con variables dinámicas
  */
 function generateRenderYaml() {
-  const backendService = getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola', false);
-  const frontendService = getEnvVar('RENDER_FRONTEND_SERVICE_NAME', 'sistemagestionagricola-frontend', false);
+  const backendService = getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola-api', false);
+  const frontendService = getEnvVar('RENDER_FRONTEND_SERVICE_NAME', 'sistemagestionagricola', false);
   const jwtSecret = getEnvVar('JWT_SECRET');
   const databaseUrl = getEnvVar('DATABASE_URL');
   
@@ -90,7 +90,7 @@ function generateRenderYaml() {
  * Template para .env.production del cliente
  */
 function generateClientEnvProduction() {
-  const backendService = getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola', false);
+  const backendService = getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola-api', false);
   
   const template = `# Variables de entorno para PRODUCCION
 # Este archivo se genera automáticamente - NO editar manualmente
