@@ -1,4 +1,8 @@
 /**
+ * App (SPA root)
+ * Rol: router + gate de autenticación
+ * Notas: token JWT en estado local; NavigationProvider para navegación avanzada
+ * 
  * ACTUALIZADO PARA USAR NAVEGACIÓN REFACTORIZADA
  * Fecha: 2025-08-07T04:19:54.386Z
  * 

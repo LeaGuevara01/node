@@ -36,7 +36,12 @@ const serverConfig = {
   
   // CORS - Soporta múltiples orígenes separados por comas
   CORS_ORIGIN: (() => {
-    const corsEnv = getEnvVar('CORS_ORIGIN', 'http://localhost:5173,http://localhost:3000', false);
+    // Incluir también 127.0.0.1 por compatibilidad con algunos entornos locales
+    const corsEnv = getEnvVar(
+      'CORS_ORIGIN',
+      'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000',
+      false
+    );
     if (corsEnv.includes(',')) {
       return corsEnv.split(',').map(origin => origin.trim());
     }

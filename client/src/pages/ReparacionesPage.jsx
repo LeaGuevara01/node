@@ -1,4 +1,7 @@
 // client/src/pages/ReparacionesPage.jsx
+// Página: Reparaciones
+// Rol: listado con filtros por fechas/entidades y acceso a detalles
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 

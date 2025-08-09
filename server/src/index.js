@@ -1,3 +1,7 @@
+// Módulo: Servidor Express
+// Rol: bootstrap de API, middlewares, rutas y documentación
+// Notas: carga Swagger si existe, healthcheck para Render, CORS desde config
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -20,6 +24,7 @@ try {
 }
 
 // CORS configuration using centralized config
+// Intención: aceptar una lista, CSV o string única desde CORS_ORIGIN
 const getCorsOrigins = () => {
   const corsOrigin = config.CORS_ORIGIN;
   
@@ -38,23 +43,27 @@ const getCorsOrigins = () => {
     return corsOrigin;
   }
   
-  // Fallback a valores por defecto
+  // Fallback a valores por defecto (dev)
   return ['http://localhost:5173', 'http://localhost:3000'];
 };
 
 const corsOptions = {
   origin: getCorsOrigins(),
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions));
+// Responder a preflight requests a nivel global
+app.options('*', cors(corsOptions));
 app.use(helmet());
 app.use(compression());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json());
 
-// Health check endpoint for Render
+// Health check endpoint para uptime y monitoreo
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'healthy', 
@@ -89,7 +98,7 @@ app.use('/api/reparaciones', require('./routes/reparaciones'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/compras', require('./routes/compras'));
 
-// Error handling middleware
+// Error handling middleware (respuesta consistente)
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });

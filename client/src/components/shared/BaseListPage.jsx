@@ -70,28 +70,18 @@ const BaseListPage = ({
   const navigate = useNavigate();
 
   /**
-   * Maneja la carga masiva de CSV
+   * Maneja la carga masiva de archivo (se envía el File al handler)
    */
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     setBulkError && setBulkError('');
     setBulkSuccess && setBulkSuccess('');
-    
-    Papa.parse(file, {
-      header: true,
-      complete: async (results) => {
-        if (onFileUpload) {
-          try {
-            await onFileUpload(results.data);
-          } catch (err) {
-            setBulkError && setBulkError('Error al procesar CSV: ' + err.message);
-          }
-        }
-      },
-      error: (err) => setBulkError && setBulkError('Error al procesar CSV: ' + err.message),
-    });
+
+    if (onFileUpload) {
+      onFileUpload(file);
+    }
   };
 
   /**
@@ -153,7 +143,7 @@ const BaseListPage = ({
                   <span className="sr-only">Cargar CSV</span>
                   <input 
                     type="file" 
-                    accept=".csv" 
+                    accept=".csv,.xlsx,.xls" 
                     onChange={handleFileUpload}
                     className="hidden"
                     id={`csv-upload-${entityName}`}

@@ -1,3 +1,5 @@
+// Servicio API (client): llamadas HTTP unificadas, manejo de token y errores
+
 /**
  * Servicio API para la comunicación con el backend
  * 
@@ -94,10 +96,9 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
   const startTime = logApiRequest(url, 'GET', filtros);
   
   // Si es un request duplicado, aún ejecutarlo pero no loggearlo como nuevo
-  if (startTime === null && process.env.NODE_ENV === 'development') {
-    // En desarrollo, cancelar requests duplicados recientes
-    throw new Error('Request duplicado cancelado');
-  }
+  // Nota: En desarrollo (StrictMode) los efectos pueden ejecutarse dos veces.
+  // Si detectamos duplicado (startTime === null), simplemente continuamos
+  // con el fetch para no romper el flujo de la UI.
 
   try {
     const res = await fetch(url, {

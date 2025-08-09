@@ -206,7 +206,7 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
     let cambiosRealizados = false;
     
     // Manejar rango de años como un solo token si hay valores
-    if (filtrosTemporales.anioMin || filtrosTemporales.anioMax) {
+    if (filtrosTemporales.anioMin !== '' || filtrosTemporales.anioMax !== '') {
       const { anioMin, anioMax } = filtrosTemporales;
       
       const rangoExiste = nuevosTokens.some(t => 
@@ -219,13 +219,15 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
         let valor = '';
         let label = '';
         
-        if (anioMin && anioMax) {
+        const hasMin = anioMin !== '' && anioMin !== null && anioMin !== undefined;
+        const hasMax = anioMax !== '' && anioMax !== null && anioMax !== undefined;
+        if (hasMin && hasMax) {
           valor = `${anioMin}-${anioMax}`;
           label = `Años: ${anioMin} - ${anioMax}`;
-        } else if (anioMin) {
+        } else if (hasMin) {
           valor = `${anioMin}+`;
           label = `Año mín: ${anioMin}`;
-        } else if (anioMax) {
+        } else if (hasMax) {
           valor = `-${anioMax}`;
           label = `Año máx: ${anioMax}`;
         }
@@ -244,7 +246,7 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
     }
     
     // Manejar rango de precios como un solo token si hay valores
-    if (filtrosTemporales.precioMin || filtrosTemporales.precioMax) {
+    if (filtrosTemporales.precioMin !== '' || filtrosTemporales.precioMax !== '') {
       const { precioMin, precioMax } = filtrosTemporales;
       
       const rangoExiste = nuevosTokens.some(t => 
@@ -258,13 +260,15 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
         let valor = '';
         let label = '';
         
-        if (precioMin && precioMax) {
+        const hasMin = precioMin !== '' && precioMin !== null && precioMin !== undefined;
+        const hasMax = precioMax !== '' && precioMax !== null && precioMax !== undefined;
+        if (hasMin && hasMax) {
           valor = `${precioMin}-${precioMax}`;
           label = `Precios: $${precioMin} - $${precioMax}`;
-        } else if (precioMin) {
+        } else if (hasMin) {
           valor = `${precioMin}+`;
           label = `Precio mín: $${precioMin}`;
-        } else if (precioMax) {
+        } else if (hasMax) {
           valor = `-${precioMax}`;
           label = `Precio máx: $${precioMax}`;
         }
@@ -283,7 +287,7 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
     }
     
     // Manejar rango de fechas como un solo token si hay valores
-    if (filtrosTemporales.fechaMin || filtrosTemporales.fechaMax) {
+    if (filtrosTemporales.fechaMin !== '' || filtrosTemporales.fechaMax !== '') {
       const { fechaMin, fechaMax } = filtrosTemporales;
       
       const rangoExiste = nuevosTokens.some(t => 
@@ -297,13 +301,15 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
         let valor = '';
         let label = '';
         
-        if (fechaMin && fechaMax) {
+        const hasMin = !!fechaMin;
+        const hasMax = !!fechaMax;
+        if (hasMin && hasMax) {
           valor = `${fechaMin}_${fechaMax}`;
           label = `Fechas: ${fechaMin} - ${fechaMax}`;
-        } else if (fechaMin) {
+        } else if (hasMin) {
           valor = `${fechaMin}+`;
           label = `Fecha desde: ${fechaMin}`;
-        } else if (fechaMax) {
+        } else if (hasMax) {
           valor = `-${fechaMax}`;
           label = `Fecha hasta: ${fechaMax}`;
         }
@@ -322,7 +328,7 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
     }
     
     // Procesar otros filtros temporales no vacíos
-    Object.keys(filtrosTemporales).forEach(campo => {
+  Object.keys(filtrosTemporales).forEach(campo => {
       // Skip campos de rango ya que los manejamos arriba
       if (['anioMin', 'anioMax', 'precioMin', 'precioMax', 'fechaMin', 'fechaMax'].includes(campo)) return;
       
@@ -331,7 +337,7 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
       const isNonEmpty = (v) => {
         if (v === null || v === undefined) return false;
         if (typeof v === 'string') return v.trim() !== '';
-        if (typeof v === 'number') return !Number.isNaN(v);
+    if (typeof v === 'number') return !Number.isNaN(v);
         if (typeof v === 'boolean') return v === true;
         return false; // ignorar objetos/funciones
       };
@@ -348,11 +354,15 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
         }
         
         if (!tokenExistente) {
+          // Normalizar valor a primitivo
+          const normalizedValue = typeof valor === 'string' || typeof valor === 'number' || typeof valor === 'boolean'
+            ? valor
+            : String(valor);
           const nuevoToken = {
-            id: generarTokenId(campo, valor),
+            id: generarTokenId(campo, normalizedValue),
             tipo: campo,
-            valor,
-            label: generarLabelToken(campo, valor),
+            valor: normalizedValue,
+            label: generarLabelToken(campo, normalizedValue),
             icon: obtenerIconoFiltro(campo)
           };
           nuevosTokens.push(nuevoToken);

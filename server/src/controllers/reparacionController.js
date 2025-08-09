@@ -1,3 +1,7 @@
+// Módulo: Reparación Controller
+// Rol: listar/CRUD de reparaciones, incluye relaciones (maquinaria, usuario, repuestos)
+// Notas: filtros por fechas, usuario, maquinaria y repuesto
+
 const prisma = require('../lib/prisma');
 
 exports.getReparaciones = async (req, res) => {

@@ -1,3 +1,8 @@
+/**
+ * Módulo: RepuestoDetails
+ * Rol: Vista de detalle y gestión de foto de un repuesto
+ * Notas: Usa detailsStyles y helpers de UI; futura API real para upload
+ */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getRepuestoById, updateRepuesto } from '../services/api';

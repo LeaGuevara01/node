@@ -1,8 +1,14 @@
+/**
+ * Módulo: UserRegisterForm
+ * Rol: Alta y edición de usuarios + carga masiva simple desde CSV (client-side)
+ * Notas: Usa utils/csvUtils para evitar duplicar lógica de parseo y reporte
+ */
+
 import React, { useState, useEffect } from 'react';
-import Papa from 'papaparse';
 import { register } from '../services/api';
 import { getUsers, updateUser, deleteUser } from '../services/users';
 import UserEditModal from '../components/UserEditModal';
+import { processCSVFile } from '../utils/csvUtils';
 
 function UserRegisterForm({ token, onRegistered }) {
   const [form, setForm] = useState({ username: '', password: '', role: 'User' });
@@ -105,49 +111,31 @@ function UserRegisterForm({ token, onRegistered }) {
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Carga Masiva desde CSV</h2>
-        <input type="file" accept=".csv" onChange={async (e) => {
-          setBulkError('');
-          setBulkSuccess('');
-          const file = e.target.files[0];
-          if (!file) return;
-          Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: async (results) => {
-              const rows = results.data;
-              let successCount = 0;
-              let failCount = 0;
-              let failDetails = [];
-              for (const row of rows) {
-                try {
-                  const username = (row.username || '').trim();
-                  const password = (row.password || '').trim();
-                  const role = (row.role || 'User').trim();
-                  if (!username || !password) {
-                    failCount++;
-                    failDetails.push(`Fila: ${JSON.stringify(row)} - Motivo: usuario o contraseña vacío`);
-                    continue;
-                  }
-                  const res = await register(username, password, role);
-                  if (res.id) {
-                    successCount++;
-                  } else {
-                    failCount++;
-                    failDetails.push(`Usuario: ${username} - Motivo: ${res.error || 'Error desconocido'}`);
-                  }
-                } catch (err) {
-                  failCount++;
-                  failDetails.push(`Usuario: ${row.username} - Motivo: ${err.message || 'Error de conexión'}`);
-                }
-              }
-              setBulkSuccess(`Creados: ${successCount}`);
-              setBulkError(failCount ? `Fallidos: ${failCount}\n${failDetails.join('\n')}` : '');
-              if (onRegistered && successCount) onRegistered();
-              fetchUsers(); // Actualizar la lista después de carga masiva
-            },
-            error: (err) => setBulkError('Error al procesar CSV'),
-          });
-        }} className="mb-2" />
+        <input
+          type="file"
+          accept=".csv,.xlsx,.xls"
+          onChange={async (e) => {
+            setBulkError('');
+            setBulkSuccess('');
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+              const form = new FormData();
+              form.append('file', file);
+              const url = `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/users/bulk`;
+              const res = await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data?.error || 'Error en importación');
+              setBulkSuccess(`Importación recibida (${data.filename || file.name}). Registros procesados: ${data.count}`);
+            } catch (err) {
+              setBulkError(err.message || 'Error al importar usuarios');
+            } finally {
+              fetchUsers();
+            }
+          }}
+          className="mb-2"
+        />
         {bulkSuccess && <div className="text-green-600 mt-2">{bulkSuccess}</div>}
         {bulkError && <pre className="text-red-500 mt-2 whitespace-pre-wrap">{bulkError}</pre>}
         <div className="text-xs text-gray-500 mt-2">Formato: username, password, role</div>

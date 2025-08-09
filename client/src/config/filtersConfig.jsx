@@ -116,7 +116,9 @@ export const MAQUINARIA_FILTERS_CONFIG = (opcionesFiltros) => [
     minPlaceholder: 'Año mínimo',
     maxPlaceholder: 'Año máximo',
     min: opcionesFiltros.anioRange?.min || 1900,
-    max: opcionesFiltros.anioRange?.max || new Date().getFullYear(),
+  max: opcionesFiltros.anioRange?.max || new Date().getFullYear(),
+  // Indica que los valores del rango son numéricos
+  valueType: 'number',
     span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   }
 ];

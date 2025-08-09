@@ -10,6 +10,9 @@
  * - Prevención de llamadas API duplicadas
  */
 
+// Página: Maquinarias (refactor)
+// Rol: listado con filtros avanzados y navegación a detalles/formulario
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, MapPin, Tag } from 'lucide-react';
 import { createMaquinaria, getMaquinarias, getMaquinariaFilters, updateMaquinaria, deleteMaquinaria } from '../services/api';
@@ -213,7 +216,7 @@ function MaquinariasPage({ token, role, onLogout }) {
     try {
       logger.data('🗂️ Iniciando importación masiva', { fileName: file.name, size: file.size });
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/maquinarias/bulk`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/maquinaria/bulk`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

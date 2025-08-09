@@ -1,3 +1,6 @@
+// Página: Repuestos
+// Rol: listado con filtros, CRUD y navegación a detalles
+
 // client/src/pages/RepuestosPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

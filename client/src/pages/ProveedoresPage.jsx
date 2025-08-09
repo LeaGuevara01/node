@@ -1,3 +1,6 @@
+// Página: Proveedores
+// Rol: listado con filtros y acceso a detalles/edición
+
 // client/src/pages/ProveedoresPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

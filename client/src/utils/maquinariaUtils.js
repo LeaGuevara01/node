@@ -1,5 +1,7 @@
 /**
  * Utilidades específicas para manejo de maquinarias
+ * Utilidad: maquinariaUtils
+ * Rol: helpers específicos de maquinaria (formatos, mapeos)
  */
 
 /**

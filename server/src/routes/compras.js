@@ -1,3 +1,6 @@
+// Rutas: Compras
+// GET / (lista), GET /stats, GET /:id, POST/PUT/DELETE (admin)
+
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');

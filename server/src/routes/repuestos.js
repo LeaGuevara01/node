@@ -1,3 +1,6 @@
+// Rutas: Repuestos
+// GET / (lista+filtros), GET /filtros, GET /estadisticas, GET /busqueda, CRUD por id
+
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
