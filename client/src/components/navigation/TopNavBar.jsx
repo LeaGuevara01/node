@@ -16,9 +16,9 @@
  * @param {boolean} showSearch - Mostrar barra de búsqueda
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, User, LogOut, Bell, Settings as SettingsIcon } from 'lucide-react';
+import { Search, User, LogOut, Bell, Settings as SettingsIcon, Edit3, Trash2 } from 'lucide-react';
 import BusquedaRapida from '../BusquedaRapida';
 
 const TopNavBar = ({ 
@@ -28,16 +28,32 @@ const TopNavBar = ({
   token,
   role,
   onLogout,
-  showSearch = true 
+  showSearch = true,
+  // Nuevo: variante para páginas de detalles y metadatos a mostrar en desktop grande
+  isDetails = false,
+  detailsInfo = null, // { categoria: '...' , ...}
+  onEdit = null,
+  onDelete = null,
+  // Nuevo: colapsar notificaciones y usuario en pantallas medianas
+  collapseUserOnMd = false
 }) => {
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
 
   const handleLogout = () => {
-    onLogout();
+    if (onLogout) {
+      onLogout();
+    }
     navigate('/');
   };
+
+  // Permitir abrir búsqueda desde encabezado móvil (evento global)
+  useEffect(() => {
+    const handler = () => setShowSearchModal(true);
+    window.addEventListener('open-global-search', handler);
+    return () => window.removeEventListener('open-global-search', handler);
+  }, []);
 
   return (
     <>
@@ -57,12 +73,24 @@ const TopNavBar = ({
                       {subtitle}
                     </p>
                   )}
+                  {/* Meta de detalles: visible en pantallas grandes (lg+) */}
+                  {isDetails && detailsInfo && (
+                    <div className="hidden lg:flex items-center gap-4 mt-2 text-sm text-gray-700">
+                      {detailsInfo.categoria && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-gray-500">Categoría:</span>
+                          <span className="font-medium">{detailsInfo.categoria}</span>
+                        </div>
+                      )}
+                      {/* Se pueden agregar más metadatos aquí si llegan por props */}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Área central - Búsqueda y acciones - Responsive */}
-            <div className="flex items-center space-x-1 sm:space-x-4">
+            <div className="flex items-center space-x-1 sm:space-x-3">
               {/* Búsqueda rápida - Ocultar en móvil si hay acciones */}
               {showSearch && (
                 <button
@@ -70,11 +98,37 @@ const TopNavBar = ({
                   className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   title="Búsqueda rápida (Ctrl+K)"
                 >
-                  <Search size={18} className="sm:w-5 sm:h-5" />
+                  <Search size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               )}
 
-              {/* Acciones personalizadas de la página */}
+              {/* Acciones de edición/eliminación específicas de detalles */}
+              {(onEdit || onDelete) && (
+        <div className="flex items-center space-x-1 sm:space-x-2">
+                  {onEdit && (
+                    <button
+                      onClick={onEdit}
+          className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      title="Editar"
+                    >
+          <Edit3 size={18} className="mr-0 sm:mr-2" />
+                      <span className="hidden sm:inline">Editar</span>
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={onDelete}
+          className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Eliminar"
+                    >
+          <Trash2 size={18} className="mr-0 sm:mr-2" />
+                      <span className="hidden sm:inline">Eliminar</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Acciones personalizadas de la página (fallback/extra) */}
               {actions && (
                 <div className="flex items-center space-x-1 sm:space-x-2">
                   {actions}
@@ -83,7 +137,7 @@ const TopNavBar = ({
 
               {/* Notificaciones - Ocultar en móvil pequeño si hay muchas acciones */}
               <button
-                className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors relative hidden sm:block"
+                className={`p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors relative ${collapseUserOnMd ? 'hidden lg:block' : 'hidden sm:block'}`}
                 title="Notificaciones"
               >
                 <Bell size={18} className="sm:w-5 sm:h-5" />
@@ -92,7 +146,7 @@ const TopNavBar = ({
             </div>
 
             {/* Área de usuario - Responsive */}
-            <div className="relative ml-2 sm:ml-4">
+            <div className={`relative ml-2 sm:ml-4 ${collapseUserOnMd ? 'hidden lg:block' : ''}`}>
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center space-x-1 sm:space-x-2 p-1.5 sm:p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -123,16 +177,18 @@ const TopNavBar = ({
                     Configuración
                   </button>
                   
-                  <button
-                    onClick={() => {
-                      setShowUserMenu(false);
-                      handleLogout();
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center active:bg-red-100"
-                  >
-                    <LogOut size={16} className="mr-2" />
-                    Cerrar sesión
-                  </button>
+                  {onLogout && (
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center active:bg-red-100"
+                    >
+                      <LogOut size={16} className="mr-2" />
+                      Cerrar sesión
+                    </button>
+                  )}
                 </div>
               )}
             </div>

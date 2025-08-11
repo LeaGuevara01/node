@@ -115,6 +115,12 @@ function MaquinariaDetailsRefactored({ token }) {
     }
   };
 
+  // Handler de edición: navegar al formulario de edición
+  const handleEdit = () => {
+    if (!id) return;
+    navigateToFormPage('maquinarias', id);
+  };
+
   // Cargar datos al montar
   useEffect(() => {
     fetchMaquinaria();
@@ -127,20 +133,8 @@ function MaquinariaDetailsRefactored({ token }) {
     { label: maquinaria?.nombre || `Maquinaria #${id}` }
   ];
 
-  // Acciones de la página
-  const pageActions = maquinaria ? (
-    <div className="flex items-center space-x-3">
-      <EditButton 
-        entity="maquinarias"
-        id={id}
-        disabled={updating}
-      />
-      <DeleteButton 
-        onClick={handleDelete}
-        loading={updating}
-      />
-    </div>
-  ) : null;
+  // Acciones de la página (si se necesitan adicionales, evitar duplicar editar/eliminar con el header)
+  const pageActions = null;
 
   // Estado de carga
   if (loading) {
@@ -189,9 +183,14 @@ function MaquinariaDetailsRefactored({ token }) {
     <AppLayout
       currentSection="maquinarias"
       breadcrumbs={breadcrumbs}
-      title={`Detalles: ${maquinaria?.nombre || 'Maquinaria'}`}
+  title={`Detalles: ${maquinaria?.nombre || 'Maquinaria'}`}
       subtitle={`${maquinaria?.marca || ''} ${maquinaria?.modelo || ''}`}
-      actions={pageActions}
+  actions={pageActions}
+  isDetails={true}
+  detailsInfo={{ categoria: maquinaria?.categoria }}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+  showSearch={true}
       token={token}
     >
       <div className="space-y-6">
@@ -252,7 +251,7 @@ function MaquinariaDetailsRefactored({ token }) {
                   label="Categoría"
                   value={maquinaria.categoria}
                   icon={<Tag size={16} className="text-indigo-600" />}
-                  badge={true}
+                  badge={false}
                 />
                 
               </div>

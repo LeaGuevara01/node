@@ -27,6 +27,8 @@ import {
   ALERT_STYLES
 } from '../styles/repuestoStyles';
 import AppLayout from '../components/navigation/AppLayout';
+import FormHeaderActions from '../components/navigation/FormHeaderActions';
+import Papa from 'papaparse';
 
 function RepuestosPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
@@ -304,16 +306,73 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     { label: 'Repuestos' }
   ];
 
+  const handleExport = () => {
+    if (!repuestos || repuestos.length === 0) return;
+    const csv = Papa.unparse(repuestos.map(r => ({
+      id: r.id,
+      nombre: r.nombre,
+      codigo: r.codigo,
+      categoria: r.categoria,
+      ubicacion: r.ubicacion,
+      stock: r.stock,
+      precio: r.precio
+    })));
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'repuestos.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportInput = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBulkError('');
+    setBulkSuccess('');
+    Papa.parse(file, {
+      header: true,
+      complete: async (results) => {
+        const validRows = results.data.filter(row => row.nombre && row.codigo);
+        let successCount = 0, failCount = 0;
+        for (const row of validRows) {
+          try {
+            await createRepuesto({
+              nombre: row.nombre || '',
+              codigo: row.codigo || '',
+              categoria: row.categoria || '',
+              ubicacion: row.ubicacion || '',
+              stock: row.stock ? Number(row.stock) : 0,
+              precio: row.precio ? Number(row.precio) : 0,
+              descripcion: row.descripcion || ''
+            }, token);
+            successCount++;
+          } catch (err) {
+            failCount++;
+          }
+        }
+        setBulkSuccess(`Creados: ${successCount}`);
+        setBulkError(failCount ? `Fallidas: ${failCount}` : '');
+        if (successCount) {
+          fetchRepuestos(filtrosConsolidados, 1);
+          cargarOpcionesFiltros();
+        }
+      },
+      error: () => setBulkError('Error al procesar CSV'),
+    });
+    // reset input value so selecting the same file again triggers change
+    e.target.value = '';
+  };
+
   const pageActions = (
-    <button
-      onClick={() => setShowAddModal(true)}
-      className={BUTTON_STYLES.newItem}
-    >
-      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-      </svg>
-      Nuevo Repuesto
-    </button>
+    <FormHeaderActions
+      onSearchClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+      onExport={handleExport}
+      onImport={handleImportInput}
+      onNew={() => setShowAddModal(true)}
+      importInputId="repuestos-import-input"
+    />
   );
 
   return (
@@ -326,6 +385,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
       token={token}
       role={role}
       onLogout={onLogout}
+  collapseUserOnMd={true}
     >
       <BaseListPage
         title="Listado de Repuestos"
