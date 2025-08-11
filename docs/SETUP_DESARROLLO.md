@@ -83,7 +83,7 @@ npx prisma generate
 
 ```bash
 cd server
-npx prisma db push
+npx prisma migrate dev
 npx prisma generate
 ```
 

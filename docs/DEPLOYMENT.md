@@ -38,7 +38,7 @@ git push origin main
 2. Conectar repositorio
 3. Configurar:
    - **Root Directory**: `server`
-   - **Build Command**: `npm install && npx prisma generate`
+  - **Build Command**: `npm install && npx prisma generate`
    - **Start Command**: `npm start`
 
 **Frontend:**
@@ -86,8 +86,8 @@ services:
     env: node
     plan: starter
     rootDir: ./server
-    buildCommand: npm install && npx prisma generate && npx prisma db push
-    startCommand: npm start
+  buildCommand: npm install && npx prisma generate
+  startCommand: npx prisma migrate deploy && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -162,10 +162,7 @@ Write-Host "🚀 Todo listo para deployment!"
 ### Post-Deploy Setup
 
 ```bash
-# Ejecutar migraciones en producción
-npx prisma db push
-
-# Importar datos iniciales
+# (Opcional) Importar datos iniciales si aplica
 node scripts/import-repuestos.js
 
 # Verificar health check
@@ -259,7 +256,7 @@ npm install --production=false
 
 # 3. Error de Prisma
 npx prisma generate
-npx prisma db push
+npx prisma migrate deploy
 ```
 
 ### Frontend no Carga
@@ -291,8 +288,8 @@ const corsOptions = {
 
 ```bash
 # 1. Verificar DATABASE_URL en Environment Variables
-# 2. Ejecutar migraciones
-npx prisma db push
+# 2. Ejecutar migraciones (prod)
+npx prisma migrate deploy
 
 # 3. Verificar conexión
 npx prisma db pull

@@ -23,8 +23,8 @@ services:
     env: node
     plan: starter
     rootDir: ./server
-    buildCommand: npm install && npx prisma generate && npx prisma db push
-    startCommand: npm start
+  buildCommand: npm install && npx prisma generate
+  startCommand: npx prisma migrate deploy && npm start
 
   # Frontend - Static Site
   - type: web

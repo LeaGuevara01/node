@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "build": "prisma generate && prisma db push",
-    "postinstall": "prisma generate",
-    "deploy": "prisma db push && npm start",
+  "build": "prisma generate",
+  "postinstall": "prisma generate",
+  "migrate:dev": "prisma migrate dev",
+  "migrate:deploy": "prisma migrate deploy",
+  "deploy": "npm run migrate:deploy && npm start",
     "test": "jest"
   },
   "engines": {

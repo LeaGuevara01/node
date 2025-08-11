@@ -97,7 +97,7 @@ cd server
 npx prisma generate
 
 # Ejecutar migraciones
-npx prisma db push
+npx prisma migrate deploy
 
 # (Opcional) Poblar con datos de ejemplo
 npx prisma db seed
@@ -635,8 +635,8 @@ npx prisma generate
 # Reset completo de DB (⚠️ elimina datos)
 npx prisma migrate reset
 
-# Solo sincronizar schema
-npx prisma db push
+# Aplicar migraciones en producción
+npx prisma migrate deploy
 ```
 
 #### **Error: Variables de Entorno**

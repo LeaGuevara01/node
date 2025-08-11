@@ -397,7 +397,7 @@ npm run build        # Compilar para producción
 npm start           # Iniciar producción
 
 # Base de datos
-npx prisma migrate dev     # Aplicar migraciones
+npx prisma migrate dev     # Aplicar migraciones en desarrollo
 npx prisma generate       # Generar cliente Prisma
 npx prisma studio        # Abrir interface visual
 
