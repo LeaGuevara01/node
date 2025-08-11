@@ -228,6 +228,8 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
       token={token}
       role={role}
       onLogout={onLogout}
+  hideSearchOnDesktop={true}
+  collapseUserOnMd={true}
     >
       <div className="space-y-6">
         {/* Estadísticas rápidas */}

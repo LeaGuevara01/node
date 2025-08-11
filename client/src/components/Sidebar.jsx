@@ -28,7 +28,7 @@ const sections = [
 
 function Sidebar({ active, setActive, isMobileMenuOpen = false, setIsMobileMenuOpen }) {
   const navigate = useNavigate();
-  const { navigateToListPage } = useNavigation();
+  const { navigateToListPage, navigateToDashboard } = useNavigation();
   // Estado para controlar si el sidebar está abierto en mobile (legacy)
   const [open, setOpen] = useState(false);
   
@@ -56,7 +56,7 @@ function Sidebar({ active, setActive, isMobileMenuOpen = false, setIsMobileMenuO
         <div className="py-4 px-6 border-b border-gray-700 bg-gray-800 flex items-center justify-between">
             <div 
             className="font-bold text-xl cursor-pointer hover:text-gray-300 transition-colors flex-1 flex items-center gap-2"
-            onClick={() => { setActive(null); setIsOpen(false); }}
+            onClick={() => { setActive && setActive(null); navigateToDashboard(); setIsOpen(false); }}
           >
             <Wheat className="w-6 h-6 text-green-400" />
             Sistema Agrícola
@@ -82,7 +82,7 @@ function Sidebar({ active, setActive, isMobileMenuOpen = false, setIsMobileMenuO
                     ? 'bg-green-600 text-white border-l-4 border-green-400 shadow-md'
                     : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                 }`}
-                onClick={() => { setActive(null); setIsOpen(false); }}
+                onClick={() => { setActive && setActive(null); navigateToDashboard(); setIsOpen(false); }}
               >
                 <BarChart3 size={20} className="mr-3" />
                 <span className="font-medium">Dashboard</span>

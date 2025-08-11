@@ -54,6 +54,7 @@ exports.getMaquinarias = async (req, res) => {
       page = 1, 
       limit = 10, 
       search, 
+      modelo,
       categoria, 
       ubicacion, 
       estado,
@@ -63,7 +64,7 @@ exports.getMaquinarias = async (req, res) => {
       sortOrder = 'asc'
     } = req.query;
 
-    console.log('🔍 Filtros recibidos en backend:', { search, categoria, ubicacion, estado, anioMin, anioMax });
+    console.log('🔍 Filtros recibidos en backend:', { search, modelo, categoria, ubicacion, estado, anioMin, anioMax });
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
@@ -119,6 +120,19 @@ exports.getMaquinarias = async (req, res) => {
       } else if (categorias.length > 1) {
         andConditions.push({
           OR: categorias.map(c => ({ categoria: { contains: c, mode: 'insensitive' } }))
+        });
+      }
+    }
+
+    if (modelo) {
+      // Permitir múltiples modelos separados por comas
+      const modelos = modelo.split(',').map(m => m.trim()).filter(m => m);
+      console.log('🏷️ Modelos procesados:', modelos);
+      if (modelos.length === 1) {
+        andConditions.push({ modelo: { contains: modelos[0], mode: 'insensitive' } });
+      } else if (modelos.length > 1) {
+        andConditions.push({
+          OR: modelos.map(m => ({ modelo: { contains: m, mode: 'insensitive' } }))
         });
       }
     }

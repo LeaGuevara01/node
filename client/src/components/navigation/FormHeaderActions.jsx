@@ -23,7 +23,7 @@ export default function FormHeaderActions({
       {/* Buscar */}
       <button
         onClick={onSearchClick}
-        className={`${iconBtn}`}
+        className={`${iconBtn} md:hidden`}
         title="Buscar"
       >
         <Search size={18} className="mr-0 sm:mr-2" />

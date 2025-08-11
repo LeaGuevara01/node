@@ -44,4 +44,8 @@ services:
       - source: /favicon.ico
         destination: /favicon-elorza.ico
         type: 200
+      # SPA catch-all: enviar cualquier ruta desconocida a index.html
+      - source: /*
+        destination: /index.html
+        type: 200
     autoDeploy: true

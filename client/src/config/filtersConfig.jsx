@@ -87,6 +87,14 @@ export const MAQUINARIA_FILTERS_CONFIG = (opcionesFiltros) => [
   // En md (2 columnas) debe ocupar todo el ancho => col-span-2
   span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   },
+  // Nuevo: búsqueda por modelo (1x1) para la grilla 2x2
+  {
+    name: 'modelo',
+    type: 'text',
+    placeholder: 'Modelo... ',
+    icon: ICONS.search,
+    span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
+  },
   {
     name: 'categoria',
     type: 'select',
@@ -128,8 +136,8 @@ export const MAQUINARIA_FILTERS_CONFIG = (opcionesFiltros) => [
   max: opcionesFiltros.anioRange?.max || new Date().getFullYear(),
   // Indica que los valores del rango son numéricos
   valueType: 'number',
-  // Siempre 1 columna desde sm para mantener 2x2 consistente
-  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
+  // Mover min/max a una fila dedicada (2x1), como en repuestos
+  span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   }
 ];
 
@@ -142,34 +150,43 @@ export const REPUESTO_FILTERS_CONFIG = (opcionesFiltros) => [
     type: 'search',
     placeholder: 'Buscar repuestos...',
     icon: ICONS.search,
-    span: 'sm:col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-2'
+  // Buscar 2x1: en grid de 2 cols desde sm ocupa 2 columnas
+  span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   },
   {
     name: 'codigo',
     type: 'text',
     placeholder: 'Código del repuesto...',
-    icon: ICONS.codigo
+  icon: ICONS.codigo,
+  // Código 1x1
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'categoria',
     type: 'select',
     placeholder: 'Todas las categorías',
     icon: ICONS.categoria,
-    options: opcionesFiltros.categorias || []
+  options: opcionesFiltros.categorias || [],
+  // Parte del 2x2
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'ubicacion',
     type: 'select',
     placeholder: 'Todas las ubicaciones',
     icon: ICONS.ubicacion,
-    options: opcionesFiltros.ubicaciones || []
+  options: opcionesFiltros.ubicaciones || [],
+  // Parte del 2x2
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'disponibilidad',
     type: 'select',
     placeholder: 'Toda disponibilidad',
     icon: ICONS.disponibilidad,
-    options: opcionesFiltros.disponibilidades || []
+  options: opcionesFiltros.disponibilidades || [],
+  // Parte del 2x2
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'precio',
@@ -179,11 +196,12 @@ export const REPUESTO_FILTERS_CONFIG = (opcionesFiltros) => [
     maxField: 'precioMax',
     minPlaceholder: 'Precio mínimo',
     maxPlaceholder: 'Precio máximo',
-    min: 0,
-    max: opcionesFiltros.precioRange?.max || 10000,
+  min: opcionesFiltros.precioRange?.min ?? 0,
+  max: opcionesFiltros.precioRange?.max ?? 10000,
     step: '0.01',
     inputType: 'number',
-    span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
+  // Precio min/max 2x1
+  span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   }
 ];
 

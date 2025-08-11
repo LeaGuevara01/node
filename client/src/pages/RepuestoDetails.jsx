@@ -269,8 +269,8 @@ function RepuestoDetails({ token }) {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {/* Stock */}
                         <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                          <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${getStockColorClass(repuesto.stock).includes('red') ? 'bg-red-100' : getStockColorClass(repuesto.stock).includes('yellow') ? 'bg-yellow-100' : 'bg-green-100'}`}>
-                            <svg className={`w-5 h-5 ${getStockColorClass(repuesto.stock).includes('red') ? 'text-red-600' : getStockColorClass(repuesto.stock).includes('yellow') ? 'text-yellow-600' : 'text-green-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${getStockColorClass(repuesto.stock, repuesto.ubicacion).replace('text-', 'bg-').replace('-700', '-100')}`}>
+                            <svg className={`w-5 h-5 ${getStockColorClass(repuesto.stock, repuesto.ubicacion).replace('bg-', 'text-').replace('-100', '-600')}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
                           </div>

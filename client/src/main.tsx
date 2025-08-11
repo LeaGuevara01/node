@@ -8,11 +8,10 @@ import './index.css';
 const container = document.getElementById('root') as HTMLElement;
 const root = ReactDOM.createRoot(container);
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  // Nota: se quita StrictMode para evitar dobles montajes y peticiones duplicadas en dev
+  <BrowserRouter>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </BrowserRouter>
 );

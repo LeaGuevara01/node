@@ -45,7 +45,9 @@ const AppLayout = ({
   onEdit = null,
   onDelete = null,
   showSearch = true,
-  collapseUserOnMd = false
+  collapseUserOnMd = false,
+  // Nuevo: ocultar búsqueda rápida en desktop (reservarla para móvil)
+  hideSearchOnDesktop = false
 }) => {
   const [sidebarActive, setSidebarActive] = useState(currentSection);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -215,6 +217,7 @@ const AppLayout = ({
       onDelete={onDelete}
       showSearch={showSearch}
       collapseUserOnMd={collapseUserOnMd}
+  hideSearchOnDesktop={hideSearchOnDesktop}
           />
         )}
         
@@ -228,12 +231,24 @@ const AppLayout = ({
               </div>
             )}
             
-            {/* Título mobile */}
-            {isMobile && !title && (
+            {/* Título y breadcrumb mobile */}
+            {isMobile && (
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  {autoBreadcrumbs[autoBreadcrumbs.length - 1]?.label || 'Dashboard'}
-                </h1>
+                {/* Indicador breadcrumb compacto en pantallas chicas */}
+                {autoBreadcrumbs.length > 1 && (
+                  <div className="text-xs text-gray-500 mb-1">
+                    {autoBreadcrumbs
+                      .map(b => b.label)
+                      .slice(0, 2) // Mostrar solo los dos primeros niveles
+                      .join(' > ')}
+                  </div>
+                )}
+                {/* Título si no se pasó explícito */}
+                {!title && (
+                  <h1 className="text-xl font-bold text-gray-900">
+                    {autoBreadcrumbs[autoBreadcrumbs.length - 1]?.label || 'Dashboard'}
+                  </h1>
+                )}
               </div>
             )}
             

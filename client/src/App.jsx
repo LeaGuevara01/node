@@ -89,7 +89,9 @@ function App() {
   return (
     <NavigationProvider>
       <Routes>
-        <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  {/* Alias explícito para permitir /dashboard */}
+  <Route path="/dashboard" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
         
         {/* Páginas de listado con filtros avanzados */}
         <Route path="/maquinarias" element={<MaquinariasPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />

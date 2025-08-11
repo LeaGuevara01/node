@@ -483,7 +483,8 @@ export const useAdvancedFilters = (
         estados: data?.estados || data?.status || [],
         anioRange: data?.anioRange || data?.anio || data?.yearsRange || { min: 1900, max: new Date().getFullYear() }
       };
-      setOpcionesFiltros(prev => ({ ...prev, ...normalizado }));
+  // Mezclar también cualquier otro campo específico de la entidad (p.ej. disponibilidades, precioRange)
+  setOpcionesFiltros(prev => ({ ...prev, ...normalizado, ...data }));
     } catch (err) {
       console.error('Error al cargar opciones de filtros:', err);
     }

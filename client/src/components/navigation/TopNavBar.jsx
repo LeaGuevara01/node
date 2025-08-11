@@ -29,6 +29,7 @@ const TopNavBar = ({
   role,
   onLogout,
   showSearch = true,
+  hideSearchOnDesktop = false,
   // Nuevo: variante para páginas de detalles y metadatos a mostrar en desktop grande
   isDetails = false,
   detailsInfo = null, // { categoria: '...' , ...}
@@ -92,10 +93,10 @@ const TopNavBar = ({
             {/* Área central - Búsqueda y acciones - Responsive */}
             <div className="flex items-center space-x-1 sm:space-x-3">
               {/* Búsqueda rápida - Ocultar en móvil si hay acciones */}
-              {showSearch && (
+        {showSearch && (
                 <button
                   onClick={() => setShowSearchModal(true)}
-                  className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className={`p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors ${hideSearchOnDesktop ? 'md:hidden' : ''}`}
                   title="Búsqueda rápida (Ctrl+K)"
                 >
                   <Search size={18} className="w-4 h-4 sm:w-5 sm:h-5" />

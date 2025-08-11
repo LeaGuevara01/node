@@ -126,53 +126,45 @@ function DashboardRefactored({ token, role, onLogout }) {
     );
   }
 
-  // Acciones rápidas del dashboard - Responsive
-  const quickActions = (
-    <div className="flex flex-wrap gap-2 sm:gap-3">
-      <RoleGuard role={role} allowed={["Admin", "User"]}>
-        <CreateButton 
-          entity="maquinarias"
-          label="Nueva Maquinaria"
-          size="small"
-        />
-      </RoleGuard>
-      <RoleGuard role={role} allowed={["Admin", "User"]}>
-        <CreateButton 
-          entity="repuestos"
-          label="Nuevo Repuesto"
-          size="small"
-        />
-      </RoleGuard>
-      <RoleGuard role={role} allowed={["Admin", "User"]}>
-        <CreateButton 
-          entity="proveedores"
-          label="Nuevo Proveedor"
-          size="small"
-        />
-      </RoleGuard>
-      <RoleGuard role={role} allowed={["Admin"]}>
-        <CreateButton 
-          entity="reparaciones"
-          label="Nueva Reparación"
-          size="small"
-        />
-      </RoleGuard>
-    </div>
-  );
+  // El dashboard no muestra acciones en el header para evitar botones fuera de contexto
+  const quickActions = null;
+
+  // Derivar maquinarias "En reparación" a partir de reparaciones recientes (últimos 30 días)
+  const enReparacionCount = (() => {
+    try {
+      const THRESHOLD_DAYS = 30;
+      const now = Date.now();
+      const ids = new Set(
+        (data.reparaciones || [])
+          .filter(r => {
+            if (!r?.maquinariaId) return false;
+            if (!r?.fecha) return true; // si no hay fecha, contarlo como activo conservadoramente
+            const t = new Date(r.fecha).getTime();
+            if (Number.isNaN(t)) return false;
+            const diffDays = (now - t) / (1000 * 60 * 60 * 24);
+            return diffDays <= THRESHOLD_DAYS;
+          })
+          .map(r => r.maquinariaId)
+      );
+      return ids.size;
+    } catch {
+      return 0;
+    }
+  })();
 
   return (
     <AppLayout
       currentSection={null} // null = dashboard
       title="Dashboard"
       subtitle="Sistema de Gestión Agrícola"
-      actions={quickActions}
+  actions={quickActions}
       token={token}
       role={role}
       onLogout={onLogout}
     >
-      <div className="space-y-8">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header del sistema - Mejorado para móvil */}
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center border-l-4 border-green-500" style={{border: '1px solid #e5e7eb', borderLeft: '4px solid #10b981'}}>
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center border border-gray-200 border-l-4 border-l-green-500">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
             <Activity size={40} className="text-green-600" />
             Sistema de Gestión Agrícola
@@ -194,7 +186,7 @@ function DashboardRefactored({ token, role, onLogout }) {
             </span>
           </h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 gap-4 lg:gap-6">
             <StatsCard 
               type="maquinarias" 
               title="Maquinarias" 
@@ -232,12 +224,8 @@ function DashboardRefactored({ token, role, onLogout }) {
             <StatusSummary
               data={data.maquinarias}
               statusField="estado"
-              colorMapping={{
-                'Operativa': 'bg-green-100 text-green-800',
-                'En mantenimiento': 'bg-yellow-100 text-yellow-800',
-                'Averiada': 'bg-red-100 text-red-800',
-                'Fuera de servicio': 'bg-gray-100 text-gray-800'
-              }}
+              definitions={MACHINERY_STATUS_DEFS}
+              extraCounts={{ 'En reparación': enReparacionCount }}
             />
           </div>
 
@@ -249,7 +237,7 @@ function DashboardRefactored({ token, role, onLogout }) {
             <StockSummary
               data={data.repuestos}
               stockField="cantidad"
-              thresholds={{ low: 10, critical: 5 }}
+              mode="discrete"
             />
           </div>
         </div>
@@ -345,25 +333,53 @@ function DashboardRefactored({ token, role, onLogout }) {
   );
 }
 
+// Definiciones de estados de maquinaria (modular)
+const MACHINERY_STATUS_DEFS = [
+  { key: 'Operativa', label: 'Operativa', class: 'bg-green-100 text-green-800' },
+  { key: 'En mantenimiento', label: 'En mantenimiento', class: 'bg-yellow-100 text-yellow-800' },
+  { key: 'En reparación', label: 'En reparación', class: 'bg-blue-100 text-blue-800' },
+  { key: 'Averiada', label: 'Averiada', class: 'bg-red-100 text-red-800' },
+  { key: 'Fuera de servicio', label: 'Fuera de servicio', class: 'bg-gray-100 text-gray-800' }
+];
+
 /**
- * Componente para mostrar resumen de estados
+ * Resumen de estados genérico con definiciones opcionales
  */
-const StatusSummary = ({ data, statusField, colorMapping = {} }) => {
-  const statusCounts = data.reduce((acc, item) => {
-    const status = item[statusField] || 'Sin estado';
+const StatusSummary = ({ data, statusField, definitions = null, extraCounts = {} }) => {
+  const counts = data.reduce((acc, item) => {
+    const raw = item?.[statusField];
+    const status = raw == null || String(raw).trim() === '' ? 'Sin estado' : raw;
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {});
 
+  if (definitions && Array.isArray(definitions)) {
+    return (
+      <div className="space-y-3">
+        {definitions.map(def => {
+          const base = counts[def.key] || 0;
+          const override = Number.isFinite(extraCounts?.[def.key]) ? extraCounts[def.key] : null;
+          const value = override !== null ? override : base;
+          return (
+            <div key={def.key} className="flex items-center justify-between">
+              <span className={`px-2 py-1 rounded text-sm font-medium ${def.class}`}>
+                {def.label}
+              </span>
+              <span className="text-sm font-medium text-gray-600">{value}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Fallback: listar estados detectados
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   return (
     <div className="space-y-3">
-      {Object.entries(statusCounts).map(([status, count]) => (
+      {entries.map(([status, count]) => (
         <div key={status} className="flex items-center justify-between">
-          <span className={`px-2 py-1 rounded text-sm font-medium ${
-            colorMapping[status] || 'bg-gray-100 text-gray-800'
-          }`}>
-            {status}
-          </span>
+          <span className="px-2 py-1 rounded text-sm font-medium bg-gray-100 text-gray-800">{status}</span>
           <span className="text-sm font-medium text-gray-600">{count}</span>
         </div>
       ))}
@@ -372,39 +388,66 @@ const StatusSummary = ({ data, statusField, colorMapping = {} }) => {
 };
 
 /**
- * Componente para mostrar resumen de stock
+ * Resumen de stock con modo discreto (0/1/2+)
  */
-const StockSummary = ({ data, stockField, thresholds = { low: 10, critical: 5 } }) => {
+const StockSummary = ({ data, stockField, mode = 'discrete' }) => {
+  if (mode === 'discrete') {
+    const summary = data.reduce((acc, item) => {
+      // Detecta cantidad desde varios campos posibles
+      const candidates = [stockField, 'stock', 'existencia', 'cantidadDisponible', 'cantidad_disponible', 'cantidad'];
+      const raw = candidates
+        .map(field => item?.[field])
+        .find(v => v !== undefined && v !== null && v !== '');
+      let qty;
+      if (typeof raw === 'string') {
+        const cleaned = raw.replace(/[^0-9-]/g, '');
+        const parsed = Number.parseInt(cleaned, 10);
+        qty = Number.isFinite(parsed) ? parsed : 0;
+      } else {
+        const num = Number(raw);
+        qty = Number.isFinite(num) ? num : 0;
+      }
+      if (qty <= 0) acc.zero += 1; else if (qty === 1) acc.one += 1; else acc.twoPlus += 1;
+      return acc;
+    }, { zero: 0, one: 0, twoPlus: 0 });
+
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="px-2 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Sin stock (0)</span>
+          <span className="text-sm font-medium text-gray-600">{summary.zero}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="px-2 py-1 rounded text-sm font-medium bg-yellow-100 text-yellow-800">Bajo (1)</span>
+          <span className="text-sm font-medium text-gray-600">{summary.one}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="px-2 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Normal (≥2)</span>
+          <span className="text-sm font-medium text-gray-600">{summary.twoPlus}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback (no usado normalmente)
   const stockAnalysis = data.reduce((acc, item) => {
     const stock = parseInt(item[stockField]) || 0;
-    if (stock <= thresholds.critical) {
-      acc.critical++;
-    } else if (stock <= thresholds.low) {
-      acc.low++;
-    } else {
-      acc.normal++;
-    }
+    if (stock <= 0) acc.critical++; else if (stock === 1) acc.low++; else acc.normal++;
     return acc;
   }, { critical: 0, low: 0, normal: 0 });
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="px-2 py-1 rounded text-sm font-medium bg-red-100 text-red-800">
-          Stock Crítico (≤{thresholds.critical})
-        </span>
+        <span className="px-2 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Sin stock</span>
         <span className="text-sm font-medium text-gray-600">{stockAnalysis.critical}</span>
       </div>
       <div className="flex items-center justify-between">
-        <span className="px-2 py-1 rounded text-sm font-medium bg-yellow-100 text-yellow-800">
-          Stock Bajo (≤{thresholds.low})
-        </span>
+        <span className="px-2 py-1 rounded text-sm font-medium bg-yellow-100 text-yellow-800">Bajo</span>
         <span className="text-sm font-medium text-gray-600">{stockAnalysis.low}</span>
       </div>
       <div className="flex items-center justify-between">
-        <span className="px-2 py-1 rounded text-sm font-medium bg-green-100 text-green-800">
-          Stock Normal
-        </span>
+        <span className="px-2 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Normal</span>
         <span className="text-sm font-medium text-gray-600">{stockAnalysis.normal}</span>
       </div>
     </div>

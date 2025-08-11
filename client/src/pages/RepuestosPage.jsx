@@ -98,7 +98,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     filtrosTemporales,
     tokensActivos,
     filtrosConsolidados,
-    opcionesFiltros,
+  opcionesFiltros,
     handleFiltroChange,
     aplicarFiltrosActuales,
     removerToken,
@@ -204,7 +204,6 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
       };
       await createRepuesto(repuestoData, token);
       setForm({ nombre: '', stock: '', codigo: '', descripcion: '', precio: '', proveedor: '', ubicacion: '', categoria: '' });
-      setShowAddModal(false);
       if (onCreated) onCreated();
       fetchRepuestos(filtrosConsolidados, 1);
       cargarOpcionesFiltros();
@@ -214,10 +213,13 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     }
   };
 
-  const getStockBadge = (stock) => {
-    if (stock <= 0) return 'bg-red-100 text-red-800';
-    if (stock <= 5) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-green-100 text-green-800';
+  const getStockBadge = (stock, ubicacion) => {
+    if (typeof ubicacion === 'string' && ubicacion.toLowerCase().includes('insumos')) {
+      return 'bg-blue-100 text-blue-800';
+    }
+    if (stock <= 0) return 'bg-red-100 text-red-800'; // 0
+    if (stock === 1) return 'bg-yellow-100 text-yellow-800'; // 1
+    return 'bg-green-100 text-green-800'; // ≥2
   };
 
   /**
@@ -229,27 +231,6 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         <div className="flex items-center gap-2">
           <h3 className={LIST_STYLES.itemTitle}>{repuesto.nombre}</h3>
         </div>
-        <div className={LIST_STYLES.itemActions}>
-          <button
-            onClick={() => handleView(repuesto)}
-            className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
-            title="Ver detalles"
-          >
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          </button>
-          <button
-            onClick={() => openEditModal(repuesto)}
-            className={BUTTON_STYLES.edit}
-            title="Editar repuesto"
-          >
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
-        </div>
       </div>
       {repuesto.descripcion && (
         <div className={LIST_STYLES.itemDescription}>
@@ -258,14 +239,16 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
       )}
       <div className={LIST_STYLES.itemTagsRow}>
         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
+          {/* Código: visible en todos los tamaños */}
           <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={repuesto.codigo || 'Sin código'}>
             <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
             <span className="tag-truncate">{repuesto.codigo || 'Sin código'}</span>
           </span>
+          {/* Ubicación: visible en md+ y con estilo gris como código */}
           {repuesto.ubicacion && (
-            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(repuesto.ubicacion, 'ubicacion')}`} title={repuesto.ubicacion}>
+            <span className={`${LIST_STYLES.itemTagLocation} bg-gray-100 text-gray-700 hidden md:inline-flex`} title={repuesto.ubicacion}>
               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -273,6 +256,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
               <span className="tag-truncate">{repuesto.ubicacion}</span>
             </span>
           )}
+          {/* Categoría: visible siempre, con colores de alto contraste */}
           {repuesto.categoria && (
             <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
               <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,10 +267,12 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
           )}
         </div>
         <div className={LIST_STYLES.itemTagsRight}>
-          <span className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock)}`}>
+          {/* Stock: visible en todos los tamaños */}
+          <span className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock, repuesto.ubicacion)}`}>
             Stock: {repuesto.stock}
           </span>
-          <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-800`}>
+          {/* Precio: solo en pantallas grandes */}
+          <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-800 hidden lg:inline-flex`}>
             ${repuesto.precio?.toFixed(2) || '0.00'}
           </span>
         </div>
@@ -385,6 +371,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
       token={token}
       role={role}
       onLogout={onLogout}
+  hideSearchOnDesktop={true}
   collapseUserOnMd={true}
     >
       <BaseListPage
@@ -393,6 +380,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         entityName="Repuesto"
         entityNamePlural="Repuestos"
         showNewButton={false}
+  showCsvUpload={false}
         
         items={repuestos}
         loading={loading}
@@ -410,15 +398,14 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         paginacion={paginacion}
         handlePaginacion={(pagina) => fetchRepuestos(filtrosConsolidados, pagina)}
         
-        onFileUpload={handleFileUpload}
+  onItemClick={(item) => navigate(`/repuestos/${item.id}`)}
+  onFileUpload={undefined}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
         
         renderItem={renderRepuesto}
-        
-  headerActions={pageActions}
       />
 
       {/* Modal de agregar repuesto */}

@@ -17,7 +17,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, MapPin, Tag } from 'lucide-react';
 import { createMaquinaria, getMaquinarias, getMaquinariaFilters, updateMaquinaria, deleteMaquinaria } from '../services/api';
 import AppLayout from '../components/navigation/AppLayout';
-import { CreateButton, ExportButton, ImportButton } from '../components/navigation/NavigationButtons';
+import FormHeaderActions from '../components/navigation/FormHeaderActions';
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
 import EstadoIcon from '../components/EstadoIcon';
 import BaseListPage from '../components/shared/BaseListPage';
@@ -383,57 +383,57 @@ function MaquinariasPage({ token, role, onLogout }) {
     { label: 'Maquinarias' }
   ];
 
-  // Acciones de la página
+  const handleExport = async () => {
+    try {
+      logger.user('🚀 Exportar maquinarias solicitado');
+      const data = await getMaquinarias(token, filtrosConsolidados, 1, true);
+      const rows = Array.isArray(data) ? data : (data.maquinarias || []);
+      const csvHeader = 'id,nombre,marca,modelo,categoria,anio,numero_serie,proveedor,ubicacion,estado';
+      const csvRows = rows.map(m => [
+        m.id,
+        JSON.stringify(m.nombre || ''),
+        JSON.stringify(m.marca || ''),
+        JSON.stringify(m.modelo || ''),
+        JSON.stringify(m.categoria || ''),
+        m.anio ?? '',
+        JSON.stringify(m.numero_serie || ''),
+        JSON.stringify(m.proveedor || ''),
+        JSON.stringify(m.ubicacion || ''),
+        JSON.stringify(m.estado || '')
+      ].join(','));
+      const csv = [csvHeader, ...csvRows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'maquinarias_export.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      logger.error('Error al exportar maquinarias', { error: err.message });
+      setError('Error al exportar maquinarias');
+    }
+  };
+
+  const handleImportInput = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await handleFileUpload(file);
+    // reset input
+    e.target.value = '';
+  };
+
+  // Acciones de la página (estilo Repuestos, iconos sin fondo y búsqueda)
   const pageActions = (
-    <div className="flex items-center space-x-3">
-      <ExportButton 
-        onClick={async () => {
-          try {
-            logger.user('🚀 Exportar maquinarias solicitado');
-            // Obtener todos los datos para exportar ignorando paginación
-            const data = await getMaquinarias(token, filtrosConsolidados, 1, true);
-            const rows = Array.isArray(data) ? data : (data.maquinarias || []);
-            const csvHeader = 'id,nombre,marca,modelo,categoria,anio,numero_serie,proveedor,ubicacion,estado';
-            const csvRows = rows.map(m => [
-              m.id,
-              JSON.stringify(m.nombre || ''),
-              JSON.stringify(m.marca || ''),
-              JSON.stringify(m.modelo || ''),
-              JSON.stringify(m.categoria || ''),
-              m.anio ?? '',
-              JSON.stringify(m.numero_serie || ''),
-              JSON.stringify(m.proveedor || ''),
-              JSON.stringify(m.ubicacion || ''),
-              JSON.stringify(m.estado || '')
-            ].join(','));
-            const csv = [csvHeader, ...csvRows].join('\n');
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'maquinarias_export.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          } catch (err) {
-            logger.error('Error al exportar maquinarias', { error: err.message });
-            setError('Error al exportar maquinarias');
-          }
-        }}
-      />
-      <ImportButton 
-        onClick={() => {
-          logger.user('📥 Importar maquinarias solicitado');
-          document.getElementById('file-upload').click();
-        }}
-      />
-      <CreateButton 
-        entity="maquinarias"
-        label="Nueva Maquinaria"
-        onClick={openCreateModal}
-      />
-    </div>
+    <FormHeaderActions
+      onSearchClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+      onExport={handleExport}
+      onImport={handleImportInput}
+      onNew={openCreateModal}
+      importInputId="maquinarias-import-input"
+    />
   );
 
   return (
@@ -446,6 +446,8 @@ function MaquinariasPage({ token, role, onLogout }) {
       token={token}
       role={role}
       onLogout={onLogout}
+  hideSearchOnDesktop={true}
+  collapseUserOnMd={true}
     >
       <BaseListPage
         title="Listado de Maquinarias"
@@ -475,7 +477,7 @@ function MaquinariasPage({ token, role, onLogout }) {
           fetchMaquinarias(filtrosConsolidados, pagina);
         }}
         
-        onFileUpload={handleFileUpload}
+  onFileUpload={handleFileUpload}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
@@ -510,18 +512,7 @@ function MaquinariasPage({ token, role, onLogout }) {
         />
       )}
 
-      {/* Input oculto para subir archivos */}
-      <input
-        id="file-upload"
-        type="file"
-        accept=".csv,.xlsx,.xls"
-        onChange={(e) => {
-          if (e.target.files[0]) {
-            handleFileUpload(e.target.files[0]);
-          }
-        }}
-        style={{ display: 'none' }}
-      />
+  {/* El input para importar se gestiona desde FormHeaderActions (maquinarias-import-input) */}
     </AppLayout>
   );
 }
