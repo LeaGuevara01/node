@@ -30,6 +30,10 @@ import CompraDetails from './pages/CompraDetails';
 import RepuestoDetails from './pages/RepuestoDetails';
 import ReparacionDetails from './pages/ReparacionDetails';
 import ProveedorDetails from './pages/ProveedorDetails';
+import RepuestoForm from './pages/RepuestoForm';
+import RepuestoFormulario from './pages/RepuestoFormulario';
+import ProveedorForm from './pages/ProveedorForm';
+import ProveedorFormulario from './pages/ProveedorFormulario';
 import { jwtDecode } from 'jwt-decode';
 import ContextPlaceholder from './pages/ContextPlaceholder';
 
@@ -107,8 +111,13 @@ function App() {
         <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />
         <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token} />} />
         <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
+  {/* Formularios de Repuestos y Proveedores */}
+  <Route path="/repuestos/formulario" element={<RepuestoFormulario token={token} />} />
+  <Route path="/repuestos/editar/:id" element={<RepuestoFormulario token={token} />} />
         <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
         <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
+  <Route path="/proveedores/formulario" element={<ProveedorFormulario token={token} />} />
+  <Route path="/proveedores/editar/:id" element={<ProveedorFormulario token={token} />} />
         <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
   {/* Rutas de contexto (placeholder) */}
   <Route path="/contexto/:tipo/:valor" element={<ContextPlaceholder token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />

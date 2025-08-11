@@ -4,24 +4,17 @@
  * Notas: Usa detailsStyles y helpers de UI; futura API real para upload
  */
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getRepuestoById, updateRepuesto } from '../services/api';
+import { useParams } from 'react-router-dom';
+import { getRepuestoById, updateRepuesto, deleteRepuesto } from '../services/api';
 import { getColorFromString, getStockColorClass } from '../utils/colorUtils';
 import { formatFecha } from '../utils/reparacionUtils';
-import { 
-  CONTAINER_STYLES, 
-  INPUT_STYLES, 
-  BUTTON_STYLES, 
-  LAYOUT_STYLES,
-  ICON_STYLES,
-  TEXT_STYLES,
-  ALERT_STYLES,
-  LIST_STYLES
-} from '../styles/repuestoStyles';
+import { CONTAINER_STYLES, INPUT_STYLES, LAYOUT_STYLES, ICON_STYLES, TEXT_STYLES, ALERT_STYLES } from '../styles/repuestoStyles';
+import AppLayout from '../components/navigation/AppLayout';
+import { useNavigation } from '../hooks/useNavigation';
 
 function RepuestoDetails({ token }) {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { navigateToListPage, navigateToFormPage } = useNavigation();
   const [repuesto, setRepuesto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -94,68 +87,66 @@ function RepuestoDetails({ token }) {
     }
   }, [id, token]);
 
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Repuestos', href: '/repuestos' },
+    { label: repuesto?.nombre || `Repuesto #${id}` }
+  ];
+
+  const handleEdit = () => navigateToFormPage('repuestos', id);
+  const handleDelete = async () => {
+    if (!id) return;
+    if (!window.confirm('¿Eliminar este repuesto? Esta acción no se puede deshacer.')) return;
+    try {
+      setUploading(true);
+      await deleteRepuesto(id, token);
+      navigateToListPage('repuestos');
+    } catch (err) {
+      setError('Error al eliminar el repuesto: ' + (err?.message || ''));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className={CONTAINER_STYLES.main}>
-        <div className={CONTAINER_STYLES.maxWidth}>
-          <div className="flex items-center justify-center min-h-64">
-            <div className={TEXT_STYLES.loading}>
-              <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
-              </svg>
-              Cargando detalles...
-            </div>
+      <AppLayout currentSection="repuestos" breadcrumbs={breadcrumbs} title="Cargando repuesto..." token={token} isDetails={true}>
+        <div className="flex items-center justify-center min-h-64">
+          <div className={TEXT_STYLES.loading}>
+            <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+            </svg>
+            Cargando detalles...
           </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   if (error && !repuesto) {
     return (
-      <div className={CONTAINER_STYLES.main}>
-        <div className={CONTAINER_STYLES.maxWidth}>
-          <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-            <div className={ALERT_STYLES.error}>
-              {error}
-            </div>
-            <button
-              onClick={() => navigate('/')}
-              className={`${BUTTON_STYLES.secondary} mt-4`}
-            >
-              Volver a Repuestos
-            </button>
+      <AppLayout currentSection="repuestos" breadcrumbs={breadcrumbs} title="Error" token={token}>
+        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+          <div className={ALERT_STYLES.error}>
+            {error}
           </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className={CONTAINER_STYLES.main}>
-      <div className={CONTAINER_STYLES.maxWidth}>
-        
-        {/* Header */}
-        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-          <div className={LAYOUT_STYLES.flexBetween}>
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <button
-                  onClick={() => navigate('/repuestos')}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  title="Volver a repuestos"
-                >
-                  <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <h1 className={TEXT_STYLES.title}>Detalles de Repuesto</h1>
-              </div>
-              <p className={TEXT_STYLES.subtitle}>Información completa y gestión de fotos</p>
-            </div>
-          </div>
-        </div>
+    <AppLayout
+      currentSection="repuestos"
+      breadcrumbs={breadcrumbs}
+      title={`Detalles: ${repuesto?.nombre || 'Repuesto'}`}
+      subtitle="Información completa y gestión de fotos"
+      isDetails={true}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      token={token}
+    >
 
         {repuesto && (
           <>
@@ -393,8 +384,7 @@ function RepuestoDetails({ token }) {
           </div>
           </>
         )}
-      </div>
-    </div>
+    </AppLayout>
   );
 }
 
