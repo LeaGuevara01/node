@@ -43,7 +43,7 @@ cd server
 npx prisma generate
 
 # Sincronizar schema
-npx prisma db push
+npx prisma migrate deploy
 
 # Test de conexión
 npx prisma db pull
@@ -131,8 +131,9 @@ npx prisma generate
 **Solución**:
 
 ```yaml
-# render.yaml - Comando de build correcto
-buildCommand: npm install && npx prisma generate && npx prisma db push
+# render.yaml - Comandos correctos
+buildCommand: npm install && npx prisma generate
+startCommand: npx prisma migrate deploy && npm start
 ```
 
 ### 3. **Variables de Entorno Faltantes**
@@ -255,8 +256,8 @@ Unknown column in field list
 **Solución**:
 
 ```bash
-# Sincronizar schema
-npx prisma db push
+# Aplicar migraciones en prod
+npx prisma migrate deploy
 
 # O generar migración
 npx prisma migrate dev --name sync-schema
@@ -473,7 +474,7 @@ cd ../server && npm install
 # Regenerar Prisma
 cd server
 npx prisma generate
-npx prisma db push
+npx prisma migrate dev
 
 # Restart
 npm run dev

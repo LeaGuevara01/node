@@ -3,6 +3,22 @@
  * Lee variables de entorno y proporciona valores por defecto seguros
  */
 
+// Asegurar carga de variables de entorno tanto desde server/.env como desde la raíz del repo
+// Esto evita fallos cuando se ejecuta desde /server y el .env está en la raíz.
+try {
+  const path = require('path');
+  const dotenv = require('dotenv');
+  const candidates = [
+    path.resolve(__dirname, '../.env'),     // c:\...\server\.env
+    path.resolve(__dirname, '../../.env'),  // c:\...\.env (raíz del repo)
+  ];
+  for (const p of candidates) {
+    dotenv.config({ path: p }); // no sobreescribe valores ya definidos
+  }
+} catch (_) {
+  // Si dotenv no está disponible o ocurre un error, continuar: en muchos entornos ya están definidas
+}
+
 /**
  * Obtiene una variable de entorno o lanza error si es requerida
  * @param {string} name - Nombre de la variable

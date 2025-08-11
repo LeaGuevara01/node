@@ -265,7 +265,7 @@ cd server
 npx prisma generate
 
 # Sincronizar schema
-npx prisma db push
+npx prisma migrate dev
 ```
 
 ### **Error: CORS**
