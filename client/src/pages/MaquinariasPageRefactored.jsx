@@ -39,11 +39,12 @@ import {
 const logger = createLogger('MaquinariasPage');
 
 function MaquinariasPage({ token, role, onLogout }) {
-  const { navigateToDetailPage } = useNavigation();
+  const { navigateToDetailPage, navigate } = useNavigation();
   
   // Estados principales
   const [maquinarias, setMaquinarias] = useState([]);
   const [selectedMaquinaria, setSelectedMaquinaria] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
@@ -51,6 +52,8 @@ function MaquinariasPage({ token, role, onLogout }) {
   // Ref para prevenir llamadas duplicadas
   const fetchingRef = useRef(false);
   const lastFetchParamsRef = useRef(null);
+  // Ref para exponer fetch a hooks hijos (limpiar filtros)
+  const fetchMaquinariasRef = useRef(null);
 
   // Hook de paginación
   const { 
@@ -74,7 +77,13 @@ function MaquinariasPage({ token, role, onLogout }) {
     cargarOpcionesFiltros: cargarOpcionesFiltrosMaquinaria
   } = useAdvancedFilters({
     endpoint: getMaquinariaFilters,
-    token
+    token,
+    // Permite que limpiar filtros dispare recarga completa
+    fetchDataFunction: (filtros = {}, pagina = 1) => {
+      if (fetchMaquinariasRef.current) {
+        return fetchMaquinariasRef.current(filtros, pagina);
+      }
+    }
   });
 
   /**
@@ -133,6 +142,9 @@ function MaquinariasPage({ token, role, onLogout }) {
     }
   };
 
+  // Exponer función de fetch al hook de filtros (para limpiar)
+  fetchMaquinariasRef.current = fetchMaquinarias;
+
   /**
    * Cargar opciones para filtros
    */
@@ -171,13 +183,18 @@ function MaquinariasPage({ token, role, onLogout }) {
     setSelectedMaquinaria(maquinaria);
   };
 
+  const openCreateModal = () => {
+    logger.user('Abriendo modal de creación de maquinaria');
+    setShowCreateModal(true);
+  };
+
   /**
    * Maneja la actualización de una maquinaria
    */
   const handleUpdate = async (id, updatedMaquinaria) => {
     try {
       logger.data('Actualizando maquinaria', { id });
-      await updateMaquinaria(id, updatedMaquinaria, token);
+      await updateMaquinaria({ ...updatedMaquinaria, id }, token);
       fetchMaquinarias(filtrosConsolidados, paginacion.paginaActual);
       setSelectedMaquinaria(null);
       logger.success('Maquinaria actualizada correctamente');
@@ -187,10 +204,24 @@ function MaquinariasPage({ token, role, onLogout }) {
     }
   };
 
+  const handleCreate = async (newMaquinaria) => {
+    try {
+      logger.data('Creando maquinaria');
+      await createMaquinaria(newMaquinaria, token);
+      setShowCreateModal(false);
+      fetchMaquinarias(filtrosConsolidados, 1);
+      logger.success('Maquinaria creada correctamente');
+    } catch (err) {
+      logger.error('Error al crear maquinaria', { error: err.message });
+      setError('Error al crear la maquinaria');
+    }
+  };
+
   /**
    * Maneja la eliminación de una maquinaria
    */
-  const handleDelete = async (id) => {
+  const handleDelete = async (itemOrId) => {
+    const id = typeof itemOrId === 'object' && itemOrId !== null ? itemOrId.id : itemOrId;
     if (!window.confirm('¿Estás seguro de que quieres eliminar esta maquinaria?')) {
       return;
     }
@@ -267,35 +298,50 @@ function MaquinariasPage({ token, role, onLogout }) {
             <h4 className="text-lg font-semibold text-gray-900 mb-1">
               {maquinaria.nombre || 'Sin nombre'}
             </h4>
-            <p className="text-sm text-gray-600 mb-2">
-              <strong>Marca:</strong> {maquinaria.marca || 'N/A'} | 
-              <strong> Modelo:</strong> {maquinaria.modelo || 'N/A'}
-            </p>
+            {maquinaria.modelo && (
+              <p className="text-sm text-gray-600 mb-2">
+                <strong>Modelo:</strong> {maquinaria.modelo}
+              </p>
+            )}
 
-            {/* Información adicional */}
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              {maquinaria.anio && (
-                <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> Año: {formatAnio(maquinaria.anio)}</span>
+            {/* Tags: ubicación, año, categoría */}
+            <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+              {maquinaria.ubicacion && (
+                <button
+                  type="button"
+                  onClick={() => navigate(`/contexto/ubicacion/${encodeURIComponent(maquinaria.ubicacion)}`)}
+                  className="px-2 py-1 rounded text-xs font-medium flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+                  title="Ver contexto de ubicación"
+                >
+                  <MapPin className="w-3.5 h-3.5" /> {maquinaria.ubicacion}
+                </button>
               )}
-              {maquinaria.categoria && (
-                <span className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getColorFromString(maquinaria.categoria)}`}>
-                  <Tag className="w-3 h-3" /> {maquinaria.categoria}
+              {maquinaria.anio && (
+                <span className="px-2 py-1 rounded text-xs font-medium flex items-center gap-1 bg-gray-100 text-gray-700">
+                  <Calendar className="w-3.5 h-3.5" /> {formatAnio(maquinaria.anio)}
                 </span>
               )}
-              {maquinaria.ubicacion && (
-                <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {maquinaria.ubicacion}</span>
+              {maquinaria.categoria && (
+                <button
+                  type="button"
+                  onClick={() => navigate(`/contexto/categoria/${encodeURIComponent(maquinaria.categoria)}`)}
+                  className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getColorFromString(maquinaria.categoria)} hover:opacity-90 transition`}
+                  title="Ver contexto de categoría"
+                >
+                  <Tag className="w-3.5 h-3.5" /> {maquinaria.categoria}
+                </button>
               )}
             </div>
           </div>
           
           {/* Estado y acciones */}
           <div className="flex items-center space-x-3">
-            {/* Estado visual */}
+            {/* Estado visual como tag coherente */}
             <div className="text-right">
-              <EstadoIcon estado={maquinaria.estado} />
-              <div className={`text-sm font-medium ${getEstadoColorClass(maquinaria.estado)}`}>
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${getEstadoColorClass(maquinaria.estado)}`}>
+                <EstadoIcon estado={maquinaria.estado} className="w-3 h-3" />
                 {maquinaria.estado || 'Sin estado'}
-              </div>
+              </span>
             </div>
           </div>
         </div>
@@ -341,9 +387,39 @@ function MaquinariasPage({ token, role, onLogout }) {
   const pageActions = (
     <div className="flex items-center space-x-3">
       <ExportButton 
-        onClick={() => {
-          logger.user('🚀 Exportar maquinarias solicitado');
-          // TODO: Implementar exportación
+        onClick={async () => {
+          try {
+            logger.user('🚀 Exportar maquinarias solicitado');
+            // Obtener todos los datos para exportar ignorando paginación
+            const data = await getMaquinarias(token, filtrosConsolidados, 1, true);
+            const rows = Array.isArray(data) ? data : (data.maquinarias || []);
+            const csvHeader = 'id,nombre,marca,modelo,categoria,anio,numero_serie,proveedor,ubicacion,estado';
+            const csvRows = rows.map(m => [
+              m.id,
+              JSON.stringify(m.nombre || ''),
+              JSON.stringify(m.marca || ''),
+              JSON.stringify(m.modelo || ''),
+              JSON.stringify(m.categoria || ''),
+              m.anio ?? '',
+              JSON.stringify(m.numero_serie || ''),
+              JSON.stringify(m.proveedor || ''),
+              JSON.stringify(m.ubicacion || ''),
+              JSON.stringify(m.estado || '')
+            ].join(','));
+            const csv = [csvHeader, ...csvRows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'maquinarias_export.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          } catch (err) {
+            logger.error('Error al exportar maquinarias', { error: err.message });
+            setError('Error al exportar maquinarias');
+          }
         }}
       />
       <ImportButton 
@@ -355,7 +431,7 @@ function MaquinariasPage({ token, role, onLogout }) {
       <CreateButton 
         entity="maquinarias"
         label="Nueva Maquinaria"
-        onClick={() => logger.user('➕ Crear nueva maquinaria solicitado')}
+        onClick={openCreateModal}
       />
     </div>
   );
@@ -376,7 +452,9 @@ function MaquinariasPage({ token, role, onLogout }) {
         subtitle="Gestiona y filtra todas las maquinarias del sistema"
         entityName="Maquinaria"
         entityNamePlural="Maquinarias"
-        createRoute="/maquinarias/formulario"
+  createRoute="/maquinarias/formulario"
+  showCsvUpload={false}
+  showNewButton={false}
         
         items={maquinarias}
         loading={loading}
@@ -403,9 +481,10 @@ function MaquinariasPage({ token, role, onLogout }) {
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
         
-        onItemClick={handleMaquinariaClick}
-        onEdit={openEditModal}
-        onDelete={handleDelete}
+  onItemClick={handleMaquinariaClick}
+  onView={handleMaquinariaClick}
+  onEdit={openEditModal}
+  onDelete={handleDelete}
         renderItem={renderMaquinaria}
         
         sortFunction={(items) => sortMaquinariasByCategory(items)}
@@ -417,6 +496,16 @@ function MaquinariasPage({ token, role, onLogout }) {
           maquinaria={selectedMaquinaria}
           onClose={() => setSelectedMaquinaria(null)}
           onUpdate={handleUpdate}
+          token={token}
+        />
+      )}
+
+      {showCreateModal && (
+        <MaquinariaEditModal
+          maquinaria={{}}
+          mode="create"
+          onClose={() => setShowCreateModal(false)}
+          onCreate={handleCreate}
           token={token}
         />
       )}

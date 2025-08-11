@@ -40,7 +40,11 @@ const useSwipeGestures = (onSwipeLeft, onSwipeRight, threshold = 50) => {
       const deltaY = Math.abs(touch.clientY - startY.current);
       
       if (deltaX > deltaY && deltaX > 10) {
-        e.preventDefault();
+        // Solo prevenir el comportamiento por defecto si el evento es cancelable
+        // para evitar el warning: "Ignored attempt to cancel a touchmove event with cancelable=false"
+        if (e.cancelable) {
+          e.preventDefault();
+        }
       }
     };
 

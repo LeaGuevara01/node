@@ -69,20 +69,21 @@ export const clearMaquinariaFilters = () => ({
  */
 export const getEstadoColorClass = (estado) => {
   if (!estado) return 'bg-gray-100 text-gray-700';
-  
-  const estadoLower = estado.toLowerCase();
-  
-  if (estadoLower.includes('operativo') || estadoLower.includes('funcionando') || estadoLower.includes('activo')) {
-    return 'bg-green-100 text-green-700';
-  }
-  if (estadoLower.includes('mantenimiento') || estadoLower.includes('reparacion') || estadoLower.includes('revision')) {
-    return 'bg-yellow-100 text-yellow-700';
-  }
-  if (estadoLower.includes('averiado') || estadoLower.includes('roto') || estadoLower.includes('fuera de servicio')) {
-    return 'bg-red-100 text-red-700';
-  }
-  
-  return 'bg-blue-100 text-blue-700'; // Para otros estados
+
+  const s = estado.toLowerCase();
+
+  // Mapeo explícito solicitado
+  if (s.includes('fuera de servicio')) return 'bg-black text-white';
+  if (s.includes('inoperativa')) return 'bg-red-100 text-red-700';
+  if (s.includes('en taller')) return 'bg-green-100 text-green-700';
+  if (s.includes('en reparacion') || s.includes('reparacion') || s.includes('mantenimiento') || s.includes('revision')) return 'bg-yellow-100 text-yellow-700';
+  if (s.includes('operativa') || s.includes('operativo')) return 'bg-blue-100 text-blue-700';
+
+  // Casos anteriores compatibles
+  if (s.includes('averiado') || s.includes('roto')) return 'bg-red-100 text-red-700';
+  if (s.includes('funcionando') || s.includes('activo')) return 'bg-blue-100 text-blue-700';
+
+  return 'bg-gray-100 text-gray-700';
 };
 
 /**
@@ -92,19 +93,19 @@ export const getEstadoColorClass = (estado) => {
  */
 export const getEstadoIconClass = (estado) => {
   if (!estado) return 'text-gray-400';
-  
-  const estadoLower = estado.toLowerCase();
-  
-  if (estadoLower.includes('operativo') || estadoLower.includes('funcionando') || estadoLower.includes('activo')) {
-    return 'text-green-600';
-  }
-  if (estadoLower.includes('mantenimiento') || estadoLower.includes('reparacion') || estadoLower.includes('revision')) {
-    return 'text-yellow-600';
-  }
-  if (estadoLower.includes('averiado') || estadoLower.includes('roto') || estadoLower.includes('fuera de servicio')) {
-    return 'text-red-600';
-  }
-  
+
+  const s = estado.toLowerCase();
+
+  // Alinear color del icono con el texto del chip
+  if (s.includes('fuera de servicio')) return 'text-white'; // chip negro
+  if (s.includes('inoperativa')) return 'text-red-700';
+  if (s.includes('en taller')) return 'text-green-700';
+  if (s.includes('en reparacion') || s.includes('reparacion') || s.includes('mantenimiento') || s.includes('revision')) return 'text-yellow-700';
+  if (s.includes('operativa') || s.includes('operativo')) return 'text-blue-700';
+
+  if (s.includes('averiado') || s.includes('roto')) return 'text-red-700';
+  if (s.includes('funcionando') || s.includes('activo')) return 'text-blue-700';
+
   return 'text-gray-600';
 };
 

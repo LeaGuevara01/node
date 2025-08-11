@@ -84,28 +84,33 @@ export const MAQUINARIA_FILTERS_CONFIG = (opcionesFiltros) => [
     type: 'search',
     placeholder: 'Buscar maquinarias...',
     icon: ICONS.search,
-    span: 'sm:col-span-2 md:col-span-4 lg:col-span-2 xl:col-span-2'
+  // En md (2 columnas) debe ocupar todo el ancho => col-span-2
+  span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   },
   {
     name: 'categoria',
     type: 'select',
     placeholder: 'Todas las categorías',
     icon: ICONS.categoria,
-    options: opcionesFiltros.categorias || []
+  options: opcionesFiltros.categorias || [],
+  // En md queremos 2x2 => cada select ocupa 1 columna
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'ubicacion',
     type: 'select',
     placeholder: 'Todas las ubicaciones',
     icon: ICONS.ubicacion,
-    options: opcionesFiltros.ubicaciones || []
+  options: opcionesFiltros.ubicaciones || [],
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'estado',
     type: 'select',
     placeholder: 'Todos los estados',
     icon: ICONS.estado,
-    options: opcionesFiltros.estados || []
+  options: opcionesFiltros.estados || [],
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   },
   {
     name: 'anio',
@@ -115,11 +120,16 @@ export const MAQUINARIA_FILTERS_CONFIG = (opcionesFiltros) => [
     maxField: 'anioMax',
     minPlaceholder: 'Año mínimo',
     maxPlaceholder: 'Año máximo',
+    responsivePlaceholders: {
+      min: { sm: 'Mín', md: 'Mínimo', lg: 'Año mínimo' },
+      max: { sm: 'Máx', md: 'Máximo', lg: 'Año máximo' }
+    },
     min: opcionesFiltros.anioRange?.min || 1900,
   max: opcionesFiltros.anioRange?.max || new Date().getFullYear(),
   // Indica que los valores del rango son numéricos
   valueType: 'number',
-    span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
+  // Siempre 1 columna desde sm para mantener 2x2 consistente
+  span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'
   }
 ];
 

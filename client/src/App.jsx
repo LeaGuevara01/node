@@ -31,6 +31,7 @@ import RepuestoDetails from './pages/RepuestoDetails';
 import ReparacionDetails from './pages/ReparacionDetails';
 import ProveedorDetails from './pages/ProveedorDetails';
 import { jwtDecode } from 'jwt-decode';
+import ContextPlaceholder from './pages/ContextPlaceholder';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -107,6 +108,8 @@ function App() {
         <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
         <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
         <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
+  {/* Rutas de contexto (placeholder) */}
+  <Route path="/contexto/:tipo/:valor" element={<ContextPlaceholder token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

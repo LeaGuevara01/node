@@ -6,7 +6,38 @@ import { useState, useCallback } from 'react';
  * @param {Function} fetchDataFunction - Función para obtener datos filtrados
  * @param {Function} fetchOptionsFunction - Función para obtener opciones de filtros
  */
-export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetchOptionsFunction) => {
+export const useAdvancedFilters = (
+  initialFiltersOrOptions = {},
+  fetchDataFunctionArg,
+  fetchOptionsFunctionArg
+) => {
+  // Compatibilidad: permitir firma antigua (initialFilters, fetchDataFn, fetchOptionsFn)
+  // y nueva firma basada en objeto de opciones { endpoint, token, defaultFilters, fetchDataFunction, fetchOptionsFunction }
+  const isOptionsObject = (
+    initialFiltersOrOptions && typeof initialFiltersOrOptions === 'object' && (
+      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'endpoint') ||
+      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'defaultFilters') ||
+      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'fetchDataFunction') ||
+      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'fetchOptionsFunction')
+    )
+  );
+
+  const defaultFilters = isOptionsObject
+    ? (initialFiltersOrOptions.defaultFilters || {})
+    : (initialFiltersOrOptions || {});
+
+  const tokenFromOptions = isOptionsObject ? initialFiltersOrOptions.token : undefined;
+  const endpointFromOptions = isOptionsObject ? initialFiltersOrOptions.endpoint : undefined;
+
+  const fetchDataFunction = isOptionsObject
+    ? (initialFiltersOrOptions.fetchDataFunction || fetchDataFunctionArg)
+    : fetchDataFunctionArg;
+
+  const fetchOptionsFunction = isOptionsObject
+    ? (initialFiltersOrOptions.fetchOptionsFunction || fetchOptionsFunctionArg || (endpointFromOptions
+        ? (() => endpointFromOptions(tokenFromOptions))
+        : undefined))
+    : fetchOptionsFunctionArg;
   // Estados para filtros con sistema de tokens
   const [filtrosTemporales, setFiltrosTemporales] = useState({
     search: '',
@@ -15,7 +46,13 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
     estado: '',
     anioMin: '',
     anioMax: '',
-    ...initialFilters
+  // Rango de precio (para repuestos)
+  precioMin: '',
+  precioMax: '',
+  // Rango de fechas (para reparaciones)
+  fechaMin: '',
+  fechaMax: '',
+    ...defaultFilters
   });
   
   const [tokensActivos, setTokensActivos] = useState([]);
@@ -206,124 +243,121 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
     let cambiosRealizados = false;
     
     // Manejar rango de años como un solo token si hay valores
-    if (filtrosTemporales.anioMin !== '' || filtrosTemporales.anioMax !== '') {
+    {
       const { anioMin, anioMax } = filtrosTemporales;
+      const hasMin = anioMin !== '' && anioMin !== null && anioMin !== undefined;
+      const hasMax = anioMax !== '' && anioMax !== null && anioMax !== undefined;
+      if (hasMin || hasMax) {
       
-      const rangoExiste = nuevosTokens.some(t => 
-        t.tipo === 'anio' && 
-        t.valor.anioMin === anioMin && 
-        t.valor.anioMax === anioMax
-      );
+        const rangoExiste = nuevosTokens.some(t => 
+          t.tipo === 'anio' && 
+          t.valor.anioMin === anioMin && 
+          t.valor.anioMax === anioMax
+        );
       
-      if (!rangoExiste) {
-        let valor = '';
-        let label = '';
-        
-        const hasMin = anioMin !== '' && anioMin !== null && anioMin !== undefined;
-        const hasMax = anioMax !== '' && anioMax !== null && anioMax !== undefined;
-        if (hasMin && hasMax) {
-          valor = `${anioMin}-${anioMax}`;
-          label = `Años: ${anioMin} - ${anioMax}`;
-        } else if (hasMin) {
-          valor = `${anioMin}+`;
-          label = `Año mín: ${anioMin}`;
-        } else if (hasMax) {
-          valor = `-${anioMax}`;
-          label = `Año máx: ${anioMax}`;
+        if (!rangoExiste) {
+          let valor = '';
+          let label = '';
+          if (hasMin && hasMax) {
+            valor = `${anioMin}-${anioMax}`;
+            label = `Años: ${anioMin} - ${anioMax}`;
+          } else if (hasMin) {
+            valor = `${anioMin}+`;
+            label = `Año mín: ${anioMin}`;
+          } else if (hasMax) {
+            valor = `-${anioMax}`;
+            label = `Año máx: ${anioMax}`;
+          }
+          const nuevoToken = {
+            id: generarTokenId('anio', valor),
+            tipo: 'anio',
+            valor: { anioMin, anioMax },
+            label,
+            icon: obtenerIconoFiltro('anio')
+          };
+          nuevosTokens.push(nuevoToken);
+          cambiosRealizados = true;
         }
-        
-        const nuevoToken = {
-          id: generarTokenId('anio', valor),
-          tipo: 'anio',
-          valor: { anioMin, anioMax },
-          label,
-          icon: obtenerIconoFiltro('anio')
-        };
-        
-        nuevosTokens.push(nuevoToken);
-        cambiosRealizados = true;
       }
     }
     
     // Manejar rango de precios como un solo token si hay valores
-    if (filtrosTemporales.precioMin !== '' || filtrosTemporales.precioMax !== '') {
+    {
       const { precioMin, precioMax } = filtrosTemporales;
+      const hasMin = precioMin !== '' && precioMin !== null && precioMin !== undefined;
+      const hasMax = precioMax !== '' && precioMax !== null && precioMax !== undefined;
+      if (hasMin || hasMax) {
       
-      const rangoExiste = nuevosTokens.some(t => 
-        t.tipo === 'precio' && 
-        typeof t.valor === 'object' &&
-        t.valor.precioMin === precioMin && 
-        t.valor.precioMax === precioMax
-      );
+        const rangoExiste = nuevosTokens.some(t => 
+          t.tipo === 'precio' && 
+          typeof t.valor === 'object' &&
+          t.valor.precioMin === precioMin && 
+          t.valor.precioMax === precioMax
+        );
       
-      if (!rangoExiste) {
-        let valor = '';
-        let label = '';
-        
-        const hasMin = precioMin !== '' && precioMin !== null && precioMin !== undefined;
-        const hasMax = precioMax !== '' && precioMax !== null && precioMax !== undefined;
-        if (hasMin && hasMax) {
-          valor = `${precioMin}-${precioMax}`;
-          label = `Precios: $${precioMin} - $${precioMax}`;
-        } else if (hasMin) {
-          valor = `${precioMin}+`;
-          label = `Precio mín: $${precioMin}`;
-        } else if (hasMax) {
-          valor = `-${precioMax}`;
-          label = `Precio máx: $${precioMax}`;
+        if (!rangoExiste) {
+          let valor = '';
+          let label = '';
+          if (hasMin && hasMax) {
+            valor = `${precioMin}-${precioMax}`;
+            label = `Precios: $${precioMin} - $${precioMax}`;
+          } else if (hasMin) {
+            valor = `${precioMin}+`;
+            label = `Precio mín: $${precioMin}`;
+          } else if (hasMax) {
+            valor = `-${precioMax}`;
+            label = `Precio máx: $${precioMax}`;
+          }
+          const nuevoToken = {
+            id: generarTokenId('precio', valor),
+            tipo: 'precio',
+            valor: { precioMin, precioMax },
+            label,
+            icon: obtenerIconoFiltro('precio')
+          };
+          nuevosTokens.push(nuevoToken);
+          cambiosRealizados = true;
         }
-        
-        const nuevoToken = {
-          id: generarTokenId('precio', valor),
-          tipo: 'precio',
-          valor: { precioMin, precioMax },
-          label,
-          icon: obtenerIconoFiltro('precio')
-        };
-        
-        nuevosTokens.push(nuevoToken);
-        cambiosRealizados = true;
       }
     }
     
     // Manejar rango de fechas como un solo token si hay valores
-    if (filtrosTemporales.fechaMin !== '' || filtrosTemporales.fechaMax !== '') {
+    {
       const { fechaMin, fechaMax } = filtrosTemporales;
+      const hasMin = !!fechaMin;
+      const hasMax = !!fechaMax;
+      if (hasMin || hasMax) {
       
-      const rangoExiste = nuevosTokens.some(t => 
-        t.tipo === 'fecha' && 
-        typeof t.valor === 'object' &&
-        t.valor.fechaMin === fechaMin && 
-        t.valor.fechaMax === fechaMax
-      );
+        const rangoExiste = nuevosTokens.some(t => 
+          t.tipo === 'fecha' && 
+          typeof t.valor === 'object' &&
+          t.valor.fechaMin === fechaMin && 
+          t.valor.fechaMax === fechaMax
+        );
       
-      if (!rangoExiste) {
-        let valor = '';
-        let label = '';
-        
-        const hasMin = !!fechaMin;
-        const hasMax = !!fechaMax;
-        if (hasMin && hasMax) {
-          valor = `${fechaMin}_${fechaMax}`;
-          label = `Fechas: ${fechaMin} - ${fechaMax}`;
-        } else if (hasMin) {
-          valor = `${fechaMin}+`;
-          label = `Fecha desde: ${fechaMin}`;
-        } else if (hasMax) {
-          valor = `-${fechaMax}`;
-          label = `Fecha hasta: ${fechaMax}`;
+        if (!rangoExiste) {
+          let valor = '';
+          let label = '';
+          if (hasMin && hasMax) {
+            valor = `${fechaMin}_${fechaMax}`;
+            label = `Fechas: ${fechaMin} - ${fechaMax}`;
+          } else if (hasMin) {
+            valor = `${fechaMin}+`;
+            label = `Fecha desde: ${fechaMin}`;
+          } else if (hasMax) {
+            valor = `-${fechaMax}`;
+            label = `Fecha hasta: ${fechaMax}`;
+          }
+          const nuevoToken = {
+            id: generarTokenId('fecha', valor),
+            tipo: 'fecha',
+            valor: { fechaMin, fechaMax },
+            label,
+            icon: obtenerIconoFiltro('fecha')
+          };
+          nuevosTokens.push(nuevoToken);
+          cambiosRealizados = true;
         }
-        
-        const nuevoToken = {
-          id: generarTokenId('fecha', valor),
-          tipo: 'fecha',
-          valor: { fechaMin, fechaMax },
-          label,
-          icon: obtenerIconoFiltro('fecha')
-        };
-        
-        nuevosTokens.push(nuevoToken);
-        cambiosRealizados = true;
       }
     }
     
@@ -371,17 +405,20 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
       }
     });
 
-    if (cambiosRealizados) {
-      setTokensActivos(nuevosTokens);
-      const nuevosConsolidados = consolidarFiltrosDeTokens(nuevosTokens);
-      setFiltrosConsolidados(nuevosConsolidados);
-      
-      // Ejecutar función de fetch de datos
-      if (fetchDataFunction) {
-        fetchDataFunction(nuevosConsolidados, 1);
-      }
+    if (!cambiosRealizados) {
+      // No aplicar ni limpiar si no hay cambios
+      return;
     }
-    
+
+    setTokensActivos(nuevosTokens);
+    const nuevosConsolidados = consolidarFiltrosDeTokens(nuevosTokens);
+    setFiltrosConsolidados(nuevosConsolidados);
+
+    // Ejecutar función de fetch de datos
+    if (fetchDataFunction) {
+      fetchDataFunction(nuevosConsolidados, 1);
+    }
+
     // Resetear filtros temporales después de aplicar
     setFiltrosTemporales(prev => {
       const reset = {};
@@ -411,36 +448,44 @@ export const useAdvancedFilters = (initialFilters = {}, fetchDataFunction, fetch
    * Limpia todos los filtros y tokens
    */
   const limpiarTodosFiltros = useCallback(() => {
+    // No hacer nada si ya está limpio
+    const allEmpty = Object.values(filtrosTemporales).every(v => v === '' || v === null || v === undefined);
+    if (tokensActivos.length === 0 && allEmpty) return;
+
     // Resetear filtros temporales
     setFiltrosTemporales(prev => {
       const reset = {};
-      Object.keys(prev).forEach(key => {
-        reset[key] = '';
-      });
+      Object.keys(prev).forEach(key => { reset[key] = ''; });
       return reset;
     });
-    
-    // Limpiar tokens
+
+    // Limpiar tokens y consolidados
     setTokensActivos([]);
     setFiltrosConsolidados({});
-    
+
     // Recargar sin filtros
     if (fetchDataFunction) {
       fetchDataFunction({}, 1);
     }
-  }, [fetchDataFunction]);
+  }, [fetchDataFunction, filtrosTemporales, tokensActivos.length]);
 
   /**
    * Carga las opciones de filtros
    */
   const cargarOpcionesFiltros = useCallback(async () => {
-    if (fetchOptionsFunction) {
-      try {
-        const data = await fetchOptionsFunction();
-        setOpcionesFiltros(data);
-      } catch (err) {
-        console.error('Error al cargar opciones de filtros:', err);
-      }
+    if (!fetchOptionsFunction) return;
+    try {
+      const data = await fetchOptionsFunction();
+      // Normalizar respuesta mínima esperada para maquinarias
+      const normalizado = {
+        categorias: data?.categorias || data?.category || data?.categories || [],
+        ubicaciones: data?.ubicaciones || data?.locations || [],
+        estados: data?.estados || data?.status || [],
+        anioRange: data?.anioRange || data?.anio || data?.yearsRange || { min: 1900, max: new Date().getFullYear() }
+      };
+      setOpcionesFiltros(prev => ({ ...prev, ...normalizado }));
+    } catch (err) {
+      console.error('Error al cargar opciones de filtros:', err);
     }
   }, [fetchOptionsFunction]);
 

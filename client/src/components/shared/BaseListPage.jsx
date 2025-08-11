@@ -48,6 +48,7 @@ const BaseListPage = ({
   onEdit,
   onView,
   onDelete,
+  onItemClick,
   
   // Carga masiva
   onFileUpload,
@@ -88,10 +89,10 @@ const BaseListPage = ({
    * Renderiza las acciones por defecto de un elemento
    */
   const renderDefaultItemActions = (item) => (
-    <div className={LIST_STYLES.itemActions}>
+    <div className={LIST_STYLES.itemActions} onClick={(e) => e.stopPropagation()}>
       {onView && (
         <button
-          onClick={() => onView(item)}
+          onClick={(e) => { e.stopPropagation(); onView(item); }}
           className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
           title={`Ver detalles de ${entityName}`}
         >
@@ -103,7 +104,7 @@ const BaseListPage = ({
       )}
       {onEdit && (
         <button
-          onClick={() => onEdit(item)}
+          onClick={(e) => { e.stopPropagation(); onEdit(item); }}
           className={BUTTON_STYLES.edit}
           title={`Editar ${entityName}`}
         >
@@ -114,7 +115,7 @@ const BaseListPage = ({
       )}
       {onDelete && (
         <button
-          onClick={() => onDelete(item)}
+          onClick={(e) => { e.stopPropagation(); onDelete(item); }}
           className={`${BUTTON_STYLES.edit} text-red-600 hover:bg-red-50`}
           title={`Eliminar ${entityName}`}
         >
@@ -233,7 +234,14 @@ const BaseListPage = ({
               </div>
             ) : (
               (Array.isArray(items) ? items : []).map((item) => (
-                <div key={item.id} className={LIST_STYLES.item}>
+                <div 
+                  key={item.id} 
+                  className={`${LIST_STYLES.item} ${onItemClick ? 'cursor-pointer hover:bg-gray-50' : ''}`}
+                  onClick={onItemClick ? () => onItemClick(item) : undefined}
+                  role={onItemClick ? 'button' : undefined}
+                  tabIndex={onItemClick ? 0 : undefined}
+                  onKeyDown={onItemClick ? (e) => { if (e.key === 'Enter') onItemClick(item); } : undefined}
+                >
                   <div className={`${LIST_STYLES.itemContent} list-item-content`}>
                     <div className="flex-1">
                       {renderItem ? renderItem(item) : (

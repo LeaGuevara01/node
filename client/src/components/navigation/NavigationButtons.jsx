@@ -91,19 +91,22 @@ export const CreateButton = ({
   label, 
   variant = "primary",
   size = "",
-  className = "" 
+  className = "",
+  onClick
 }) => {
   const { navigateToFormPage } = useNavigation();
   
-  const finalLabel = label || `Crear ${entity || 'Nuevo'}`;
+  const finalLabel = label || `Nueva ${entity ? entity.charAt(0).toUpperCase() + entity.slice(1) : 'Entrada'}`;
+  const shortLabel = 'Nueva';
   
   return (
     <button
-      onClick={() => navigateToFormPage(entity)}
+      onClick={onClick || (() => navigateToFormPage(entity))}
       className={`${BUTTON_STYLES.base} ${BUTTON_STYLES[variant]} ${BUTTON_STYLES[size]} ${className}`}
     >
       <Plus size={16} className="mr-2" />
-      {finalLabel}
+      <span className="block lg:hidden">{shortLabel}</span>
+      <span className="hidden lg:inline">{finalLabel}</span>
     </button>
   );
 };
