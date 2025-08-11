@@ -14,5 +14,27 @@
     "checkJs": false,
     "strict": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    // Archivos/páginas legacy o de ejemplo (no se usan en runtime)
+    "src/backup/**",
+    "src/examples/**",
+    "src/scripts/**",
+    "src/components/examples/**",
+    "src/pages/*Old*.jsx",
+    "src/pages/*WithFilters*.jsx",
+    "src/pages/Dashboard.jsx",
+    "src/pages/DashboardModern.jsx",
+    "src/pages/RepuestosModular.jsx",
+    "src/pages/MaquinariasPage.jsx",
+    "src/pages/MaquinariaForm.jsx",
+    "src/pages/MaquinariaFormModular.jsx",
+    "src/pages/ProveedorDetails_new.jsx",
+    "src/pages/ReparacionDetails_new.jsx",
+    "src/pages/StatsCardDemo.jsx",
+    "src/pages/StyleExamples.jsx",
+    // Entrypoints duplicados no usados (usamos main.tsx + App.tsx)
+    "src/main.jsx",
+    "src/App.jsx"
+  ]
 }
