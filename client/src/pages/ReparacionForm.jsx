@@ -1,9 +1,14 @@
 // Archivo optimizado para ReparacionForm.jsx con utilidades modulares
 // Este archivo es una versión refactorizada que usa las utilidades creadas
 
+/**
+ * Módulo: ReparacionForm
+ * Rol: Crear/editar reparaciones + carga masiva desde CSV (client-side helper)
+ * Notas: Centraliza parseo CSV con utils/csvUtils; valores numéricos normalizados
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Papa from 'papaparse';
+import { processCSVFile, createCSVMappers } from '../utils/csvUtils';
 import { 
   createReparacion, 
   updateReparacion, 
@@ -410,45 +415,29 @@ function ReparacionForm({ token, onCreated }) {
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <label className="flex-1 sm:flex-initial">
                 <span className="sr-only">Cargar CSV</span>
-                <input 
-                  type="file" 
-                  accept=".csv" 
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
                   onChange={async (e) => {
                     const file = e.target.files[0];
                     if (!file) return;
-                    setBulkError(''); setBulkSuccess('');
-                    
-                    Papa.parse(file, {
-                      header: true,
-                      complete: async (results) => {
-                        const validRows = results.data.filter(row => row.fecha && row.maquinariaId && row.userId);
-                        let successCount = 0, failCount = 0;
-                        
-                        for (const row of validRows) {
-                          try {
-                            await createReparacion({
-                              fecha: row.fecha,
-                              maquinariaId: Number(row.maquinariaId),
-                              descripcion: row.descripcion || '',
-                              userId: Number(row.userId),
-                              estado: row.estado || getDefaultEstado(),
-                              prioridad: row.prioridad || getDefaultPrioridad(),
-                              costo: row.costo ? Number(row.costo) : 0,
-                              duracionEstimada: row.duracionEstimada ? Number(row.duracionEstimada) : 0,
-                              repuestos: []
-                            }, token);
-                            successCount++;
-                          } catch (err) {
-                            failCount++;
-                          }
-                        }
-                        setBulkSuccess(`Creadas: ${successCount}`);
-                        setBulkError(failCount ? `Fallidas: ${failCount}` : '');
-                        if (onCreated && successCount) onCreated();
-                        fetchReparaciones();
-                      },
-                      error: (err) => setBulkError('Error al procesar CSV'),
-                    });
+                    setBulkError('');
+                    setBulkSuccess('');
+
+                    try {
+                      const form = new FormData();
+                      form.append('file', file);
+                      const url = `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/reparaciones/bulk`;
+                      const res = await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+                      const data = await res.json();
+                      if (!res.ok) throw new Error(data?.error || 'Error en importación');
+                      setBulkSuccess(`Importación recibida (${data.filename || file.name}). Registros procesados: ${data.count}`);
+                      if (onCreated) onCreated();
+                    } catch (err) {
+                      setBulkError(err.message || 'Error al importar reparaciones');
+                    } finally {
+                      fetchReparaciones();
+                    }
                   }}
                   className="hidden"
                   id="csv-upload"
@@ -657,7 +646,7 @@ function ReparacionForm({ token, onCreated }) {
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Reparaciones ({paginacion.totalItems || reparaciones.length})</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Reparaciones</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenadas por fecha descendente</p>
               </div>
               {loading && (

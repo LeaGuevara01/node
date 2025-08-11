@@ -96,15 +96,23 @@ export {
   conditionalClass
 } from './pageStyles';
 
-// Componentes con estilos automáticos
+// Componentes con estilos automáticos - ⚠️ DEPRECADOS
 export {
+  /** @deprecated Usar AppLayout + PageContainer */
   StyledPageWrapper,
+  /** @deprecated Usar AppLayout directamente */
   withStyledPage,
+  /** @deprecated Usar AppLayout + PageContainer */
   useStyledPage,
+  /** @deprecated Usar FormLayout + componentes modulares */
   StyledForm,
+  /** @deprecated Usar UniversalList + ListLayout */
   StyledList,
+  /** @deprecated Usar PageContainer + StatsGrid */
   StyledDashboard,
+  /** @deprecated No usar */
   applyPageStyles,
+  /** @deprecated No usar */
   styledPage
 } from './styledComponents';
 

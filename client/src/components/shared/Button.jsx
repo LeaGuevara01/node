@@ -4,6 +4,7 @@
  */
 
 import React, { forwardRef } from 'react';
+import { Search, RotateCcw } from 'lucide-react';
 import { COMPONENT_VARIANTS } from '../../styles/tokens/componentVariants';
 
 /**
@@ -216,7 +217,7 @@ export const CreateButton = (props) => (
 export const SearchButton = ({ loading, ...props }) => (
   <Button
     variant="primary"
-    icon={loading ? null : '🔍'}
+    icon={loading ? null : <Search className="w-4 h-4" />}
     loading={loading}
     {...props}
   >
@@ -241,7 +242,7 @@ export const ExportButton = ({ loading, ...props }) => (
 export const RefreshButton = ({ loading, ...props }) => (
   <Button
     variant="ghost"
-    icon={loading ? null : '🔄'}
+    icon={loading ? null : <RotateCcw className="w-4 h-4" />}
     loading={loading}
     size="sm"
     {...props}

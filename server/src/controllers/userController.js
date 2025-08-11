@@ -1,6 +1,9 @@
-const { PrismaClient } = require('@prisma/client');
+// Módulo: User Controller
+// Rol: administración de usuarios (listar, actualizar, eliminar)
+// Notas: no retorna contraseñas; maneja errores Prisma (P2002/P2025)
+
 const bcrypt = require('bcryptjs');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 exports.getUsers = async (req, res) => {
   try {

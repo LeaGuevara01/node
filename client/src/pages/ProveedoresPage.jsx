@@ -1,3 +1,6 @@
+// Página: Proveedores
+// Rol: listado con filtros y acceso a detalles/edición
+
 // client/src/pages/ProveedoresPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,10 +20,15 @@ import { getColorFromString } from '../utils/colorUtils';
 import { 
   BUTTON_STYLES, 
   ICON_STYLES,
-  LIST_STYLES
+  LIST_STYLES,
+  MODAL_STYLES,
+  INPUT_STYLES,
+  LAYOUT_STYLES,
+  ALERT_STYLES
 } from '../styles/repuestoStyles';
+import AppLayout from '../components/navigation/AppLayout';
 
-function ProveedoresPage({ token, onCreated }) {
+function ProveedoresPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
   
   // Estados principales
@@ -29,6 +37,12 @@ function ProveedoresPage({ token, onCreated }) {
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  
+  // Estado del formulario
+  const [form, setForm] = useState({
+    nombre: '', contacto: '', telefono: '', email: '', direccion: '', ubicacion: '', notas: ''
+  });
 
   // Hook de paginación
   const { 
@@ -175,6 +189,26 @@ function ProveedoresPage({ token, onCreated }) {
   };
 
   /**
+   * Maneja el envío del formulario de agregar proveedor
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const proveedorData = { ...form };
+      await createProveedor(proveedorData, token);
+      setForm({ nombre: '', contacto: '', telefono: '', email: '', direccion: '', ubicacion: '', notas: '' });
+      setShowAddModal(false);
+      if (onCreated) onCreated();
+      fetchProveedores(filtrosConsolidados, 1);
+      cargarOpcionesFiltros();
+      setBulkSuccess('Proveedor creado exitosamente');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  /**
    * Renderiza un elemento de proveedor
    */
   const renderProveedor = (proveedor) => (
@@ -183,27 +217,7 @@ function ProveedoresPage({ token, onCreated }) {
         <div className="flex items-center gap-2">
           <h3 className={LIST_STYLES.itemTitle}>{proveedor.nombre}</h3>
         </div>
-        <div className={LIST_STYLES.itemActions}>
-          <button
-            onClick={() => handleView(proveedor)}
-            className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
-            title="Ver detalles"
-          >
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          </button>
-          <button
-            onClick={() => openEditModal(proveedor)}
-            className={BUTTON_STYLES.edit}
-            title="Editar proveedor"
-          >
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
-        </div>
+  {/* Acciones en header de detalles; fila clickeable abre detalles */}
       </div>
       {proveedor.direccion && (
         <div className={LIST_STYLES.itemDescription}>
@@ -256,14 +270,41 @@ function ProveedoresPage({ token, onCreated }) {
     cargarOpcionesFiltros();
   }, []);
 
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Proveedores' }
+  ];
+
+  const pageActions = (
+    <button
+      onClick={() => setShowAddModal(true)}
+      className={BUTTON_STYLES.newItem}
+    >
+      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+      </svg>
+      Nuevo Proveedor
+    </button>
+  );
+
   return (
-    <>
+    <AppLayout
+      currentSection="proveedores"
+      breadcrumbs={breadcrumbs}
+      title="Gestión de Proveedores"
+      subtitle="Administra tus proveedores"
+      actions={pageActions}
+      token={token}
+      role={role}
+      onLogout={onLogout}
+    >
       <BaseListPage
         title="Listado de Proveedores"
         subtitle="Gestiona y filtra todos los proveedores del sistema"
         entityName="Proveedor"
         entityNamePlural="Proveedores"
-        createRoute="/proveedores/formulario"
+        showNewButton={false}
+  showCsvUpload={false}
         
         items={proveedores}
         loading={loading}
@@ -281,7 +322,8 @@ function ProveedoresPage({ token, onCreated }) {
         paginacion={paginacion}
         handlePaginacion={(pagina) => fetchProveedores(filtrosConsolidados, pagina)}
         
-        onFileUpload={handleFileUpload}
+  onItemClick={(item) => navigate(`/proveedores/${item.id}`)}
+  onFileUpload={undefined}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
@@ -289,6 +331,116 @@ function ProveedoresPage({ token, onCreated }) {
         
         renderItem={renderProveedor}
       />
+
+      {/* Modal de agregar proveedor */}
+      {showAddModal && (
+        <div className={MODAL_STYLES.overlay}>
+          <div className={MODAL_STYLES.container}>
+            <div className={MODAL_STYLES.content}>
+              <div className={MODAL_STYLES.header}>
+                <h2 className={MODAL_STYLES.title}>Nuevo Proveedor</h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className={MODAL_STYLES.closeButton}
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className={MODAL_STYLES.form}>
+                <div className={LAYOUT_STYLES.gridForm}>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input
+                      type="text"
+                      value={form.nombre}
+                      onChange={(e) => setForm({...form, nombre: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Contacto</label>
+                    <input
+                      type="text"
+                      value={form.contacto}
+                      onChange={(e) => setForm({...form, contacto: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                    <input
+                      type="tel"
+                      value={form.telefono}
+                      onChange={(e) => setForm({...form, telefono: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({...form, email: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                    <input
+                      type="text"
+                      value={form.ubicacion}
+                      onChange={(e) => setForm({...form, ubicacion: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                    <input
+                      type="text"
+                      value={form.direccion}
+                      onChange={(e) => setForm({...form, direccion: e.target.value})}
+                      className={INPUT_STYLES.base}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                    <textarea
+                      value={form.notas}
+                      onChange={(e) => setForm({...form, notas: e.target.value})}
+                      className={INPUT_STYLES.base}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <div className={ALERT_STYLES.errorModal}>
+                    {error}
+                  </div>
+                )}
+
+                <div className={MODAL_STYLES.buttonGroup}>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className={BUTTON_STYLES.secondary}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className={BUTTON_STYLES.primary}
+                  >
+                    Crear Proveedor
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de edición */}
       {selectedProveedor && (
@@ -300,7 +452,7 @@ function ProveedoresPage({ token, onCreated }) {
           token={token}
         />
       )}
-    </>
+  </AppLayout>
   );
 }
 

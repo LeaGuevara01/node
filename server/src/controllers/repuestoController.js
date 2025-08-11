@@ -1,5 +1,8 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+// Módulo: Repuesto Controller
+// Rol: listar/CRUD, filtros (categoría, ubicacion, stock), estadísticas
+// Notas: respuestas con { repuestos, pagination } y endpoints auxiliares
+
+const prisma = require('../lib/prisma');
 
 // Función para parsear rangos de stock/año
 const parseStockRange = (rangeString) => {
@@ -54,6 +57,9 @@ exports.getRepuestos = async (req, res) => {
       stockMin, 
       stockMax, 
       sinStock,
+  disponibilidad,
+  precioMin,
+  precioMax,
       codigo,
       page = 1, 
       limit = 50,
@@ -61,55 +67,102 @@ exports.getRepuestos = async (req, res) => {
       sortOrder = 'asc'
     } = req.query;
 
-    // Construir filtros dinámicamente
-    const where = {};
-    const orderBy = {};
+  // Construir filtros dinámicamente con AND/OR correctamente agrupados
+  const baseWhere = {};
+  const andConds = [];
+  const orderBy = {};
 
     // Filtro de búsqueda por nombre, código o descripción
     if (search) {
       const searchTerms = Array.isArray(search) ? search : search.split(',');
-      where.OR = searchTerms.flatMap(term => [
-        { nombre: { contains: term.trim(), mode: 'insensitive' } },
-        { codigo: { contains: term.trim(), mode: 'insensitive' } },
-        { descripcion: { contains: term.trim(), mode: 'insensitive' } }
-      ]);
+      const searchOR = searchTerms.flatMap(term => {
+        const t = term.trim();
+        if (!t) return [];
+        return [
+          { nombre: { contains: t, mode: 'insensitive' } },
+          { codigo: { contains: t, mode: 'insensitive' } },
+          { descripcion: { contains: t, mode: 'insensitive' } }
+        ];
+      });
+      if (searchOR.length) andConds.push({ OR: searchOR });
     }
 
     // Filtro por código específico (puede ser múltiple)
     if (codigo) {
       const codigoTerms = Array.isArray(codigo) ? codigo : codigo.split(',');
-      if (codigoTerms.length === 1) {
-        where.codigo = { contains: codigoTerms[0].trim(), mode: 'insensitive' };
-      } else {
-        where.OR = [...(where.OR || []), ...codigoTerms.map(term => ({
-          codigo: { contains: term.trim(), mode: 'insensitive' }
-        }))];
+      const codeOR = codigoTerms
+        .map(term => term.trim())
+        .filter(Boolean)
+        .map(t => ({ codigo: { contains: t, mode: 'insensitive' } }));
+      if (codeOR.length === 1) {
+        baseWhere.codigo = codeOR[0].codigo; // objeto { contains, mode }
+      } else if (codeOR.length > 1) {
+        andConds.push({ OR: codeOR });
       }
     }
 
     // Filtro por categoría
     if (categoria && categoria !== 'all') {
-      where.categoria = categoria;
+  baseWhere.categoria = categoria;
     }
 
     // Filtro por ubicación
     if (ubicacion && ubicacion !== 'all') {
-      where.ubicacion = ubicacion;
+  baseWhere.ubicacion = ubicacion;
     }
 
     // Filtro por stock mínimo
     if (stockMin) {
-      where.stock = { ...where.stock, gte: parseInt(stockMin) };
+      baseWhere.stock = { ...(baseWhere.stock || {}), gte: parseInt(stockMin) };
     }
 
     // Filtro por stock máximo
     if (stockMax) {
-      where.stock = { ...where.stock, lte: parseInt(stockMax) };
+      baseWhere.stock = { ...(baseWhere.stock || {}), lte: parseInt(stockMax) };
     }
 
     // Filtro para repuestos sin stock
-    if (sinStock === 'true') {
-      where.stock = { lte: 0 };
+    const applySinStockOnly = sinStock === 'true';
+    if (applySinStockOnly) {
+      baseWhere.stock = { lte: 0 };
+    }
+
+    // Filtro por disponibilidad (alineado con Dashboard: 0 | 1 | >=2)
+    if (disponibilidad && !applySinStockOnly) {
+      // Normalizar valor/es y permitir múltiples separados por coma
+      const normalize = (v) => (v || '')
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '');
+      const values = Array.isArray(disponibilidad)
+        ? disponibilidad
+        : disponibilidad.split(',');
+      const norms = values.map(normalize);
+
+      // Construir condiciones OR según buckets
+      const orConds = [];
+      if (norms.some(v => ['sin stock', 'sinstock', '0', 'cero', 'zero'].includes(v))) {
+        orConds.push({ stock: { lte: 0 } });
+      }
+      if (norms.some(v => ['bajo', '1', 'uno', 'low'].includes(v) || v.startsWith('bajo'))) {
+        orConds.push({ stock: 1 });
+      }
+      if (norms.some(v => ['normal', '>=2', '2+', 'dos', 'twoplus', 'two+', 'dosplus'].includes(v) || v.includes('2'))) {
+        orConds.push({ stock: { gte: 2 } });
+      }
+      if (orConds.length > 0) {
+        andConds.push({ OR: orConds });
+      }
+    }
+
+    // Filtros por precio (acepta 0 como valor válido)
+    if (precioMin !== undefined && precioMin !== '') {
+      baseWhere.precio = { ...(baseWhere.precio || {}), gte: parseInt(precioMin) };
+    }
+    if (precioMax !== undefined && precioMax !== '') {
+      baseWhere.precio = { ...(baseWhere.precio || {}), lte: parseInt(precioMax) };
     }
 
     // Configurar ordenamiento
@@ -120,14 +173,18 @@ exports.getRepuestos = async (req, res) => {
     const take = parseInt(limit);
 
     // Ejecutar consulta con filtros
+    const finalWhere = andConds.length
+      ? (Object.keys(baseWhere).length ? { AND: [baseWhere, ...andConds] } : { AND: andConds })
+      : baseWhere;
+
     const [repuestos, total] = await Promise.all([
       prisma.repuesto.findMany({
-        where,
+        where: finalWhere,
         orderBy,
         skip,
         take
       }),
-      prisma.repuesto.count({ where })
+      prisma.repuesto.count({ where: finalWhere })
     ]);
 
     // Calcular información de paginación
@@ -219,7 +276,7 @@ exports.deleteRepuesto = async (req, res) => {
 // Obtener opciones únicas para filtros
 exports.getFilterOptions = async (req, res) => {
   try {
-    const [categorias, ubicaciones, estadisticas] = await Promise.all([
+    const [categorias, ubicaciones, estadisticas, precioStats] = await Promise.all([
       // Obtener categorías únicas
       prisma.repuesto.findMany({
         select: { categoria: true },
@@ -237,15 +294,25 @@ exports.getFilterOptions = async (req, res) => {
         _min: { stock: true },
         _max: { stock: true },
         _count: { id: true }
+      }),
+      // Rango de precios
+      prisma.repuesto.aggregate({
+        _min: { precio: true },
+        _max: { precio: true }
       })
     ]);
 
     res.json({
       categorias: categorias.map(c => c.categoria).sort(),
       ubicaciones: ubicaciones.map(u => u.ubicacion).sort(),
+      disponibilidades: ['Sin stock', 'Bajo (1)', 'Normal (≥2)'],
       stockRange: {
         min: estadisticas._min.stock || 0,
         max: estadisticas._max.stock || 0
+      },
+      precioRange: {
+        min: (precioStats._min.precio ?? 0),
+        max: (precioStats._max.precio ?? 0)
       },
       totalRepuestos: estadisticas._count.id
     });
@@ -260,7 +327,8 @@ exports.getEstadisticas = async (req, res) => {
     const [
       totalRepuestos,
       repuestosSinStock,
-      stockBajo,
+      stockIgualUno,
+      stockNormalDosPlus,
       porCategoria,
       porUbicacion
     ] = await Promise.all([
@@ -272,10 +340,11 @@ exports.getEstadisticas = async (req, res) => {
         where: { stock: { lte: 0 } }
       }),
       
-      // Repuestos con stock bajo (menos de 3)
-      prisma.repuesto.count({
-        where: { stock: { lte: 2, gt: 0 } }
-      }),
+      // Repuestos con stock bajo (exactamente 1)
+      prisma.repuesto.count({ where: { stock: 1 } }),
+
+      // Repuestos con stock normal (>= 2)
+      prisma.repuesto.count({ where: { stock: { gte: 2 } } }),
       
       // Agrupado por categoría
       prisma.repuesto.groupBy({
@@ -297,9 +366,9 @@ exports.getEstadisticas = async (req, res) => {
     res.json({
       resumen: {
         total: totalRepuestos,
-        sinStock: repuestosSinStock,
-        stockBajo: stockBajo,
-        stockDisponible: totalRepuestos - repuestosSinStock
+  sinStock: repuestosSinStock,
+  stockBajo: stockIgualUno,
+  stockDisponible: stockNormalDosPlus
       },
       porCategoria: porCategoria.map(item => ({
         categoria: item.categoria,

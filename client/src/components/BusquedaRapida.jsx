@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { MapPin } from 'lucide-react';
 import { busquedaRapidaRepuestos } from '../services/api';
 
 const BusquedaRapida = ({ token, onSelect }) => {
@@ -130,8 +131,8 @@ const BusquedaRapida = ({ token, onSelect }) => {
                     )}
                     
                     {repuesto.ubicacion && (
-                      <span className="text-purple-600">
-                        📍 {repuesto.ubicacion}
+                      <span className="text-purple-600 flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> {repuesto.ubicacion}
                       </span>
                     )}
                   </div>

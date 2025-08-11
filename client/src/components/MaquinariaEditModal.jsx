@@ -10,17 +10,17 @@ import {
   MODAL_STYLES
 } from '../styles/repuestoStyles';
 
-function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, token }) {
+function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, onCreate, mode = 'edit', token }) {
   const [form, setForm] = useState({
-    nombre: maquinaria.nombre || '',
-    modelo: maquinaria.modelo || '',
-    categoria: maquinaria.categoria || '',
-    anio: maquinaria.anio || '',
-    numero_serie: maquinaria.numero_serie || '',
-    proveedor: maquinaria.proveedor || '',
-    ubicacion: maquinaria.ubicacion || '',
-    estado: maquinaria.estado || '',
-    descripcion: maquinaria.descripcion || ''
+  nombre: maquinaria?.nombre || '',
+  modelo: maquinaria?.modelo || '',
+  categoria: maquinaria?.categoria || '',
+  anio: maquinaria?.anio || '',
+  numero_serie: maquinaria?.numero_serie || '',
+  proveedor: maquinaria?.proveedor || '',
+  ubicacion: maquinaria?.ubicacion || '',
+  estado: maquinaria?.estado || '',
+  descripcion: maquinaria?.descripcion || ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,7 +43,16 @@ function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, token })
         ...form,
         anio: form.anio ? Number(form.anio) : null
       };
-      await onUpdate(maquinaria.id, maquinariaData);
+      if (mode === 'create') {
+        if (onCreate) {
+          await onCreate(maquinariaData);
+        } else if (onUpdate) {
+          // fallback por compatibilidad
+          await onUpdate(undefined, maquinariaData);
+        }
+      } else {
+        await onUpdate(maquinaria.id, maquinariaData);
+      }
       onClose();
     } catch (err) {
       setError(err.message || 'Error al actualizar maquinaria');
@@ -68,7 +77,7 @@ function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, token })
       <div className={MODAL_STYLES.container}>
         <div className={MODAL_STYLES.content}>
           <div className={MODAL_STYLES.header}>
-            <h2 className={MODAL_STYLES.title}>Editar Maquinaria</h2>
+            <h2 className={MODAL_STYLES.title}>{mode === 'create' ? 'Nueva Maquinaria' : 'Editar Maquinaria'}</h2>
             <button
               onClick={onClose}
               className={MODAL_STYLES.closeButton}
@@ -183,16 +192,18 @@ function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, token })
             )}
 
             <div className={MODAL_STYLES.buttonGroup}>
-              <button
-                type="button"
-                onClick={handleDelete}
-                className={BUTTON_STYLES.danger}
-              >
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Eliminar
-              </button>
+              {mode !== 'create' && (
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className={BUTTON_STYLES.danger}
+                >
+                  <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Eliminar
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onClose}
@@ -214,7 +225,7 @@ function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, token })
                     Guardando...
                   </>
                 ) : (
-                  'Guardar Cambios'
+                  mode === 'create' ? 'Crear Maquinaria' : 'Guardar Cambios'
                 )}
               </button>
             </div>

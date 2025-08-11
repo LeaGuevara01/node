@@ -432,7 +432,7 @@ function RepuestoForm({ token, onCreated }) {
           <div className={`${CONTAINER_STYLES.cardPadding} border-b border-gray-200`}>
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Repuestos ({paginacion.totalItems})</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Repuestos</h3>
                 <p className={TEXT_STYLES.subtitle}>Ordenados por stock descendente</p>
               </div>
               {loading && (
@@ -509,7 +509,7 @@ function RepuestoForm({ token, onCreated }) {
                           )}
                         </div>
                         <div className={LIST_STYLES.itemTagsRight}>
-                          <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock)}`} title={`Stock: ${repuesto.stock}`}>
+                          <span className={`${LIST_STYLES.itemTagStock} ${getStockColorClass(repuesto.stock, repuesto.ubicacion)}`} title={`Stock: ${repuesto.stock}`}>
                             <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                             </svg>

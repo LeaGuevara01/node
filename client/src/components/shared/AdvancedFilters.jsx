@@ -44,9 +44,20 @@ const AdvancedFilters = ({
           {campo.icon}
         </div>
         <input
-          type="text"
+          type={campo.type === 'search' ? 'search' : 'text'}
           value={filtrosTemporales[campo.name] || ''}
           onChange={(e) => handleFiltroChange(campo.name, e.target.value)}
+          onKeyDown={(e) => {
+            if (campo.type === 'search') {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                aplicarFiltrosActuales();
+              } else if (e.key === 'Escape' || e.key === 'Esc') {
+                e.preventDefault();
+                limpiarTodosFiltros();
+              }
+            }
+          }}
           placeholder={campo.placeholder}
           className={`${INPUT_STYLES.withIcon} ${INPUT_STYLES.placeholder}`}
         />
@@ -64,16 +75,38 @@ const AdvancedFilters = ({
           {campo.icon}
         </div>
         <select
-          value={filtrosTemporales[campo.name] || ''}
-          onChange={(e) => handleFiltroChange(campo.name, e.target.value)}
+          /*
+           * Normalizamos el value del select a string para el DOM,
+           * y convertimos de vuelta a primitivo (string|number) en onChange.
+           */
+          value={
+            filtrosTemporales[campo.name] === 0
+              ? '0'
+              : (filtrosTemporales[campo.name] ?? '') + ''
+          }
+          onChange={(e) => {
+            const raw = e.target.value;
+            const normalized = raw === ''
+              ? ''
+              : (campo.valueType === 'number' ? Number(raw) : raw);
+            handleFiltroChange(campo.name, normalized);
+          }}
           className={INPUT_STYLES.select}
         >
           <option value="" className={INPUT_STYLES.selectPlaceholder}>
             {campo.placeholder}
           </option>
-          {campo.options?.map(option => (
-            <option key={option} value={option}>{option}</option>
-          ))}
+          {campo.options?.map((option, idx) => {
+            const isObj = typeof option === 'object' && option !== null;
+            const value = isObj ? option.value : option;
+            const label = isObj ? (option.label ?? String(option.value)) : String(option);
+            const domValue = value === 0 ? '0' : String(value ?? '');
+            return (
+              <option key={isObj ? `${value}-${idx}` : String(option)} value={domValue}>
+                {label}
+              </option>
+            );
+          })}
         </select>
         <div className={POSITION_STYLES.iconRight}>
           <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,40 +120,73 @@ const AdvancedFilters = ({
   /**
    * Renderiza un campo de rango numérico (años, precios, etc.)
    */
-  const renderRangeInput = (campo) => (
-    <div className={campo.span || "sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full"} key={campo.name}>
-      <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>
-          {campo.icon}
-        </div>
-        <div className="pl-10 pr-3 py-2 border border-gray-300 rounded-md focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 bg-white">
-          <div className="flex items-center gap-2">
-            <input
-              type={campo.inputType || "number"}
-              value={filtrosTemporales[campo.minField] || ''}
-              onChange={(e) => handleFiltroChange(campo.minField, e.target.value)}
-              placeholder={campo.minPlaceholder}
-              className="flex-1 border-0 p-0 text-sm placeholder-gray-500 focus:outline-none focus:ring-0"
-              min={campo.min}
-              max={campo.max}
-              step={campo.step || "1"}
-            />
-            <span className="text-gray-400 text-sm">-</span>
-            <input
-              type={campo.inputType || "number"}
-              value={filtrosTemporales[campo.maxField] || ''}
-              onChange={(e) => handleFiltroChange(campo.maxField, e.target.value)}
-              placeholder={campo.maxPlaceholder}
-              className="flex-1 border-0 p-0 text-sm placeholder-gray-500 focus:outline-none focus:ring-0"
-              min={campo.min}
-              max={campo.max}
-              step={campo.step || "1"}
-            />
+  const renderRangeInput = (campo) => {
+    // Resolve responsive placeholders per input
+    const getResponsivePlaceholder = (map, fallback) => {
+      if (!map) return fallback || '';
+      const w = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      if (w < 640) return map.sm || fallback || '';
+      if (w < 1024) return map.md || fallback || '';
+      return map.lg || fallback || '';
+    };
+
+    const minPh = getResponsivePlaceholder(campo?.responsivePlaceholders?.min, campo.minPlaceholder);
+    const maxPh = getResponsivePlaceholder(campo?.responsivePlaceholders?.max, campo.maxPlaceholder);
+
+    return (
+      <div className={campo.span || "sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full"} key={campo.name}>
+        <div className={POSITION_STYLES.relative}>
+          <div className={POSITION_STYLES.iconLeft}>
+            {campo.icon}
+          </div>
+          {/* Contenedor con altura y estilos consistentes con inputs estándar */}
+          <div className="pl-10 pr-3 h-12 sm:h-12 flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent bg-white relative">
+            <div className="flex items-center gap-2 w-full">
+              <input
+                type={campo.inputType || "number"}
+                value={
+                  filtrosTemporales[campo.minField] === 0
+                    ? 0
+                    : (filtrosTemporales[campo.minField] ?? '')
+                }
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const normalized = raw === '' ? '' : Number(raw);
+                  handleFiltroChange(campo.minField, normalized);
+                }}
+                placeholder={minPh}
+                className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
+                min={campo.min}
+                max={campo.max}
+                step={campo.step || "1"}
+                inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
+              />
+              <span className="text-gray-300 text-sm">-</span>
+              <input
+                type={campo.inputType || "number"}
+                value={
+                  filtrosTemporales[campo.maxField] === 0
+                    ? 0
+                    : (filtrosTemporales[campo.maxField] ?? '')
+                }
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const normalized = raw === '' ? '' : Number(raw);
+                  handleFiltroChange(campo.maxField, normalized);
+                }}
+                placeholder={maxPh}
+                className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
+                min={campo.min}
+                max={campo.max}
+                step={campo.step || "1"}
+                inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   /**
    * Renderiza un campo de fecha
@@ -172,18 +238,6 @@ const AdvancedFilters = ({
       <div className={LAYOUT_STYLES.gridButtons}>
         <button
           type="button"
-          onClick={aplicarFiltrosActuales}
-          className={`${BUTTON_STYLES.primary} w-full flex items-center justify-center gap-2`}
-          disabled={Object.values(filtrosTemporales).every(val => !val || val === '')}
-        >
-          <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Aplicar
-        </button>
-        
-        <button
-          type="button"
           onClick={limpiarTodosFiltros}
           className={`${BUTTON_STYLES.filter.clear} w-full flex items-center justify-center gap-2`}
         >
@@ -191,6 +245,18 @@ const AdvancedFilters = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
           Limpiar
+        </button>
+
+        <button
+          type="button"
+          onClick={aplicarFiltrosActuales}
+          className={`${BUTTON_STYLES.primary} w-full flex items-center justify-center gap-2`}
+          disabled={Object.values(filtrosTemporales).every(val => val === '' || val === null || val === undefined)}
+        >
+          <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Aplicar
         </button>
       </div>
 

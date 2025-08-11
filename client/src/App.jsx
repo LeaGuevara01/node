@@ -1,18 +1,37 @@
+/**
+ * App (SPA root)
+ * Rol: router + gate de autenticación
+ * Notas: token JWT en estado local; NavigationProvider para navegación avanzada
+ * 
+ * ACTUALIZADO PARA USAR NAVEGACIÓN REFACTORIZADA
+ * Fecha: 2025-08-07T04:19:54.386Z
+ * 
+ * Cambios:
+ * - Dashboard → DashboardRefactored
+ * - MaquinariasPage → MaquinariasPageRefactored
+ * - MaquinariaDetails → MaquinariaDetailsRefactored
+ */
+
 import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { login } from './services/api';
-import Dashboard from './pages/Dashboard';
-import MaquinariaDetails from './pages/MaquinariaDetails';
-import MaquinariasPage from './pages/MaquinariasPage';
+import { NavigationProvider } from './contexts/NavigationContext';
+import Dashboard from './pages/DashboardRefactored';
+import MaquinariaDetails from './pages/MaquinariaDetailsRefactored';
+import MaquinariasPage from './pages/MaquinariasPageRefactored';
 import MaquinariaFormulario from './pages/MaquinariaFormulario';
 import RepuestosPage from './pages/RepuestosPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import ReparacionesPage from './pages/ReparacionesPage';
 import UsuariosPage from './pages/UsuariosPage';
+import ComprasPage from './pages/ComprasPage';
+import CompraForm from './pages/CompraForm';
+import CompraDetails from './pages/CompraDetails';
 import RepuestoDetails from './pages/RepuestoDetails';
 import ReparacionDetails from './pages/ReparacionDetails';
 import ProveedorDetails from './pages/ProveedorDetails';
 import { jwtDecode } from 'jwt-decode';
+import ContextPlaceholder from './pages/ContextPlaceholder';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -68,26 +87,35 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      
-      {/* Páginas de listado con filtros avanzados */}
-      <Route path="/maquinarias" element={<MaquinariasPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      <Route path="/repuestos" element={<RepuestosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      <Route path="/proveedores" element={<ProveedoresPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      <Route path="/reparaciones" element={<ReparacionesPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      <Route path="/usuarios" element={<UsuariosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
-      
-      {/* Formularios y páginas de detalles */}
-      <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />
-      <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token} />} />
-      <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
-      <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
-      <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
-      <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
-      
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <NavigationProvider>
+      <Routes>
+  <Route path="/" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  {/* Alias explícito para permitir /dashboard */}
+  <Route path="/dashboard" element={<Dashboard token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+        
+        {/* Páginas de listado con filtros avanzados */}
+        <Route path="/maquinarias" element={<MaquinariasPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+        <Route path="/repuestos" element={<RepuestosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+        <Route path="/proveedores" element={<ProveedoresPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+        <Route path="/reparaciones" element={<ReparacionesPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+        <Route path="/usuarios" element={<UsuariosPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  <Route path="/compras" element={<ComprasPage token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+  <Route path="/compras/nueva" element={<CompraForm token={token} />} />
+        <Route path="/compras/:id" element={<CompraDetails token={token} />} />
+        
+        {/* Formularios y páginas de detalles */}
+        <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />
+        <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token} />} />
+        <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
+        <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
+        <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
+        <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
+  {/* Rutas de contexto (placeholder) */}
+  <Route path="/contexto/:tipo/:valor" element={<ContextPlaceholder token={token} role={role} onLogout={() => { setToken(null); setRole(null); }} />} />
+        
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </NavigationProvider>
   );
 }
 

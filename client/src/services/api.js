@@ -1,3 +1,5 @@
+// Servicio API (client): llamadas HTTP unificadas, manejo de token y errores
+
 /**
  * Servicio API para la comunicación con el backend
  * 
@@ -7,10 +9,19 @@
  * - Operaciones CRUD en todas las entidades
  * - Manejo consistente de headers y tokens
  * - Configuración del endpoint base
+ * - Sistema de logging centralizado y modular
  * 
  * Todas las funciones retornan el resultado parseado de la respuesta JSON
  * y manejan automáticamente los headers de autorización cuando se requiere.
  */
+
+import { 
+  logApiRequest, 
+  logApiSuccess, 
+  logApiError, 
+  formatFiltersForLog,
+  logCrudOperation 
+} from '../utils/apiLogger';
 
 // Configuración del endpoint base de la API
 // Utiliza variable de entorno o fallback a desarrollo local
@@ -71,32 +82,52 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
       // Si es un array, convertir a string separado por comas
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
-          const valorArray = filtros[key].join(',');
-          params.append(key, valorArray);
-          console.log(`🔗 Agregando filtro array ${key}:`, filtros[key], '→', valorArray);
+          params.append(key, filtros[key].join(','));
         }
       } else {
         params.append(key, filtros[key].toString());
-        console.log(`🔗 Agregando filtro simple ${key}:`, filtros[key]);
       }
     }
   });
 
-  console.log('🌐 API Request URL:', `${API_URL}/maquinaria?${params}`);
-  console.log('🔍 Filtros enviados completos:', filtros);
+  const url = `${API_URL}/maquinaria?${params}`;
+  
+  // Logging con sistema centralizado
+  const startTime = logApiRequest(url, 'GET', filtros);
+  
+  // Si es un request duplicado, aún ejecutarlo pero no loggearlo como nuevo
+  // Nota: En desarrollo (StrictMode) los efectos pueden ejecutarse dos veces.
+  // Si detectamos duplicado (startTime === null), simplemente continuamos
+  // con el fetch para no romper el flujo de la UI.
 
-  const res = await fetch(`${API_URL}/maquinaria?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  const data = await res.json();
-  
-  // Si es para estadísticas, retornar solo el array
-  if (forStats) {
-    return data.maquinarias || data || [];
+  try {
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    
+    // Log de éxito con información específica
+    logApiSuccess(url, 'GET', data, startTime, {
+      expectedField: 'maquinarias'
+    });
+    
+    // Si es para estadísticas, retornar solo el array
+    if (forStats) {
+      return data.maquinarias || data || [];
+    }
+    
+    // Para uso normal, retornar el objeto completo con paginación
+    return data;
+    
+  } catch (error) {
+    logApiError(url, 'GET', error, startTime);
+    throw error;
   }
-  
-  // Para uso normal, retornar el objeto completo con paginación
-  return data;
 }
 
 /**
@@ -443,14 +474,27 @@ export async function getReparaciones(token, filtros = {}, pagina = 1, forStats 
   const res = await fetch(`${API_URL}/reparaciones?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.json()).error || res.statusText; } catch {}
+    throw new Error(`Error ${res.status}: ${detail}`);
+  }
   const data = await res.json();
 
   // Si es para estadísticas, retornar solo el array
   if (forStats) {
-    return data.reparaciones || data || [];
+    // El backend actual responde { data: [...], pagination: {...} }
+    return data.reparaciones || data.data || data || [];
   }
 
   // Para uso normal, retornar el objeto completo con paginación
+  // Normalizar para que las páginas puedan manejar ambos formatos
+  if (Array.isArray(data)) {
+    return { reparaciones: data, pagination: { current: Number(pagina) || 1, total: 1, totalItems: data.length, limit: Number(params.get('limit')) || 20 } };
+  }
+  if (data && (data.data || data.reparaciones)) {
+    return { reparaciones: data.reparaciones || data.data, pagination: data.pagination };
+  }
   return data;
 }
 
@@ -516,6 +560,11 @@ export async function getReparacionFilters(token) {
   const res = await fetch(`${API_URL}/reparaciones/filtros`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.json()).error || res.statusText; } catch {}
+    throw new Error(`Error ${res.status}: ${detail}`);
+  }
   return res.json();
 }
 
@@ -657,5 +706,67 @@ export async function getUsuarioFilters(token) {
   const res = await fetch(`${API_URL}/usuarios/filtros`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
+  return res.json();
+}
+
+// ===== COMPRAS =====
+
+export async function getCompras(token, filtros = {}, pagina = 1, forStats = false) {
+  const params = new URLSearchParams({
+    page: pagina.toString(),
+    limit: forStats ? '10000' : '20'
+  });
+  Object.keys(filtros).forEach(key => {
+    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+      if (Array.isArray(filtros[key])) {
+        if (filtros[key].length > 0) params.append(key, filtros[key].join(','));
+      } else {
+        params.append(key, filtros[key].toString());
+      }
+    }
+  });
+  const res = await fetch(`${API_URL}/compras?${params}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  const data = await res.json();
+  return forStats ? (data.data || data || []) : data;
+}
+
+export async function getCompra(id, token) {
+  const res = await fetch(`${API_URL}/compras/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+  return res.json();
+}
+
+export async function createCompra(data, token) {
+  const res = await fetch(`${API_URL}/compras`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error al crear compra');
+  return res.json();
+}
+
+export async function updateCompra(id, data, token) {
+  const res = await fetch(`${API_URL}/compras/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error al actualizar compra');
+  return res.json();
+}
+
+export async function deleteCompra(id, token) {
+  const res = await fetch(`${API_URL}/compras/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'Error al eliminar compra');
+  return res.json();
+}
+
+export async function getComprasStats(token) {
+  const res = await fetch(`${API_URL}/compras/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
   return res.json();
 }

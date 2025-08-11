@@ -1,6 +1,14 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+// Módulo: Proveedor Controller
+// Rol: CRUD de proveedores, filtros y estadísticas
+// Notas: paginación y ordenamiento simples, búsqueda flexible OR
 
+const prisma = require('../lib/prisma');
+
+/**
+ * GET /api/proveedores
+ * Query: search?, nombre?, contacto?, page=1, limit=50, sortBy=nombre, sortOrder=asc
+ * Respuesta: { proveedores: [], pagination: { current, total, hasNext, hasPrev, totalItems } }
+ */
 exports.getProveedores = async (req, res) => {
   try {
     const { 
@@ -17,7 +25,7 @@ exports.getProveedores = async (req, res) => {
     const where = {};
     const orderBy = {};
 
-    // Filtro de búsqueda general
+    // Filtro de búsqueda general (OR por múltiples campos)
     if (search) {
       const searchTerms = Array.isArray(search) ? search : search.split(',');
       where.OR = searchTerms.flatMap(term => [
@@ -56,14 +64,13 @@ exports.getProveedores = async (req, res) => {
       }
     }
 
-    // Configurar ordenamiento
+    // Ordenamiento
     orderBy[sortBy] = sortOrder;
 
     // Paginación
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
 
-    // Ejecutar consulta con filtros
     const [proveedores, total] = await Promise.all([
       prisma.proveedor.findMany({
         where,
@@ -74,7 +81,6 @@ exports.getProveedores = async (req, res) => {
       prisma.proveedor.count({ where })
     ]);
 
-    // Calcular información de paginación
     const totalPages = Math.ceil(total / take);
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
@@ -94,21 +100,20 @@ exports.getProveedores = async (req, res) => {
   }
 };
 
-// Obtener opciones únicas para filtros (basado en campos reales del modelo)
+/**
+ * GET /api/proveedores/filtros
+ * Resumen de campos disponibles para búsqueda y conteos básicos.
+ */
 exports.getFilterOptions = async (req, res) => {
   try {
     const [estadisticas] = await Promise.all([
-      // Obtener estadísticas básicas
       prisma.proveedor.aggregate({
         _count: { id: true }
       })
     ]);
 
     res.json({
-      // Como el modelo Proveedor no tiene campos categóricos como ubicacion o estado,
-      // solo retornamos información básica
       totalProveedores: estadisticas._count.id,
-      // Los filtros se basarán en búsqueda por texto en los campos disponibles
       campos: {
         nombre: 'Nombre del proveedor',
         cuit: 'CUIT',
@@ -122,6 +127,10 @@ exports.getFilterOptions = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/proveedores/:id
+ * 404 si no existe.
+ */
 exports.getProveedorById = async (req, res) => {
   try {
     const proveedor = await prisma.proveedor.findUnique({
@@ -138,6 +147,11 @@ exports.getProveedorById = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/proveedores
+ * Body: { nombre, cuit?, telefono?, email?, direccion?, web?, productos?[] }
+ * 201 si creado, 400 si validación falla.
+ */
 exports.createProveedor = async (req, res) => {
   const { nombre, cuit, telefono, email, direccion, web, productos } = req.body;
   try {
@@ -158,6 +172,10 @@ exports.createProveedor = async (req, res) => {
   }
 };
 
+/**
+ * PUT /api/proveedores/:id
+ * 404 si no existe; 400 otros errores.
+ */
 exports.updateProveedor = async (req, res) => {
   const { id } = req.params;
   const { nombre, cuit, telefono, email, direccion, web, productos } = req.body;
@@ -186,6 +204,10 @@ exports.updateProveedor = async (req, res) => {
   }
 };
 
+/**
+ * DELETE /api/proveedores/:id
+ * 200 si eliminado; 404 si no existe.
+ */
 exports.deleteProveedor = async (req, res) => {
   const { id } = req.params;
   try {
@@ -202,7 +224,10 @@ exports.deleteProveedor = async (req, res) => {
   }
 };
 
-// Obtener estadísticas de proveedores
+/**
+ * GET /api/proveedores/estadisticas
+ * Resumen agregado de cobertura de contacto.
+ */
 exports.getEstadisticas = async (req, res) => {
   try {
     const [
@@ -211,26 +236,19 @@ exports.getEstadisticas = async (req, res) => {
       conTelefono,
       conDireccion
     ] = await Promise.all([
-      // Total de proveedores
       prisma.proveedor.count(),
-      
-      // Proveedores con email
       prisma.proveedor.count({
         where: { 
           email: { not: null },
           email: { not: '' }
         }
       }),
-      
-      // Proveedores con teléfono
       prisma.proveedor.count({
         where: { 
           telefono: { not: null },
           telefono: { not: '' }
         }
       }),
-      
-      // Proveedores con dirección
       prisma.proveedor.count({
         where: { 
           direccion: { not: null },
@@ -253,7 +271,10 @@ exports.getEstadisticas = async (req, res) => {
   }
 };
 
-// Búsqueda rápida de proveedores
+/**
+ * GET /api/proveedores/busqueda?q=term
+ * Retorna top 10 por nombre/cuit/email.
+ */
 exports.busquedaRapida = async (req, res) => {
   try {
     const { q } = req.query;

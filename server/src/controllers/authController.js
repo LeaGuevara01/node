@@ -1,7 +1,10 @@
+// Módulo: Auth Controller
+// Rol: registro y login de usuarios (JWT)
+// Contratos: register -> 201/200 si existe; login -> 200 con token | 401 inválidas
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 exports.register = async (req, res) => {
   const { username, password, role } = req.body;

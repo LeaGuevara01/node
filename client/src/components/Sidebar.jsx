@@ -13,7 +13,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu } from 'lucide-react';
+import { Truck, Settings, Building2, Wrench, Users, BarChart3, Menu, X, Wheat, ShoppingCart } from 'lucide-react';
 import { useNavigation } from '../hooks/useNavigation';
 
 // Configuración de las secciones disponibles en el sistema
@@ -22,14 +22,19 @@ const sections = [
   { key: 'repuestos', label: 'Repuestos', icon: Settings },
   { key: 'proveedores', label: 'Proveedores', icon: Building2 },
   { key: 'reparaciones', label: 'Reparaciones', icon: Wrench },
+  { key: 'compras', label: 'Compras', icon: ShoppingCart },
   { key: 'usuarios', label: 'Usuarios', icon: Users },
 ];
 
-function Sidebar({ active, setActive }) {
+function Sidebar({ active, setActive, isMobileMenuOpen = false, setIsMobileMenuOpen }) {
   const navigate = useNavigate();
-  const { navigateToListPage } = useNavigation();
-  // Estado para controlar si el sidebar está abierto en mobile
+  const { navigateToListPage, navigateToDashboard } = useNavigation();
+  // Estado para controlar si el sidebar está abierto en mobile (legacy)
   const [open, setOpen] = useState(false);
+  
+  // Usar el estado del AppLayout si está disponible
+  const isOpen = isMobileMenuOpen !== undefined ? isMobileMenuOpen : open;
+  const setIsOpen = setIsMobileMenuOpen || setOpen;
   
   /**
    * Maneja la navegación en el sidebar
@@ -37,82 +42,89 @@ function Sidebar({ active, setActive }) {
   const handleNavigation = (key) => {
     // Navegar directamente a las páginas de listado con filtros avanzados
     navigateToListPage(key);
-    setOpen(false);
+    setIsOpen(false);
   };
   
   return (
     <>
-      {/* Barra de activación mobile - solo visible en pantallas pequeñas */}
-      {/* Actúa como "botón hamburguesa" para abrir el sidebar */}
-      <div 
-        className={`md:hidden fixed top-0 left-0 w-12 h-full bg-gray-800 z-50 transition-all duration-300 cursor-pointer hover:bg-gray-700 ${
-          open ? 'w-0 opacity-0' : 'w-12 opacity-100'
-        }`}
-        onClick={() => setOpen(true)}
-      >
-        <div className="flex items-center justify-center h-full">
-          <Menu className="text-white" size={20} />
-        </div>
-      </div>
-      
       {/* Sidebar principal de navegación */}
-      {/* Fixed positioning para evitar afectar el flujo del documento */}
-      {/* Animación de slide desde la izquierda en mobile */}
-      <nav className={`fixed top-0 left-0 h-full w-56 bg-gray-900 text-white shadow-xl z-50 transition-transform duration-300 md:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'} border-r-2 border-gray-700`}>
-        {/* Header del sidebar con título */}
-        <div 
-          className="py-3 px-4 font-bold text-xl border-b border-gray-700 bg-gray-800 cursor-pointer hover:bg-gray-700 transition-colors"
-          onClick={() => { setActive(null); setOpen(false); }}
-        >
-          Secciones
+      {/* Fixed positioning en desktop, slide-in en mobile */}
+      <nav className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white shadow-xl z-50 transition-transform duration-300 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      } border-r-2 border-gray-700`}>
+        {/* Header del sidebar con título y botón de cerrar en mobile */}
+        <div className="py-4 px-6 border-b border-gray-700 bg-gray-800 flex items-center justify-between">
+            <div 
+            className="font-bold text-xl cursor-pointer hover:text-gray-300 transition-colors flex-1 flex items-center gap-2"
+            onClick={() => { setActive && setActive(null); navigateToDashboard(); setIsOpen(false); }}
+          >
+            <Wheat className="w-6 h-6 text-green-400" />
+            Sistema Agrícola
+          </div>
+          
+          {/* Botón cerrar solo en mobile */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="md:hidden p-1 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
         
         {/* Lista de navegación */}
-        <ul className="mt-2 px-2">
-          {/* Botón Dashboard - sección principal */}
-          <li className="mb-2">
-            <button
-              className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 ${
-                active === null
-                  ? 'bg-green-600 text-white border-l-4 border-green-400 shadow-md'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-              }`}
-              onClick={() => { setActive(null); setOpen(false); }}
-            >
-              <div className="flex items-center">
-                <BarChart3 size={18} className="mr-2" />
-                Dashboard
-              </div>
-            </button>
-          </li>
-          
-          {/* Renderizar botones para cada sección configurada */}
-          {sections.map(s => (
-            <li key={s.key} className="mb-1">
+        <div className="flex-1 overflow-y-auto py-4">
+          <ul className="px-4 space-y-1">
+            {/* Botón Dashboard - sección principal */}
+            <li>
               <button
-                className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-md ${
-                  active === s.key ? 'bg-gray-700 font-semibold border-l-4 border-blue-400' : ''
+                className={`w-full text-left py-3 px-4 rounded-lg transition-all duration-200 flex items-center ${
+                  active === null
+                    ? 'bg-green-600 text-white border-l-4 border-green-400 shadow-md'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                 }`}
-                onClick={() => handleNavigation(s.key)}
+                onClick={() => { setActive && setActive(null); navigateToDashboard(); setIsOpen(false); }}
               >
-                <div className="flex items-center">
-                  <s.icon size={18} className="mr-2" />
-                  {s.label}
-                </div>
+                <BarChart3 size={20} className="mr-3" />
+                <span className="font-medium">Dashboard</span>
               </button>
             </li>
-          ))}
-        </ul>
+            
+            {/* Separador */}
+            <li className="py-2">
+              <div className="border-t border-gray-700"></div>
+              <div className="text-xs text-gray-500 mt-2 px-4 font-semibold uppercase tracking-wider">
+                Gestión
+              </div>
+            </li>
+            
+            {/* Renderizar botones para cada sección configurada */}
+            {sections.map(s => (
+              <li key={s.key}>
+                <button
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-md flex items-center group ${
+                    active === s.key ? 'bg-gray-700 font-semibold border-l-4 border-blue-400 text-white' : 'text-gray-300'
+                  }`}
+                  onClick={() => handleNavigation(s.key)}
+                >
+                  <s.icon size={20} className="mr-3 group-hover:text-blue-400" />
+                  <span>{s.label}</span>
+                  {/* Indicador visual para sección activa */}
+                  {active === s.key && (
+                    <div className="ml-auto w-2 h-2 bg-blue-400 rounded-full"></div>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* Footer del sidebar */}
+        <div className="border-t border-gray-700 p-4">
+          <div className="text-xs text-gray-500 text-center">
+            Sistema Agrícola v2.0
+          </div>
+        </div>
       </nav>
-      
-      {/* Overlay semitransparente para mobile cuando el sidebar está abierto */}
-      {/* Permite cerrar el sidebar tocando fuera de él */}
-      {open && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden transition-opacity duration-300" 
-          onClick={() => setOpen(false)}
-        />
-      )}
     </>
   );
 }

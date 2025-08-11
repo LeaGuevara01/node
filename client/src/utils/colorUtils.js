@@ -29,9 +29,11 @@ export const getColorFromString = (str, type = 'categoria') => {
   const hash = generateStringHash(str);
   
   if (type === 'categoria') {
+    // Paleta con mayor contraste entre tonos
     const colors = [
-      'bg-blue-100 text-blue-700', 'bg-purple-100 text-purple-700', 'bg-indigo-100 text-indigo-700', 
-      'bg-teal-100 text-teal-700', 'bg-cyan-100 text-cyan-700', 'bg-emerald-100 text-emerald-700'
+      'bg-blue-200 text-blue-900', 'bg-fuchsia-200 text-fuchsia-900', 'bg-indigo-200 text-indigo-900', 
+      'bg-teal-200 text-teal-900', 'bg-amber-200 text-amber-900', 'bg-emerald-200 text-emerald-900',
+      'bg-rose-200 text-rose-900', 'bg-cyan-200 text-cyan-900'
     ];
     return colors[Math.abs(hash) % colors.length];
   } else {
@@ -46,6 +48,7 @@ export const getColorFromString = (str, type = 'categoria') => {
     
     // Para otras ubicaciones, usar la paleta original de rojos/naranjas
     const colors = [
+      'bg-gray-100 text-gray-700', // opción neutra similar a código
       'bg-red-100 text-red-700', 'bg-orange-100 text-orange-700', 'bg-amber-100 text-amber-700', 
       'bg-rose-100 text-rose-700', 'bg-pink-100 text-pink-700', 'bg-red-50 text-red-800'
     ];
@@ -58,8 +61,13 @@ export const getColorFromString = (str, type = 'categoria') => {
  * @param {number} stock - Cantidad en stock
  * @returns {string} - Clase CSS de color con background
  */
-export const getStockColorClass = (stock) => {
-  if (stock <= 0) return 'bg-red-100 text-red-700';
-  if (stock < 10) return 'bg-yellow-100 text-yellow-700';
-  return 'bg-green-100 text-green-700';
+export const getStockColorClass = (stock, ubicacion) => {
+  // Regla especial: para ubicación "insumos" siempre azul
+  if (typeof ubicacion === 'string' && ubicacion.toLowerCase().includes('insumos')) {
+    return 'bg-blue-100 text-blue-700';
+  }
+  // Buckets alineados con el Dashboard
+  if (stock <= 0) return 'bg-red-100 text-red-700'; // Sin stock (0)
+  if (stock === 1) return 'bg-yellow-100 text-yellow-700'; // Bajo (1)
+  return 'bg-green-100 text-green-700'; // Normal (≥2)
 };

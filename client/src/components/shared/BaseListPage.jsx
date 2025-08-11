@@ -48,6 +48,7 @@ const BaseListPage = ({
   onEdit,
   onView,
   onDelete,
+  onItemClick,
   
   // Carga masiva
   onFileUpload,
@@ -70,38 +71,28 @@ const BaseListPage = ({
   const navigate = useNavigate();
 
   /**
-   * Maneja la carga masiva de CSV
+   * Maneja la carga masiva de archivo (se envía el File al handler)
    */
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     setBulkError && setBulkError('');
     setBulkSuccess && setBulkSuccess('');
-    
-    Papa.parse(file, {
-      header: true,
-      complete: async (results) => {
-        if (onFileUpload) {
-          try {
-            await onFileUpload(results.data);
-          } catch (err) {
-            setBulkError && setBulkError('Error al procesar CSV: ' + err.message);
-          }
-        }
-      },
-      error: (err) => setBulkError && setBulkError('Error al procesar CSV: ' + err.message),
-    });
+
+    if (onFileUpload) {
+      onFileUpload(file);
+    }
   };
 
   /**
    * Renderiza las acciones por defecto de un elemento
    */
   const renderDefaultItemActions = (item) => (
-    <div className={LIST_STYLES.itemActions}>
+    <div className={LIST_STYLES.itemActions} onClick={(e) => e.stopPropagation()}>
       {onView && (
         <button
-          onClick={() => onView(item)}
+          onClick={(e) => { e.stopPropagation(); onView(item); }}
           className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
           title={`Ver detalles de ${entityName}`}
         >
@@ -113,7 +104,7 @@ const BaseListPage = ({
       )}
       {onEdit && (
         <button
-          onClick={() => onEdit(item)}
+          onClick={(e) => { e.stopPropagation(); onEdit(item); }}
           className={BUTTON_STYLES.edit}
           title={`Editar ${entityName}`}
         >
@@ -124,7 +115,7 @@ const BaseListPage = ({
       )}
       {onDelete && (
         <button
-          onClick={() => onDelete(item)}
+          onClick={(e) => { e.stopPropagation(); onDelete(item); }}
           className={`${BUTTON_STYLES.edit} text-red-600 hover:bg-red-50`}
           title={`Eliminar ${entityName}`}
         >
@@ -153,7 +144,7 @@ const BaseListPage = ({
                   <span className="sr-only">Cargar CSV</span>
                   <input 
                     type="file" 
-                    accept=".csv" 
+                    accept=".csv,.xlsx,.xls" 
                     onChange={handleFileUpload}
                     className="hidden"
                     id={`csv-upload-${entityName}`}
@@ -220,7 +211,7 @@ const BaseListPage = ({
             <div className={LAYOUT_STYLES.flexBetween}>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {entityNamePlural} ({paginacion?.totalItems || 0})
+                  {entityNamePlural} ({paginacion?.totalItems ?? (Array.isArray(items) ? items.length : 0)})
                 </h3>
               </div>
               {loading && (
@@ -242,8 +233,15 @@ const BaseListPage = ({
                 {loading ? 'Cargando...' : `No hay ${entityNamePlural.toLowerCase()} que coincidan con los filtros aplicados`}
               </div>
             ) : (
-              items?.map((item) => (
-                <div key={item.id} className={LIST_STYLES.item}>
+              (Array.isArray(items) ? items : []).map((item) => (
+                <div 
+                  key={item.id} 
+                  className={`${LIST_STYLES.item} ${onItemClick ? 'cursor-pointer hover:bg-gray-50' : ''}`}
+                  onClick={onItemClick ? () => onItemClick(item) : undefined}
+                  role={onItemClick ? 'button' : undefined}
+                  tabIndex={onItemClick ? 0 : undefined}
+                  onKeyDown={onItemClick ? (e) => { if (e.key === 'Enter') onItemClick(item); } : undefined}
+                >
                   <div className={`${LIST_STYLES.itemContent} list-item-content`}>
                     <div className="flex-1">
                       {renderItem ? renderItem(item) : (
