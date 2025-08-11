@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProveedorById } from '../services/api';
+import { useParams } from 'react-router-dom';
+import { getProveedorById, updateProveedor, deleteProveedor } from '../services/api';
 import { 
   formatCuit, 
   formatTelefono, 
   extractCiudadFromDireccion, 
   formatUrl 
 } from '../utils/proveedorUtils';
+import TagLink from '../components/TagLink';
 import { handleFileUpload, COMMON_ICONS } from '../utils/detailsUtils.jsx';
-import { 
-  DetailsHeader, 
-  DetailsAlert, 
-  DetailsLoading, 
-  DetailsSection,
-  FieldWithIcon,
-  SimpleField,
-  ImageUpload
-} from '../components/shared/DetailsComponents';
+import { DetailsAlert, DetailsLoading, FieldWithIcon, SimpleField, ImageUpload } from '../components/shared/DetailsComponents';
+import AppLayout from '../components/navigation/AppLayout';
+import { useNavigation } from '../hooks/useNavigation';
 import { DETAILS_CONTAINER } from '../styles/detailsStyles';
 import { 
   CONTAINER_STYLES,
@@ -29,7 +24,7 @@ import {
 
 function ProveedorDetails({ token }) {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { navigateToListPage, navigateToFormPage } = useNavigation();
   const [proveedor, setProveedor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -71,40 +66,57 @@ function ProveedorDetails({ token }) {
     }
   }, [id, token]);
 
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Proveedores', href: '/proveedores' },
+    { label: proveedor?.nombre || `Proveedor #${id}` }
+  ];
+
+  const handleEdit = () => navigateToFormPage('proveedores', id);
+  const handleDelete = async () => {
+    if (!window.confirm('¿Eliminar este proveedor?')) return;
+    try {
+      await deleteProveedor(id, token);
+      navigateToListPage('proveedores');
+    } catch (e) {
+      setError('Error al eliminar proveedor');
+    }
+  };
+
   if (loading) {
-    return <DetailsLoading message="Cargando proveedor..." />;
+    return (
+      <AppLayout currentSection="proveedores" breadcrumbs={breadcrumbs} title="Cargando proveedor..." token={token} isDetails={true}>
+        <DetailsLoading message="Cargando proveedor..." />
+      </AppLayout>
+    );
   }
 
   if (error && !proveedor) {
     return (
-      <div className={CONTAINER_STYLES.main}>
-        <div className={CONTAINER_STYLES.maxWidth}>
-          <DetailsAlert type="error" message={error} />
-          <button
-            onClick={() => navigate('/proveedores')}
-            className={BUTTON_STYLES.backButton}
-          >
-            Volver a Proveedores
-          </button>
+      <AppLayout currentSection="proveedores" breadcrumbs={breadcrumbs} title="Error" token={token}>
+        <div className={CONTAINER_STYLES.main}>
+          <div className={CONTAINER_STYLES.maxWidth}>
+            <DetailsAlert type="error" message={error} />
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className={CONTAINER_STYLES.main}>
-      <div className={CONTAINER_STYLES.maxWidth}>
-        
-        <DetailsHeader 
-          title={proveedor?.nombre || 'Proveedor'} 
-          onBack={() => navigate('/proveedores')} 
-        />
-
-        {error && <DetailsAlert type="error" message={error} />}
-        {uploadSuccess && <DetailsAlert type="success" message={uploadSuccess} />}
-
-        {proveedor && (
-          <>
+    <AppLayout
+      currentSection="proveedores"
+      breadcrumbs={breadcrumbs}
+      title={`Detalles: ${proveedor?.nombre || 'Proveedor'}`}
+      isDetails={true}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      token={token}
+    >
+      {error && <DetailsAlert type="error">{error}</DetailsAlert>}
+      {uploadSuccess && <DetailsAlert type="success">{uploadSuccess}</DetailsAlert>}
+      {proveedor && (
+        <>
             {/* Información principal */}
             <div className={CONTAINER_STYLES.card}>
               <div className={CONTAINER_STYLES.cardPadding}>
@@ -142,11 +154,16 @@ function ProveedorDetails({ token }) {
                           )}
                           
                           {proveedor.telefono && (
-                            <FieldWithIcon
-                              icon={COMMON_ICONS.phone}
-                              label="Teléfono"
-                              value={formatTelefono(proveedor.telefono)}
-                            />
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm font-medium text-gray-700">Teléfono</span>
+                              <div>
+                                <TagLink
+                                  type="whatsapp"
+                                  value={proveedor.telefono}
+                                  label={formatTelefono(proveedor.telefono)}
+                                />
+                              </div>
+                            </div>
                           )}
                           
                           {proveedor.email && (
@@ -232,10 +249,9 @@ function ProveedorDetails({ token }) {
                 </div>
               </div>
             </div>
-          </>
-        )}
-      </div>
-    </div>
+        </>
+      )}
+    </AppLayout>
   );
 }
 

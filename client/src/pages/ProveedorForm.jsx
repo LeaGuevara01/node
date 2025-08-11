@@ -7,6 +7,7 @@ import Papa from 'papaparse';
 import { createProveedor, updateProveedor, getProveedores, deleteProveedor } from '../services/api';
 import ProveedorEditModal from '../components/ProveedorEditModal';
 import { getColorFromString } from '../utils/colorUtils';
+import AppLayout from '../components/navigation/AppLayout';
 import { 
   sortProveedoresByName, 
   buildProveedorQueryParams, 
@@ -239,7 +240,15 @@ function ProveedorForm({ token, onCreated }) {
   }, []);
 
   return (
-    <div className={DETAILS_CONTAINER.main}>
+    <AppLayout
+      currentSection="proveedores"
+      // Usamos breadcrumbs automáticos (Inicio > Proveedores > Formulario/Editar)
+      title="Gestión de Proveedores"
+      subtitle="Crea y edita proveedores"
+      token={token}
+      hideSearchOnDesktop={true}
+      collapseUserOnMd={true}
+    >
       <div className={DETAILS_CONTAINER.maxWidth}>
         
         {/* Header con botones de acción */}
@@ -691,7 +700,7 @@ function ProveedorForm({ token, onCreated }) {
           />
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
 
