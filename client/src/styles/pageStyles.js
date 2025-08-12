@@ -25,7 +25,7 @@ export const PAGE_STYLES = {
   
   // Header de página
   pageHeader: `
-    bg-white rounded-lg shadow-sm p-4 mb-6 border-l-4 border-agricultural-crop-500
+    bg-white rounded-lg shadow-sm p-4 mb-6 border-l-4 border-brand-600
   `,
   
   // Título principal
@@ -60,7 +60,7 @@ export const PAGE_STYLES = {
   `,
   
   loadingSpinner: `
-    animate-spin rounded-full h-12 w-12 border-b-2 border-agricultural-crop-600
+    animate-spin rounded-full h-12 w-12 border-b-2 border-brand-700
   `,
   
   loadingText: `
@@ -86,7 +86,7 @@ export const PAGE_STYLES = {
   `,
   
   alertInfo: `
-    bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4
+    bg-brand-50 border border-brand-200 text-brand-800 px-4 py-3 rounded-lg mb-4
   `
 };
 

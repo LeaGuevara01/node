@@ -26,14 +26,17 @@ exports.getProveedores = async (req, res) => {
     const orderBy = {};
 
     // Filtro de búsqueda general (OR por múltiples campos)
-    if (search) {
+  if (search) {
       const searchTerms = Array.isArray(search) ? search : search.split(',');
       where.OR = searchTerms.flatMap(term => [
         { nombre: { contains: term.trim(), mode: 'insensitive' } },
+    { contacto: { contains: term.trim(), mode: 'insensitive' } },
         { cuit: { contains: term.trim(), mode: 'insensitive' } },
         { email: { contains: term.trim(), mode: 'insensitive' } },
         { telefono: { contains: term.trim(), mode: 'insensitive' } },
-        { direccion: { contains: term.trim(), mode: 'insensitive' } }
+    { direccion: { contains: term.trim(), mode: 'insensitive' } },
+    { ubicacion: { contains: term.trim(), mode: 'insensitive' } },
+    { notas: { contains: term.trim(), mode: 'insensitive' } }
       ]);
     }
 
@@ -106,7 +109,7 @@ exports.getProveedores = async (req, res) => {
  */
 exports.getFilterOptions = async (req, res) => {
   try {
-    const [estadisticas] = await Promise.all([
+  const [estadisticas] = await Promise.all([
       prisma.proveedor.aggregate({
         _count: { id: true }
       })
@@ -116,10 +119,13 @@ exports.getFilterOptions = async (req, res) => {
       totalProveedores: estadisticas._count.id,
       campos: {
         nombre: 'Nombre del proveedor',
+  contacto: 'Persona de contacto',
         cuit: 'CUIT',
         email: 'Email de contacto',
         telefono: 'Teléfono',
-        direccion: 'Dirección'
+  direccion: 'Dirección',
+  ubicacion: 'Ubicación',
+  notas: 'Notas'
       }
     });
   } catch (err) {
@@ -149,20 +155,23 @@ exports.getProveedorById = async (req, res) => {
 
 /**
  * POST /api/proveedores
- * Body: { nombre, cuit?, telefono?, email?, direccion?, web?, productos?[] }
+ * Body: { nombre, contacto?, cuit?, telefono?, email?, direccion?, ubicacion?, web?, productos?[], notas? }
  * 201 si creado, 400 si validación falla.
  */
 exports.createProveedor = async (req, res) => {
-  const { nombre, cuit, telefono, email, direccion, web, productos } = req.body;
+  const { nombre, contacto, cuit, telefono, email, direccion, ubicacion, web, productos, notas } = req.body;
   try {
     const data = { 
       nombre,
+    contacto: contacto || null,
       cuit: cuit || null,
       telefono: telefono || null,
       email: email || null,
       direccion: direccion || null,
+    ubicacion: ubicacion || null,
       web: web || null,
-      productos: productos || []
+    productos: productos || [],
+    notas: notas || null
     };
 
     const proveedor = await prisma.proveedor.create({ data });
@@ -178,16 +187,19 @@ exports.createProveedor = async (req, res) => {
  */
 exports.updateProveedor = async (req, res) => {
   const { id } = req.params;
-  const { nombre, cuit, telefono, email, direccion, web, productos } = req.body;
+  const { nombre, contacto, cuit, telefono, email, direccion, ubicacion, web, productos, notas } = req.body;
   try {
     const data = { 
       nombre,
+      contacto: contacto || null,
       cuit: cuit || null,
       telefono: telefono || null,
       email: email || null,
       direccion: direccion || null,
+      ubicacion: ubicacion || null,
       web: web || null,
-      productos: productos || []
+      productos: productos || [],
+      notas: notas || null
     };
 
     const proveedor = await prisma.proveedor.update({
@@ -287,6 +299,7 @@ exports.busquedaRapida = async (req, res) => {
       where: {
         OR: [
           { nombre: { contains: q, mode: 'insensitive' } },
+          { contacto: { contains: q, mode: 'insensitive' } },
           { cuit: { contains: q, mode: 'insensitive' } },
           { email: { contains: q, mode: 'insensitive' } }
         ]
@@ -294,10 +307,12 @@ exports.busquedaRapida = async (req, res) => {
       select: {
         id: true,
         nombre: true,
+        contacto: true,
         cuit: true,
         email: true,
         telefono: true,
-        direccion: true
+        direccion: true,
+        ubicacion: true
       },
       take: 10,
       orderBy: { nombre: 'asc' }

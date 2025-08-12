@@ -22,10 +22,10 @@ export const BUTTON_VARIANTS = {
   variants: {
     // Botón primario del sistema
     primary: `
-      bg-blue-600 text-white border border-blue-600
-      hover:bg-blue-700 hover:border-blue-700
-      focus:ring-blue-500
-      active:bg-blue-800
+      bg-brand-700 text-white border border-brand-700
+      hover:bg-brand-800 hover:border-brand-800
+      focus:ring-brand-500
+      active:bg-brand-900
     `,
 
     // Botón de éxito (verde)
@@ -56,7 +56,7 @@ export const BUTTON_VARIANTS = {
     secondary: `
       bg-white text-gray-700 border border-gray-300
       hover:bg-gray-50 hover:border-gray-400
-      focus:ring-blue-500
+      focus:ring-brand-500
       active:bg-gray-100
     `,
 
@@ -64,7 +64,7 @@ export const BUTTON_VARIANTS = {
     ghost: `
       bg-transparent text-gray-700 border border-transparent
       hover:bg-gray-100
-      focus:ring-blue-500
+      focus:ring-brand-500
       active:bg-gray-200
     `,
 
@@ -95,10 +95,10 @@ export const BUTTON_VARIANTS = {
 
     // Botón de link
     link: `
-      bg-transparent text-blue-600 border border-transparent
-      hover:text-blue-800 hover:underline
-      focus:ring-blue-500
-      active:text-blue-900
+      bg-transparent text-brand-700 border border-transparent
+      hover:text-brand-900 hover:underline
+      focus:ring-brand-500
+      active:text-brand-950
     `
   },
 
@@ -146,14 +146,14 @@ export const CARD_VARIANTS = {
     stats: `
       shadow-md text-center p-6
       hover:shadow-lg hover:scale-105
-      border-l-4 border-blue-500
-      bg-gradient-to-br from-white to-blue-50
+      border-l-4 border-brand-600
+      bg-gradient-to-br from-white to-brand-50
     `,
 
     // Cards temáticas agrícolas
     agricultural: `
-      shadow-md border-l-4 border-green-500
-      bg-gradient-to-br from-white to-green-50
+      shadow-md border-l-4 border-brown-500
+      bg-gradient-to-br from-white to-brown-50
       hover:shadow-lg hover:scale-[1.02]
     `,
 
@@ -218,7 +218,7 @@ export const INPUT_VARIANTS = {
     // Input por defecto
     default: `
       border-gray-300 bg-white text-gray-900
-      focus:border-blue-500 focus:ring-blue-500
+      focus:border-brand-500 focus:ring-brand-500
       placeholder:text-gray-400
     `,
 
@@ -238,9 +238,9 @@ export const INPUT_VARIANTS = {
 
     // Input temático agrícola
     agricultural: `
-      border-green-300 bg-green-50 text-green-900
-      focus:border-green-500 focus:ring-green-500
-      placeholder:text-green-400
+      border-brown-300 bg-brown-50 text-brown-900
+      focus:border-brown-500 focus:ring-brown-500
+      placeholder:text-brown-400
     `,
 
     // Input ghost (sin bordes visibles)
@@ -277,8 +277,8 @@ export const BADGE_VARIANTS = {
 
     // Badge primario
     primary: `
-      bg-blue-100 text-blue-800
-      hover:bg-blue-200
+      bg-brand-100 text-brand-800
+      hover:bg-brand-200
     `,
 
     // Badge de éxito
@@ -301,8 +301,8 @@ export const BADGE_VARIANTS = {
 
     // Badges temáticos agrícolas
     agricultural: `
-      bg-green-100 text-green-800 border border-green-200
-      hover:bg-green-200
+      bg-brown-100 text-brown-800 border border-brown-200
+      hover:bg-brown-200
     `,
 
     machinery: `
@@ -341,7 +341,7 @@ export const ALERT_VARIANTS = {
   // Variantes de tipo
   variants: {
     info: `
-      bg-blue-50 border-blue-200 text-blue-800
+      bg-brand-50 border-brand-200 text-brand-800
     `,
 
     success: `
@@ -358,8 +358,8 @@ export const ALERT_VARIANTS = {
 
     // Alertas temáticas
     agricultural: `
-      bg-green-50 border-green-200 text-green-800
-      border-l-4 border-l-green-500
+      bg-brown-50 border-brown-200 text-brown-800
+      border-l-4 border-l-brown-500
     `
   }
 };
@@ -442,10 +442,10 @@ export const LOADING_VARIANTS = {
     base: 'animate-spin rounded-full border-2 border-gray-200',
     
     variants: {
-      primary: 'border-t-blue-600',
-      success: 'border-t-green-600',
+  primary: 'border-t-brand-700',
+  success: 'border-t-brown-700',
       warning: 'border-t-yellow-600',
-      agricultural: 'border-t-green-600'
+  agricultural: 'border-t-brown-600'
     },
     
     sizes: {

@@ -94,8 +94,8 @@ export const diasDesdeReparacion = (fecha) => {
 export const getEstadoReparacionColorClass = (estado) => {
   const estados = {
     'pendiente': 'bg-yellow-100 text-yellow-700',
-    'en_progreso': 'bg-blue-100 text-blue-700',
-    'completada': 'bg-green-100 text-green-700',
+    'en_progreso': 'bg-brand-100 text-brand-800',
+    'completada': 'bg-brown-100 text-brown-800',
     'cancelada': 'bg-red-100 text-red-700',
     'pausada': 'bg-gray-100 text-gray-700'
   };

@@ -26,8 +26,8 @@ function ProveedorFormulario({ token, onCreated }) {
     telefono: '',
     email: '',
     direccion: '',
-    ubicacion: '',
-    notas: ''
+  ubicacion: '',
+  notas: ''
   });
 
   const [loading, setLoading] = useState(false);

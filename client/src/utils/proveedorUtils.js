@@ -98,8 +98,8 @@ export const getCiudadColorClass = (ciudad) => {
   if (!ciudad) return 'bg-gray-100 text-gray-700';
   
   const colors = [
-    'bg-blue-100 text-blue-700',
-    'bg-green-100 text-green-700',
+    'bg-brand-100 text-brand-800',
+    'bg-brown-100 text-brown-800',
     'bg-yellow-100 text-yellow-700',
     'bg-purple-100 text-purple-700',
     'bg-pink-100 text-pink-700',

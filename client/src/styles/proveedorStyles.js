@@ -27,8 +27,8 @@ export const PROVEEDOR_STYLES = {
   fields: {
     cuit: "font-mono text-sm",
     telefono: "font-mono text-sm",
-    email: "text-blue-600 hover:text-blue-800 transition-colors",
-    web: "text-blue-600 hover:text-blue-800 transition-colors break-all",
+  email: "text-brand-700 hover:text-brand-900 transition-colors",
+  web: "text-brand-700 hover:text-brand-900 transition-colors break-all",
     direccion: "leading-relaxed",
     productos: "flex flex-wrap gap-2"
   },
@@ -36,8 +36,8 @@ export const PROVEEDOR_STYLES = {
   // Tags para productos
   productTag: {
     base: "inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium",
-    default: "bg-blue-100 text-blue-800",
-    hover: "hover:bg-blue-200 transition-colors cursor-pointer"
+  default: "bg-brand-100 text-brand-800",
+  hover: "hover:bg-brand-200 transition-colors cursor-pointer"
   },
 
   // Cards de información
@@ -57,7 +57,7 @@ export const PROVEEDOR_STYLES = {
   // Botones específicos para proveedores
   buttons: {
     ...BUTTON_STYLES,
-    contact: "bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 hover:border-green-300",
+  contact: "bg-brown-50 hover:bg-brown-100 text-brown-800 border border-brown-200 hover:border-brown-300",
     website: "bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 hover:border-purple-300"
   },
 
@@ -106,15 +106,15 @@ export const PROVEEDOR_STYLES = {
 export const PROVEEDOR_UTILS = {
   // Clases para estados de conexión/contacto
   contactStatus: {
-    available: "bg-green-100 text-green-800",
+  available: "bg-brown-100 text-brown-800",
     unavailable: "bg-red-100 text-red-800",
     unknown: "bg-gray-100 text-gray-800"
   },
 
   // Iconos específicos para proveedores
   icons: {
-    supplier: "w-5 h-5 text-blue-600",
-    contact: "w-4 h-4 text-green-600",
+  supplier: "w-5 h-5 text-brand-700",
+  contact: "w-4 h-4 text-brown-700",
     location: "w-4 h-4 text-gray-600",
     products: "w-4 h-4 text-purple-600"
   }
