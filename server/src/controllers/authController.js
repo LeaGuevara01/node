@@ -27,6 +27,17 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { username, password } = req.body;
   try {
+  // Bypass opcional para trabajar sin DB (solo si DEV_BYPASS_AUTH=true)
+  if (String(process.env.DEV_BYPASS_AUTH).toLowerCase() === 'true') {
+      const devUser = process.env.DEV_USER || 'admin';
+      const devPass = process.env.DEV_PASS || 'admin';
+      if (username === devUser && password === devPass) {
+        const token = jwt.sign({ userId: 0, role: 'Admin', dev: true }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return res.json({ token, bypass: true });
+      }
+      return res.status(401).json({ error: 'Credenciales inválidas (DEV_BYPASS_AUTH activo)' });
+    }
+
     const user = await prisma.user.findUnique({ where: { username } });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Credenciales inválidas' });

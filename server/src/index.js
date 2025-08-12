@@ -13,6 +13,7 @@ const app = express();
 const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
 const yaml = require('js-yaml');
+const prisma = require('./lib/prisma');
 
 // Validar configuración al inicio
 try {
@@ -24,27 +25,31 @@ try {
 }
 
 // CORS configuration using centralized config
-// Intención: aceptar una lista, CSV o string única desde CORS_ORIGIN
+// En desarrollo, incluir siempre orígenes localhost aunque CORS_ORIGIN esté definido
 const getCorsOrigins = () => {
-  const corsOrigin = config.CORS_ORIGIN;
-  
-  // Si es una cadena separada por comas, dividir en array
-  if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
-    return corsOrigin.split(',').map(origin => origin.trim());
+  const fromEnv = (() => {
+    const corsOrigin = config.CORS_ORIGIN;
+    if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
+      return corsOrigin.split(',').map(o => o.trim());
+    }
+    if (typeof corsOrigin === 'string') {
+      return [corsOrigin];
+    }
+    if (Array.isArray(corsOrigin)) {
+      return corsOrigin;
+    }
+    return [];
+  })();
+
+  const devDefaults = ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'];
+  if (config.isDevelopment()) {
+    // Unir y deduplicar
+    return Array.from(new Set([...
+      fromEnv,
+      ...devDefaults
+    ]));
   }
-  
-  // Si es una cadena simple, devolverla como array
-  if (typeof corsOrigin === 'string') {
-    return [corsOrigin];
-  }
-  
-  // Si ya es un array, devolverlo
-  if (Array.isArray(corsOrigin)) {
-    return corsOrigin;
-  }
-  
-  // Fallback a valores por defecto (dev)
-  return ['http://localhost:5173', 'http://localhost:3000'];
+  return fromEnv.length ? fromEnv : devDefaults;
 };
 
 const corsOptions = {
@@ -70,6 +75,16 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
+});
+
+// DB health check (attempts a lightweight query)
+app.get('/api/health/db', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ db: 'up' });
+  } catch (e) {
+    res.status(500).json({ db: 'down', error: e.message });
+  }
 });
 
 // Root endpoint
