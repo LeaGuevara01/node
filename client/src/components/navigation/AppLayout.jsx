@@ -171,11 +171,11 @@ const AppLayout = ({
                 <>
                   {showSearch && (
                     <button
-                      className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
+                      className="inline-flex items-center leading-none p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
                       onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
                       title="Buscar"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.386a1 1 0 01-1.414 1.415l-4.387-4.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z" clipRule="evenodd" /></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="align-middle h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.386a1 1 0 01-1.414 1.415l-4.387-4.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z" clipRule="evenodd" /></svg>
                     </button>
                   )}
                   {isDetails && onEdit && (

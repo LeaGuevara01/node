@@ -9,10 +9,9 @@ import {
 } from '../utils/proveedorUtils';
 import TagLink from '../components/TagLink';
 import { handleFileUpload, COMMON_ICONS } from '../utils/detailsUtils.jsx';
-import { DetailsAlert, DetailsLoading, FieldWithIcon, SimpleField, ImageUpload } from '../components/shared/DetailsComponents';
+import { DetailsLoading, FieldWithIcon, SimpleField, ImageUpload } from '../components/shared/DetailsComponents';
 import AppLayout from '../components/navigation/AppLayout';
 import { useNavigation } from '../hooks/useNavigation';
-import { DETAILS_CONTAINER } from '../styles/detailsStyles';
 import { 
   CONTAINER_STYLES,
   INPUT_STYLES,
@@ -21,6 +20,7 @@ import {
   TEXT_STYLES,
   ALERT_STYLES
 } from '../styles/repuestoStyles';
+import { getCiudadColorClass } from '../utils/proveedorUtils';
 
 function ProveedorDetails({ token }) {
   const { id } = useParams();
@@ -30,6 +30,9 @@ function ProveedorDetails({ token }) {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState('');
+
+  // Derivar ciudad para mostrar en header/etiquetas
+  const ciudad = proveedor?.ciudad || extractCiudadFromDireccion(proveedor?.direccion || '');
 
   const fetchProveedor = async () => {
     try {
@@ -94,10 +97,8 @@ function ProveedorDetails({ token }) {
   if (error && !proveedor) {
     return (
       <AppLayout currentSection="proveedores" breadcrumbs={breadcrumbs} title="Error" token={token}>
-        <div className={CONTAINER_STYLES.main}>
-          <div className={CONTAINER_STYLES.maxWidth}>
-            <DetailsAlert type="error" message={error} />
-          </div>
+        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+          <div className={ALERT_STYLES.error}>{error}</div>
         </div>
       </AppLayout>
     );
@@ -108,18 +109,22 @@ function ProveedorDetails({ token }) {
       currentSection="proveedores"
       breadcrumbs={breadcrumbs}
       title={`Detalles: ${proveedor?.nombre || 'Proveedor'}`}
+      subtitle={ciudad || proveedor?.email || ''}
       isDetails={true}
       onEdit={handleEdit}
       onDelete={handleDelete}
       token={token}
     >
-      {error && <DetailsAlert type="error">{error}</DetailsAlert>}
-      {uploadSuccess && <DetailsAlert type="success">{uploadSuccess}</DetailsAlert>}
+      {error && (
+        <div className={`${ALERT_STYLES.error} mb-4`}>{error}</div>
+      )}
+      {uploadSuccess && (
+        <div className={`${ALERT_STYLES.success} mb-4`}>{uploadSuccess}</div>
+      )}
       {proveedor && (
         <>
             {/* Información principal */}
-            <div className={CONTAINER_STYLES.card}>
-              <div className={CONTAINER_STYLES.cardPadding}>
+            <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
                 
                 {/* Grid para imagen y información */}
                 <div className={LAYOUT_STYLES.gridForm}>
@@ -139,6 +144,17 @@ function ProveedorDetails({ token }) {
                   <div>
                     <h3 className={TEXT_STYLES.sectionTitle}>Información del Proveedor</h3>
                     <div className="space-y-6">
+
+                      {/* Etiquetas rápidas */}
+                      {(ciudad) && (
+                        <div className="flex flex-wrap items-center gap-2">
+                          {ciudad && (
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getCiudadColorClass(ciudad)}`}>
+                              {ciudad}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       
                       {/* Información básica */}
                       <div className="bg-gray-50 rounded-xl p-6">
@@ -246,9 +262,8 @@ function ProveedorDetails({ token }) {
                       )}
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
+        </div>
+      </div>
         </>
       )}
     </AppLayout>
