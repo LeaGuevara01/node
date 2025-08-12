@@ -1,5 +1,5 @@
 /**
- * Página de listado de Maquinarias refactorizada
+ * Página de listado de Equipos refactorizada
  * 
  * Esta página ahora utiliza el nuevo sistema de navegación unificado:
  * - AppLayout para layout consistente
@@ -10,7 +10,7 @@
  * - Prevención de llamadas API duplicadas
  */
 
-// Página: Maquinarias (refactor)
+// Página: Equipos (refactor)
 // Rol: listado con filtros avanzados y navegación a detalles/formulario
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -36,7 +36,7 @@ import {
 } from '../styles/repuestoStyles';
 
 // Logger específico para este componente
-const logger = createLogger('MaquinariasPage');
+const logger = createLogger('EquiposPage');
 
 function MaquinariasPage({ token, role, onLogout }) {
   const { navigateToDetailPage, navigate } = useNavigation();
@@ -62,7 +62,7 @@ function MaquinariasPage({ token, role, onLogout }) {
     setLoading, 
     handlePaginacion, 
     actualizarPaginacion 
-  } = usePagination({ limit: 20 });
+  } = usePagination({ limit: 10 });
 
   // Hook de filtros avanzados con configuración específica de maquinarias
   const {
@@ -380,7 +380,7 @@ function MaquinariasPage({ token, role, onLogout }) {
   // Definir breadcrumbs
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
-    { label: 'Maquinarias' }
+    { label: 'Equipos' }
   ];
 
   const handleExport = async () => {
@@ -440,8 +440,8 @@ function MaquinariasPage({ token, role, onLogout }) {
     <AppLayout
       currentSection="maquinarias"
       breadcrumbs={breadcrumbs}
-      title="Gestión de Maquinarias"
-      subtitle="Administra el inventario de maquinaria agrícola"
+  title="Gestión de Equipos"
+  subtitle="Administra el inventario de equipos agrícolas"
       actions={pageActions}
       token={token}
       role={role}
@@ -450,10 +450,10 @@ function MaquinariasPage({ token, role, onLogout }) {
   collapseUserOnMd={true}
     >
       <BaseListPage
-        title="Listado de Maquinarias"
-        subtitle="Gestiona y filtra todas las maquinarias del sistema"
-        entityName="Maquinaria"
-        entityNamePlural="Maquinarias"
+  title="Listado de Equipos"
+  subtitle="Gestiona y filtra todos los equipos del sistema"
+  entityName="Equipo"
+  entityNamePlural="Equipos"
   createRoute="/maquinarias/formulario"
   showCsvUpload={false}
   showNewButton={false}

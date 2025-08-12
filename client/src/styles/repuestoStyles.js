@@ -12,23 +12,23 @@ export const CONTAINER_STYLES = {
 
 // Clases para inputs y formularios
 export const INPUT_STYLES = {
-  base: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500",
-  withIcon: "w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-500",
+  base: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-700 focus:border-transparent text-gray-700",
+  withIcon: "w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-700 focus:border-transparent text-gray-700",
   placeholder: "placeholder-gray-500",
-  select: "w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none text-gray-500",
+  select: "w-full pl-10 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-700 focus:border-transparent appearance-none text-gray-700",
   selectPlaceholder: "text-gray-500",
   label: "block text-sm font-medium text-gray-700 mb-2",
-  textarea: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 resize-vertical min-h-[100px]"
+  textarea: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-700 focus:border-transparent text-gray-900 resize-vertical min-h-[100px]"
 };
 
 // Clases para botones
 export const BUTTON_STYLES = {
-  primary: "bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200",
-  secondary: "bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium transition-colors duration-200",
+  primary: "bg-brand-700 hover:bg-brand-800 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2",
+  secondary: "bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2",
   danger: "bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2",
-  edit: "bg-blue-50 hover:bg-blue-100 text-blue-700 p-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center mt-1 flex-shrink-0",
-  csv: "bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-200 text-center flex items-center justify-center gap-2 font-semibold opacity-90 hover:opacity-100 border border-green-200 hover:border-green-300",
-  newItem: "bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 opacity-90 hover:opacity-100 w-full sm:w-auto border border-blue-200 hover:border-blue-300",
+  edit: "bg-brand-50 hover:bg-brand-100 text-brand-700 p-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center mt-1 flex-shrink-0",
+  csv: "bg-brown-50 hover:bg-brown-100 text-brown-700 px-4 py-2 rounded-lg cursor-pointer transition-colors duration-200 text-center flex items-center justify-center gap-2 font-semibold opacity-90 hover:opacity-100 border border-brown-200 hover:border-brown-300",
+  newItem: "bg-brand-50 hover:bg-brand-100 text-brand-700 px-4 py-2 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2 opacity-90 hover:opacity-100 w-full sm:w-auto border border-brand-200 hover:border-brand-300",
   backButton: "inline-flex items-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 gap-2 text-sm font-medium shadow-sm",
   backButtonLarge: "inline-flex items-center px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 gap-3 text-base font-medium shadow-sm hover:shadow-md",
   filter: {
@@ -37,7 +37,7 @@ export const BUTTON_STYLES = {
     clear: "w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
   },
   pagination: {
-    enabled: "bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md",
+    enabled: "bg-brand-700 hover:bg-brand-800 text-white shadow-sm hover:shadow-md",
     disabled: "bg-gray-100 text-gray-400 cursor-not-allowed opacity-60",
     base: "px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center gap-1 border border-transparent"
   }
@@ -67,7 +67,7 @@ export const ICON_STYLES = {
 
 // Clases para textos y tipografía
 export const TEXT_STYLES = {
-  title: "text-2xl font-bold text-gray-900",
+  title: "text-2xl font-bold text-brand-700",
   subtitle: "text-gray-600",
   sectionTitle: "text-lg font-semibold mb-3 text-gray-900",
   itemTitle: "font-semibold text-gray-900 text-[17px]",
@@ -127,12 +127,12 @@ export const POSITION_STYLES = {
 
 // Clases para inputs embebidos (rangos)
 export const RANGE_STYLES = {
-  container: "relative border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent w-full",
+  container: "relative border border-gray-300 rounded-lg bg-white focus-within:ring-2 focus-within:ring-brand-700 focus-within:border-transparent w-full",
   wrapper: "flex items-center py-3 min-w-0 w-full",
   labelSection: "flex items-center px-3 min-w-0 flex-shrink-0",
   icon: "w-5 h-5 mr-2 text-gray-400 flex-shrink-0",
-  labelText: "text-sm font-medium text-gray-500 whitespace-nowrap",
+  labelText: "text-sm font-medium text-gray-600 whitespace-nowrap",
   inputsWrapper: "flex items-center gap-1 px-3 flex-1 min-w-0 w-full",
-  input: "flex-1 border-0 p-1 text-sm focus:ring-0 focus:outline-none bg-transparent placeholder-gray-500 min-w-0 w-16 text-gray-500 text-center",
+  input: "flex-1 border-0 p-1 text-sm focus:ring-0 focus:outline-none bg-transparent placeholder-gray-500 min-w-0 w-16 text-gray-700 text-center",
   separator: "text-gray-500 text-sm font-medium px-2 flex-shrink-0 select-none"
 };

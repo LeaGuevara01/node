@@ -8,18 +8,30 @@ module.exports = {
     extend: {
       // Colores personalizados del sistema agrícola
       colors: {
-        // Tema principal del sistema
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+        // Paleta sobria, industrial
+        brand: {
+          50: '#f3f5f9',
+          100: '#e7ebf3',
+          200: '#c7cfdf',
+          300: '#a3b0cb',
+          400: '#6f82a7',
+          500: '#4a5a84',
+          600: '#36466f',
+          700: '#2e406b', // azul principal solicitado
+          800: '#253356',
+          900: '#1b2741',
+        },
+        brown: {
+          50: '#f8f3ef',
+          100: '#efe3d6',
+          200: '#e0c7af',
+          300: '#caa27e',
+          400: '#a97c54',
+          500: '#8b5e3c', // marrón industrial
+          600: '#714a31',
+          700: '#5a3b28',
+          800: '#482f21',
+          900: '#3a261b',
         },
         
         // Colores agrícolas especializados
@@ -237,23 +249,22 @@ module.exports = {
     function({ addUtilities }) {
       const newUtilities = {
         // Utilidades para contenedores agrícolas
-        '.container-agricultural': {
+        '.container-industrial': {
           '@apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8': {},
         },
-        
-        // Utilidades para cards agrícolas
-        '.card-agricultural': {
-          '@apply bg-white rounded-xl shadow-agricultural border border-agricultural-earth-200 overflow-hidden': {},
+        // Utilidades para cards industriales
+        '.card-industrial': {
+          '@apply bg-white rounded-xl shadow-soft border border-gray-200 overflow-hidden': {},
         },
-        
-        // Utilidades para botones agrícolas
-        '.btn-agricultural': {
-          '@apply bg-gradient-agricultural text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-agricultural-lg transition-all duration-200': {},
+
+        // Utilidades para botones industriales
+        '.btn-industrial': {
+          '@apply bg-brand-700 hover:bg-brand-800 text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200': {},
         },
-        
-        // Utilidades para texto
-        '.text-agricultural': {
-          '@apply text-agricultural-crop-700': {},
+
+        // Utilidades para texto industrial
+        '.text-industrial': {
+          '@apply text-brand-700': {},
         },
         
         // Utilidades de animación

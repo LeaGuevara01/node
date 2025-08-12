@@ -10,7 +10,7 @@ export const usePagination = (initialPagination = {}, fetchDataFunction) => {
     current: 1,
     total: 1,
     totalItems: 0,
-    limit: 20,
+  limit: 10,
     ...initialPagination
   });
 

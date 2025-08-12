@@ -28,6 +28,8 @@ import {
   ALERT_STYLES
 } from '../styles/repuestoStyles';
 import AppLayout from '../components/navigation/AppLayout';
+import FormHeaderActions from '../components/navigation/FormHeaderActions';
+import Papa from 'papaparse';
 
 function ProveedoresPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
@@ -52,7 +54,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     setLoading, 
     handlePaginacion, 
     actualizarPaginacion 
-  } = usePagination({ limit: 20 });
+  } = usePagination({ limit: 10 });
 
   /**
    * Carga los proveedores con filtros aplicados
@@ -64,10 +66,10 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
       
       if (data.proveedores) {
         setProveedores(data.proveedores);
-        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
+  actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         setProveedores(data || []);
-        actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 20 });
+  actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
       }
       setError('');
     } catch (err) {
@@ -274,16 +276,76 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     { label: 'Proveedores' }
   ];
 
+  // Exportar a CSV (campos principales de proveedores)
+  const handleExport = () => {
+    if (!proveedores || proveedores.length === 0) return;
+    const csv = Papa.unparse(proveedores.map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      contacto: p.contacto,
+      telefono: p.telefono,
+      email: p.email,
+      direccion: p.direccion,
+      ubicacion: p.ubicacion,
+      notas: p.notas
+    })));
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'proveedores.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Importar desde CSV usando Papa.parse
+  const handleImportInput = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBulkError('');
+    setBulkSuccess('');
+    Papa.parse(file, {
+      header: true,
+      complete: async (results) => {
+        const validRows = results.data.filter(row => row.nombre);
+        let successCount = 0, failCount = 0;
+        for (const row of validRows) {
+          try {
+            await createProveedor({
+              nombre: row.nombre || '',
+              contacto: row.contacto || '',
+              telefono: row.telefono || '',
+              email: row.email || '',
+              direccion: row.direccion || '',
+              ubicacion: row.ubicacion || '',
+              notas: row.notas || ''
+            }, token);
+            successCount++;
+          } catch (err) {
+            failCount++;
+          }
+        }
+        setBulkSuccess(`Creados: ${successCount}`);
+        setBulkError(failCount ? `Fallidas: ${failCount}` : '');
+        if (successCount) {
+          fetchProveedores(filtrosConsolidados, 1);
+          cargarOpcionesFiltros();
+        }
+      },
+      error: () => setBulkError('Error al procesar CSV'),
+    });
+    // reset input value para permitir re-seleccionar el mismo archivo
+    e.target.value = '';
+  };
+
   const pageActions = (
-    <button
-      onClick={() => setShowAddModal(true)}
-      className={BUTTON_STYLES.newItem}
-    >
-      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-      </svg>
-      Nuevo Proveedor
-    </button>
+    <FormHeaderActions
+      onSearchClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+      onExport={handleExport}
+      onImport={handleImportInput}
+      onNew={() => setShowAddModal(true)}
+      importInputId="proveedores-import-input"
+    />
   );
 
   return (
@@ -296,6 +358,8 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
       token={token}
       role={role}
       onLogout={onLogout}
+  hideSearchOnDesktop={true}
+  collapseUserOnMd={true}
     >
       <BaseListPage
         title="Listado de Proveedores"

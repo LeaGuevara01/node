@@ -51,20 +51,20 @@ const iconMap = {
   reparaciones: Wrench     // Llave inglesa para reparaciones
 };
 
-function StatsCard({ type, title, value, onClick, clickable = true }) {
+function StatsCard({ type, title, value, onClick, clickable = true, iconOnly = false, className = '' }) {
   // Obtener estilos e icono según el tipo
   const style = cardStyles[type];
   const IconComponent = iconMap[type];
 
   // Determinar clases CSS según si es clickeable - Responsive optimizado
-  const cardClasses = `
-    bg-white p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 
-    transition-all duration-200 group min-h-[80px] sm:min-h-[90px]
-    ${clickable && onClick ? 
-      'hover:shadow-xl hover:scale-105 cursor-pointer hover:border-gray-300 active:scale-100 touch-manipulation' : 
-      'hover:shadow-lg'
-    }
-  `.trim();
+  const baseInteractive = clickable && onClick ? 'hover:shadow-xl hover:scale-105 cursor-pointer hover:border-gray-300 active:scale-100 touch-manipulation' : 'hover:shadow-lg';
+  const sizing = iconOnly ? 'p-3 sm:p-4 aspect-square h-16 sm:h-20 flex items-center justify-center' : 'p-3 sm:p-4 min-h-[80px] sm:min-h-[90px]';
+  const cardClasses = [
+    'bg-white rounded-lg shadow-md border border-gray-200 transition-all duration-200 group select-none',
+    sizing,
+    baseInteractive,
+    className
+  ].join(' ').trim();
 
   // Manejar el click
   const handleClick = () => {
@@ -74,11 +74,12 @@ function StatsCard({ type, title, value, onClick, clickable = true }) {
   };
 
   return (
-    <div 
+    <div
       className={cardClasses}
       onClick={handleClick}
-      role={clickable && onClick ? "button" : undefined}
+      role={clickable && onClick ? 'button' : undefined}
       tabIndex={clickable && onClick ? 0 : undefined}
+      aria-label={iconOnly ? title : undefined}
       onKeyDown={(e) => {
         if ((e.key === 'Enter' || e.key === ' ') && clickable && onClick) {
           e.preventDefault();
@@ -86,19 +87,22 @@ function StatsCard({ type, title, value, onClick, clickable = true }) {
         }
       }}
     >
-      <div className="flex items-center justify-between h-full">
-        {/* Contenedor del icono con colores temáticos - Responsive */}
-        <div className="flex items-center w-full">
-          <div className={`p-2 sm:p-2.5 rounded-full ${style.bgColor} ${style.textColor} mr-2 sm:mr-3 flex-shrink-0`}>
-            <IconComponent size={16} className="sm:w-5 sm:h-5" />
-          </div>
-          
-          {/* Información textual - Responsive */}
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{title}</p>
+      {iconOnly ? (
+        <div className={`p-2 sm:p-3 rounded-full ${style.bgColor} ${style.textColor} flex items-center justify-center w-full h-full`}> 
+          <IconComponent size={28} className="sm:w-8 sm:h-8" />
+        </div>
+      ) : (
+        <div className="flex items-center justify-between h-full">
+          <div className="flex items-center w-full">
+            <div className={`p-2 sm:p-2.5 rounded-full ${style.bgColor} ${style.textColor} mr-2 sm:mr-3 flex-shrink-0`}>
+              <IconComponent size={16} className="sm:w-5 sm:h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{title}</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

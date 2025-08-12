@@ -21,9 +21,11 @@ import StatsCard from '../components/StatsCard';
 import QuickActionCard, { SectionCards } from '../components/QuickActionCard';
 import WelcomeCard from '../components/WelcomeCard';
 import RoleGuard from '../components/RoleGuard';
+import { EntityModalProvider, useEntityModal } from '../context/EntityModalContext';
 
-function DashboardRefactored({ token, role, onLogout }) {
+function DashboardContent({ token, role, onLogout }) {
   const { navigateToListPage, navigateToFormPage, navigateFromDashboard } = useNavigation();
+  const { openEntityModal } = useEntityModal();
   
   // Estados para almacenar los datos de cada entidad
   const [data, setData] = useState({
@@ -163,10 +165,10 @@ function DashboardRefactored({ token, role, onLogout }) {
       onLogout={onLogout}
     >
       <div className="space-y-6 lg:space-y-8">
-        {/* Header del sistema - Mejorado para móvil */}
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center border border-gray-200 border-l-4 border-l-green-500">
+        {/* Header del sistema */}
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center border border-gray-200 border-l-4 border-l-green-600">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
-            <Activity size={40} className="text-green-600" />
+            {/*<Activity size={40} className="text-green-800" />*/}
             Sistema de Gestión Agrícola
           </h1>
           <p className="text-gray-600 text-base md:text-lg">
@@ -174,8 +176,8 @@ function DashboardRefactored({ token, role, onLogout }) {
           </p>
         </div>
 
-        {/* Tarjetas de estadísticas - Responsive mejorado */}
-        <div>
+  {/* Tarjetas de estadísticas (contenidas como las secciones de estado) */}
+  <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 flex flex-col sm:flex-row sm:items-center">
             <span className="flex items-center gap-2">
               <BarChart3 size={20} className="text-blue-600" />
@@ -186,40 +188,48 @@ function DashboardRefactored({ token, role, onLogout }) {
             </span>
           </h2>
           
-          <div className="grid grid-cols-2 gap-4 lg:gap-6">
-            <StatsCard 
-              type="maquinarias" 
-              title="Maquinarias" 
+          <div className="flex flex-wrap justify-center gap-4 lg:gap-6" role="list" aria-label="Resumen del sistema">
+            <StatsCard
+              type="maquinarias"
+              title="Equipos"
               value={stats.maquinarias}
               onClick={handleStatsCardClick}
+              iconOnly
+              className="w-16 h-16 sm:w-20 sm:h-20"
             />
-            <StatsCard 
-              type="repuestos" 
-              title="Repuestos" 
+            <StatsCard
+              type="repuestos"
+              title="Repuestos"
               value={stats.repuestos}
               onClick={handleStatsCardClick}
+              iconOnly
+              className="w-16 h-16 sm:w-20 sm:h-20"
             />
-            <StatsCard 
-              type="proveedores" 
-              title="Proveedores" 
+            <StatsCard
+              type="proveedores"
+              title="Proveedores"
               value={stats.proveedores}
               onClick={handleStatsCardClick}
+              iconOnly
+              className="w-16 h-16 sm:w-20 sm:h-20"
             />
-            <StatsCard 
-              type="reparaciones" 
-              title="Reparaciones" 
+            <StatsCard
+              type="reparaciones"
+              title="Reparaciones"
               value={stats.reparaciones}
               onClick={handleStatsCardClick}
+              iconOnly
+              className="w-16 h-16 sm:w-20 sm:h-20"
             />
           </div>
         </div>
 
-        {/* Resumen de estados - Layout responsive */}
+        {/* Resumen de estados */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
           <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
             <h3 className="text-base md:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <Wrench size={20} className="text-orange-600" />
-              Estado de Maquinarias
+              Estado de Equipos
             </h3>
             <StatusSummary
               data={data.maquinarias}
@@ -248,87 +258,96 @@ function DashboardRefactored({ token, role, onLogout }) {
         {/* Sección de acciones rápidas adicionales - Con navegación directa */}
         <div className="space-y-4">
           <h3 className="text-base md:text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <Zap size={20} className="text-yellow-600" />
+            <Zap size={20} className="text-yellow-600" aria-hidden="true" />
             Acciones Rápidas
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <QuickActionCard
-              type="maquinarias"
-              title={SectionCards.maquinarias.title}
-              icon={SectionCards.maquinarias.icon}
-              description={SectionCards.maquinarias.description}
-              quickActions={SectionCards.maquinarias.quickActions.map(action => ({
-                ...action,
-                action: () => {
-                  if (action.key === 'view') {
-                    navigateToListPage('maquinarias');
-                  } else if (action.key === 'create') {
-                    navigateFromDashboard('maquinarias', 'create');
-                  } else if (action.key === 'maintenance') {
-                    navigateToListPage('maquinarias', { estado: 'En mantenimiento' });
-                  }
-                }
-              }))}
-            />
-            
-            <QuickActionCard
-              type="repuestos"
-              title={SectionCards.repuestos.title}
-              icon={SectionCards.repuestos.icon}
-              description={SectionCards.repuestos.description}
-              quickActions={SectionCards.repuestos.quickActions.map(action => ({
-                ...action,
-                action: () => {
-                  if (action.key === 'view') {
-                    navigateToListPage('repuestos');
-                  } else if (action.key === 'create') {
-                    navigateFromDashboard('repuestos', 'create');
-                  } else if (action.key === 'low-stock') {
-                    navigateToListPage('repuestos', { stockBajo: true });
-                  }
-                }
-              }))}
-            />
-            
-            <QuickActionCard
-              type="proveedores"
-              title={SectionCards.proveedores.title}
-              icon={SectionCards.proveedores.icon}
-              description={SectionCards.proveedores.description}
-              quickActions={SectionCards.proveedores.quickActions.map(action => ({
-                ...action,
-                action: () => {
-                  if (action.key === 'view') {
-                    navigateToListPage('proveedores');
-                  } else if (action.key === 'create') {
-                    navigateFromDashboard('proveedores', 'create');
-                  }
-                }
-              }))}
-            />
-            
-            <QuickActionCard
-              type="reparaciones"
-              title={SectionCards.reparaciones.title}
-              icon={SectionCards.reparaciones.icon}
-              description={SectionCards.reparaciones.description}
-              quickActions={SectionCards.reparaciones.quickActions.map(action => ({
-                ...action,
-                action: () => {
-                  if (action.key === 'view') {
-                    navigateToListPage('reparaciones');
-                  } else if (action.key === 'create') {
-                    navigateFromDashboard('reparaciones', 'create');
-                  } else if (action.key === 'pending') {
-                    navigateToListPage('reparaciones', { estado: 'Pendiente' });
-                  }
-                }
-              }))}
-            />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4" role="list" aria-label="Acciones rápidas">
+            <div role="listitem">
+              <QuickActionCard
+                  type="maquinarias"
+                  title={SectionCards.maquinarias.title}
+                  icon={SectionCards.maquinarias.icon}
+                  description={SectionCards.maquinarias.description}
+        className="min-h-[136px]"
+                  quickActions={SectionCards.maquinarias.quickActions.map(action => ({
+                    ...action,
+                    action: () => {
+                      if (action.key === 'view') {
+                        navigateToListPage('maquinarias');
+                      } else if (action.key === 'create') {
+            openEntityModal({ entity: 'maquinarias', mode: 'create', props: { onCreate: async () => { await fetchData(); } } });
+                      } else if (action.key === 'maintenance') {
+                        navigateToListPage('maquinarias', { estado: 'En mantenimiento' });
+                      }
+                    }
+                  }))}
+                />
+              </div>
+              <div role="listitem">
+              <QuickActionCard
+                  type="repuestos"
+                  title={SectionCards.repuestos.title}
+                  icon={SectionCards.repuestos.icon}
+                  description={SectionCards.repuestos.description}
+                  className="min-h-[136px]"
+                  quickActions={SectionCards.repuestos.quickActions.map(action => ({
+                    ...action,
+                    action: () => {
+                      if (action.key === 'view') {
+                        navigateToListPage('repuestos');
+                      } else if (action.key === 'create') {
+            openEntityModal({ entity: 'repuestos', mode: 'create', props: { onCreate: async () => { await fetchData(); } } });
+                      } else if (action.key === 'low-stock') {
+                        navigateToListPage('repuestos', { stockBajo: true });
+                      }
+                    }
+                  }))}
+                />
+              </div>
+              <div role="listitem">
+              <QuickActionCard
+                  type="proveedores"
+                  title={SectionCards.proveedores.title}
+                  icon={SectionCards.proveedores.icon}
+                  description={SectionCards.proveedores.description}
+                  className="min-h-[136px]"
+                  quickActions={SectionCards.proveedores.quickActions.map(action => ({
+                    ...action,
+                    action: () => {
+                      if (action.key === 'view') {
+                        navigateToListPage('proveedores');
+                      } else if (action.key === 'create') {
+            openEntityModal({ entity: 'proveedores', mode: 'create', props: { onCreate: async () => { await fetchData(); } } });
+                      }
+                    }
+                  }))}
+                />
+              </div>
+              <div role="listitem">
+              <QuickActionCard
+                  type="reparaciones"
+                  title={SectionCards.reparaciones.title}
+                  icon={SectionCards.reparaciones.icon}
+                  description={SectionCards.reparaciones.description}
+                  className="min-h-[136px]"
+                  quickActions={SectionCards.reparaciones.quickActions.map(action => ({
+                    ...action,
+                    action: () => {
+                      if (action.key === 'view') {
+                        navigateToListPage('reparaciones');
+                      } else if (action.key === 'create') {
+            openEntityModal({ entity: 'reparaciones', mode: 'create', props: { onSave: async () => { await fetchData(); } } });
+                      } else if (action.key === 'pending') {
+                        navigateToListPage('reparaciones', { estado: 'Pendiente' });
+                      }
+                    }
+                  }))}
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
     </AppLayout>
   );
 }
@@ -355,18 +374,18 @@ const StatusSummary = ({ data, statusField, definitions = null, extraCounts = {}
 
   if (definitions && Array.isArray(definitions)) {
     return (
-      <div className="space-y-3">
+  <div className="flex flex-wrap justify-center gap-2">
         {definitions.map(def => {
           const base = counts[def.key] || 0;
           const override = Number.isFinite(extraCounts?.[def.key]) ? extraCounts[def.key] : null;
           const value = override !== null ? override : base;
           return (
-            <div key={def.key} className="flex items-center justify-between">
-              <span className={`px-2 py-1 rounded text-sm font-medium ${def.class}`}>
-                {def.label}
+            <span key={def.key} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${def.class}`}>
+              <span>{def.label}</span>
+              <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">
+                {value}
               </span>
-              <span className="text-sm font-medium text-gray-600">{value}</span>
-            </div>
+            </span>
           );
         })}
       </div>
@@ -376,12 +395,14 @@ const StatusSummary = ({ data, statusField, definitions = null, extraCounts = {}
   // Fallback: listar estados detectados
   const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   return (
-    <div className="space-y-3">
+    <div className="flex flex-wrap justify-center gap-2">
       {entries.map(([status, count]) => (
-        <div key={status} className="flex items-center justify-between">
-          <span className="px-2 py-1 rounded text-sm font-medium bg-gray-100 text-gray-800">{status}</span>
-          <span className="text-sm font-medium text-gray-600">{count}</span>
-        </div>
+        <span key={status} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+          <span>{status}</span>
+          <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">
+            {count}
+          </span>
+        </span>
       ))}
     </div>
   );
@@ -412,19 +433,19 @@ const StockSummary = ({ data, stockField, mode = 'discrete' }) => {
     }, { zero: 0, one: 0, twoPlus: 0 });
 
     return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="px-2 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Sin stock (0)</span>
-          <span className="text-sm font-medium text-gray-600">{summary.zero}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="px-2 py-1 rounded text-sm font-medium bg-yellow-100 text-yellow-800">Bajo (1)</span>
-          <span className="text-sm font-medium text-gray-600">{summary.one}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="px-2 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Normal (≥2)</span>
-          <span className="text-sm font-medium text-gray-600">{summary.twoPlus}</span>
-        </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
+          <span>Sin stock (0)</span>
+          <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{summary.zero}</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+          <span>Bajo (1)</span>
+          <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{summary.one}</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+          <span>Normal (≥2)</span>
+          <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{summary.twoPlus}</span>
+        </span>
       </div>
     );
   }
@@ -437,21 +458,30 @@ const StockSummary = ({ data, stockField, mode = 'discrete' }) => {
   }, { critical: 0, low: 0, normal: 0 });
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="px-2 py-1 rounded text-sm font-medium bg-red-100 text-red-800">Sin stock</span>
-        <span className="text-sm font-medium text-gray-600">{stockAnalysis.critical}</span>
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="px-2 py-1 rounded text-sm font-medium bg-yellow-100 text-yellow-800">Bajo</span>
-        <span className="text-sm font-medium text-gray-600">{stockAnalysis.low}</span>
-      </div>
-      <div className="flex items-center justify-between">
-        <span className="px-2 py-1 rounded text-sm font-medium bg-green-100 text-green-800">Normal</span>
-        <span className="text-sm font-medium text-gray-600">{stockAnalysis.normal}</span>
-      </div>
+    <div className="flex flex-wrap justify-center gap-2">
+      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
+        <span>Sin stock</span>
+        <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{stockAnalysis.critical}</span>
+      </span>
+      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+        <span>Bajo</span>
+        <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{stockAnalysis.low}</span>
+      </span>
+      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+        <span>Normal</span>
+        <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{stockAnalysis.normal}</span>
+      </span>
     </div>
   );
 };
+
+function DashboardRefactored(props) {
+  const { token } = props;
+  return (
+    <EntityModalProvider token={token}>
+      <DashboardContent {...props} />
+    </EntityModalProvider>
+  );
+}
 
 export default DashboardRefactored;

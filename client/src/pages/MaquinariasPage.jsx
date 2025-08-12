@@ -1,4 +1,4 @@
-// Página dedicada para el listado y gestión de maquinarias
+// Página dedicada para el listado y gestión de equipos
 // Refactorizada usando componentes modulares
 
 import React, { useState, useEffect } from 'react';
@@ -35,7 +35,7 @@ function MaquinariasPage({ token, onCreated }) {
     setLoading, 
     handlePaginacion, 
     actualizarPaginacion 
-  } = usePagination({ limit: 20 });
+  } = usePagination({ limit: 10 });
 
   /**
    * Carga las maquinarias con filtros aplicados
@@ -51,12 +51,12 @@ function MaquinariasPage({ token, onCreated }) {
       if (data.maquinarias) {
         const maquinariasOrdenadas = sortMaquinariasByCategory(data.maquinarias);
         setMaquinarias(maquinariasOrdenadas);
-        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
+  actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         // Respuesta legacy sin paginación
         const maquinariasOrdenadas = sortMaquinariasByCategory(data || []);
         setMaquinarias(maquinariasOrdenadas);
-        actualizarPaginacion({ current: 1, total: 1, totalItems: maquinariasOrdenadas.length, limit: 20 });
+  actualizarPaginacion({ current: 1, total: 1, totalItems: maquinariasOrdenadas.length, limit: 10 });
       }
       setError('');
     } catch (err) {
@@ -267,10 +267,10 @@ function MaquinariasPage({ token, onCreated }) {
   return (
     <>
       <BaseListPage
-        title="Listado de Maquinarias"
-        subtitle="Gestiona y filtra todas las maquinarias del sistema"
-        entityName="Maquinaria"
-        entityNamePlural="Maquinarias"
+  title="Listado de Equipos"
+  subtitle="Gestiona y filtra todos los equipos del sistema"
+  entityName="Equipo"
+  entityNamePlural="Equipos"
         createRoute="/maquinarias/formulario"
         
         items={maquinarias}

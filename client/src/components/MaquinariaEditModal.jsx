@@ -77,7 +77,7 @@ function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, onCreate
       <div className={MODAL_STYLES.container}>
         <div className={MODAL_STYLES.content}>
           <div className={MODAL_STYLES.header}>
-            <h2 className={MODAL_STYLES.title}>{mode === 'create' ? 'Nueva Maquinaria' : 'Editar Maquinaria'}</h2>
+            <h2 className={MODAL_STYLES.title}>{mode === 'create' ? 'Nuevo Equipo' : 'Editar Equipo'}</h2>
             <button
               onClick={onClose}
               className={MODAL_STYLES.closeButton}
@@ -225,7 +225,12 @@ function MaquinariaEditModal({ maquinaria, onClose, onUpdate, onDelete, onCreate
                     Guardando...
                   </>
                 ) : (
-                  mode === 'create' ? 'Crear Maquinaria' : 'Guardar Cambios'
+                  <>
+                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    {mode === 'create' ? 'Crear Equipo' : 'Actualizar Equipo'}
+                  </>
                 )}
               </button>
             </div>

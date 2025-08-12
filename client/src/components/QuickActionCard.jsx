@@ -12,7 +12,7 @@
  * @param {Function} onNavigate - Callback de navegación
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ChevronRight, 
   Plus, 
@@ -32,9 +32,12 @@ const QuickActionCard = ({
   icon,
   count = 0,
   description = '',
-  quickActions = []
+  quickActions = [],
+  className = ''
 }) => {
   const [showActions, setShowActions] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
+  const cardRef = useRef(null);
   const { navigateFromDashboard, navigateToListPage } = useNavigation();
 
   const defaultQuickActions = [
@@ -56,7 +59,36 @@ const QuickActionCard = ({
 
   const actions = quickActions.length > 0 ? quickActions : defaultQuickActions;
 
+  // Detectar entorno táctil (coarse pointer / no hover)
+  useEffect(() => {
+    const touch = matchMedia('(hover: none), (pointer: coarse)').matches || 'ontouchstart' in window;
+    setIsTouch(touch);
+  }, []);
+
+  // Cerrar acciones al tocar fuera en móvil
+  useEffect(() => {
+    if (!isTouch || !showActions) return;
+    const handleOutside = (e) => {
+      if (cardRef.current && !cardRef.current.contains(e.target)) {
+        setShowActions(false);
+      }
+    };
+    document.addEventListener('touchstart', handleOutside);
+    document.addEventListener('click', handleOutside);
+    return () => {
+      document.removeEventListener('touchstart', handleOutside);
+      document.removeEventListener('click', handleOutside);
+    };
+  }, [isTouch, showActions]);
+
   const handleMainClick = () => {
+    // En táctil: primer tap abre, segundo tap (ya abierto) navega
+    if (isTouch) {
+      if (!showActions) {
+        setShowActions(true);
+        return;
+      }
+    }
     navigateToListPage(type);
   };
 
@@ -67,14 +99,19 @@ const QuickActionCard = ({
 
   return (
     <div 
-      className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden group cursor-pointer"
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
+      ref={cardRef}
+      className={`bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden group cursor-pointer flex flex-col h-full ${className}`}
+      onMouseEnter={() => { if (!isTouch) setShowActions(true); }}
+      onMouseLeave={() => { if (!isTouch) setShowActions(false); }}
     >
       {/* Main Content */}
       <div 
         onClick={handleMainClick}
-        className="p-4 sm:p-5 hover:bg-gray-50 transition-colors"
+        className="p-4 sm:p-5 hover:bg-gray-50 transition-colors flex-1 min-h-[112px]"
+        role="button"
+        aria-expanded={showActions}
+        aria-haspopup="true"
+        aria-label={isTouch ? `${title} - ${showActions ? 'ocultar acciones' : 'mostrar acciones'}` : title}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -85,11 +122,9 @@ const QuickActionCard = ({
               <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                 {title}
               </h3>
-              {description && (
-                <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                  {description}
-                </p>
-              )}
+              <div className="mt-1 text-xs sm:text-sm text-gray-600 leading-snug h-10 overflow-hidden">
+                {description}
+              </div>
             </div>
           </div>
           
@@ -104,25 +139,23 @@ const QuickActionCard = ({
       <div 
         className={`
           border-t border-gray-100 transition-all duration-300 overflow-hidden
-          ${showActions ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}
+          ${showActions ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'}
         `}
       >
-        <div className="p-3 bg-gray-50 flex space-x-2">
+        <div className="p-3 bg-gray-50 flex flex-wrap items-center justify-center gap-2">
           {actions.map((action, index) => (
             <button
               key={action.key || index}
               onClick={(e) => handleActionClick(e, action.action)}
               className={`
-                flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium
+                flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-md text-xs font-medium
                 border border-transparent hover:border-gray-300 transition-all duration-200
                 ${action.color || 'text-gray-600 hover:bg-gray-100'}
               `}
               title={action.label}
+              aria-label={action.label}
             >
               {action.icon}
-              <span className="hidden sm:inline">
-                {action.label}
-              </span>
             </button>
           ))}
         </div>
@@ -134,19 +167,19 @@ const QuickActionCard = ({
 // Configuración predefinida para diferentes secciones
 export const SectionCards = {
   maquinarias: {
-    title: 'Maquinarias',
+  title: 'Equipos',
     icon: <Tractor size={20} />,
-    description: 'Gestión de maquinaria agrícola',
+  description: 'Gestión de equipos agrícolas',
     quickActions: [
       {
         key: 'view',
-        label: 'Ver Lista',
+    label: 'Ver Lista',
         icon: <List size={14} />,
         color: 'text-blue-600 hover:bg-blue-50'
       },
       {
         key: 'create',
-        label: 'Nueva Maquinaria',
+    label: 'Nuevo Equipo',
         icon: <Plus size={14} />,
         color: 'text-green-600 hover:bg-green-50'
       },

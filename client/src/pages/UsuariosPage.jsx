@@ -38,7 +38,7 @@ function UsuariosPage({ token, role, onLogout, onCreated }) {
     setLoading, 
     handlePaginacion, 
     actualizarPaginacion 
-  } = usePagination({ limit: 20 });
+  } = usePagination({ limit: 10 });
 
   /**
    * Carga los usuarios con filtros aplicados
@@ -50,10 +50,10 @@ function UsuariosPage({ token, role, onLogout, onCreated }) {
       
       if (data.usuarios) {
         setUsuarios(data.usuarios);
-        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
+  actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         setUsuarios(data || []);
-        actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 20 });
+  actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
       }
       setError('');
     } catch (err) {

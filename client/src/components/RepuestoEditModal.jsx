@@ -196,7 +196,16 @@ function RepuestoEditModal({ repuesto, onClose, onUpdate, onDelete, token }) {
                 className={BUTTON_STYLES.primary}
                 disabled={loading}
               >
-                {loading ? 'Guardando...' : 'Guardar Cambios'}
+                {loading ? (
+                  'Guardando...'
+                ) : (
+                  <>
+                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Actualizar Repuesto
+                  </>
+                )}
               </button>
             </div>
           </form>

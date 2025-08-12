@@ -53,7 +53,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     setLoading, 
     handlePaginacion, 
     actualizarPaginacion 
-  } = usePagination({ limit: 20 });
+  } = usePagination({ limit: 10 });
 
   /**
    * Carga los repuestos con filtros aplicados
@@ -65,10 +65,10 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
       
       if (data.repuestos) {
         setRepuestos(data.repuestos);
-        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 20 });
+  actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         setRepuestos(data || []);
-        actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 20 });
+  actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
       }
       setError('');
     } catch (err) {

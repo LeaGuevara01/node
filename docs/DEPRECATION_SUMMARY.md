@@ -158,3 +158,12 @@ node scripts/migrateStyledComponents.js
 El sistema está **listo para migración** y los desarrolladores tienen todas las herramientas necesarias para hacer la transición de manera eficiente y sin problemas.
 
 **El próximo paso es ejecutar la migración gradual según el timeline establecido.** 🚀
+
+---
+
+## 🗂️ Anexo: Deprecación de páginas legacy
+
+- `client/src/pages/MaquinariasPageOld.jsx`
+  - Estado: Deprecado y neutralizado (export vacío) para evitar errores de build.
+  - Reemplazo: `client/src/pages/MaquinariasPageRefactored.jsx` + `UniversalList`.
+  - Notas: Archivo movido lógicamente a `client/legacy/` (documentado) y excluido del análisis TS vía `tsconfig.json` (patrón `*Old*`).

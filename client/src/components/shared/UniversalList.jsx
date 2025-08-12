@@ -40,12 +40,12 @@ export const useListData = (apiEndpoint, initialFilters = {}) => {
   const [error, setError] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 20,
+    limit: 10,
     total: 0,
     totalPages: 0
   });
 
-  const fetchData = async (filters = {}, page = 1, limit = 20) => {
+  const fetchData = async (filters = {}, page = 1, limit = 10) => {
     try {
       setLoading(true);
       setError('');

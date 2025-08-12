@@ -41,7 +41,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
     setLoading, 
     handlePaginacion, 
     actualizarPaginacion 
-  } = usePagination({ limit: 20 });
+  } = usePagination({ limit: 10 });
 
   /**
    * Carga las reparaciones con filtros aplicados
@@ -52,7 +52,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
       const data = await getReparaciones(token, filtrosActuales, pagina);
       const items = data.reparaciones || data.data || (Array.isArray(data) ? data : []);
       setReparaciones(Array.isArray(items) ? items : []);
-      actualizarPaginacion(data.pagination || { current: pagina, total: 1, totalItems: Array.isArray(items) ? items.length : 0, limit: 20 });
+  actualizarPaginacion(data.pagination || { current: pagina, total: 1, totalItems: Array.isArray(items) ? items.length : 0, limit: 10 });
       setError('');
     } catch (err) {
       console.error('Error al cargar reparaciones:', err);
