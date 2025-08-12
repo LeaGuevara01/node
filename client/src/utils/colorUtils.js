@@ -31,7 +31,7 @@ export const getColorFromString = (str, type = 'categoria') => {
   if (type === 'categoria') {
     // Paleta con mayor contraste entre tonos
     const colors = [
-      'bg-blue-200 text-blue-900', 'bg-fuchsia-200 text-fuchsia-900', 'bg-indigo-200 text-indigo-900', 
+      'bg-brand-200 text-brand-900', 'bg-fuchsia-200 text-fuchsia-900', 'bg-indigo-200 text-indigo-900', 
       'bg-teal-200 text-teal-900', 'bg-amber-200 text-amber-900', 'bg-emerald-200 text-emerald-900',
       'bg-rose-200 text-rose-900', 'bg-cyan-200 text-cyan-900'
     ];
@@ -39,11 +39,11 @@ export const getColorFromString = (str, type = 'categoria') => {
   } else {
     // Para ubicaciones relacionadas con John Deere (JD), usar tonos verdes con mejor contraste
     if (str.toLowerCase().includes('jd') || str.toLowerCase().includes('john') || str.toLowerCase().includes('deere')) {
-      const greenColors = [
-        'bg-green-200 text-green-800', 'bg-emerald-200 text-emerald-800', 'bg-lime-200 text-lime-800', 
-        'bg-green-100 text-green-800', 'bg-emerald-100 text-emerald-800', 'bg-teal-100 text-teal-800'
+      const brownColors = [
+        'bg-brown-200 text-brown-900', 'bg-amber-200 text-amber-900', 'bg-yellow-200 text-yellow-900', 
+        'bg-brown-100 text-brown-900', 'bg-amber-100 text-amber-900', 'bg-yellow-100 text-yellow-900'
       ];
-      return greenColors[Math.abs(hash) % greenColors.length];
+      return brownColors[Math.abs(hash) % brownColors.length];
     }
     
     // Para otras ubicaciones, usar la paleta original de rojos/naranjas
@@ -64,10 +64,10 @@ export const getColorFromString = (str, type = 'categoria') => {
 export const getStockColorClass = (stock, ubicacion) => {
   // Regla especial: para ubicación "insumos" siempre azul
   if (typeof ubicacion === 'string' && ubicacion.toLowerCase().includes('insumos')) {
-    return 'bg-blue-100 text-blue-700';
+    return 'bg-brand-100 text-brand-700';
   }
   // Buckets alineados con el Dashboard
   if (stock <= 0) return 'bg-red-100 text-red-700'; // Sin stock (0)
   if (stock === 1) return 'bg-yellow-100 text-yellow-700'; // Bajo (1)
-  return 'bg-green-100 text-green-700'; // Normal (≥2)
+  return 'bg-brown-100 text-brown-800'; // Normal (≥2) acorde paleta industrial
 };

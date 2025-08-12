@@ -103,7 +103,7 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
               name="username"
               value={form.username}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
               required
               disabled={isLoading}
             />
@@ -117,7 +117,7 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
               name="role"
               value={form.role}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
               required
               disabled={isLoading}
             >
@@ -135,7 +135,7 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-500"
               placeholder="Dejar vacío para mantener la actual"
               disabled={isLoading}
               autoComplete="new-password"
@@ -162,7 +162,7 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
                 disabled={isLoading}
               >
                 {isLoading ? 'Guardando...' : 'Guardar'}

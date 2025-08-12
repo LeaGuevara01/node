@@ -41,12 +41,15 @@ model Repuesto {
 model Proveedor {
   id        Int        @id @default(autoincrement())
   nombre    String
+  contacto  String?
   cuit      String?
   direccion String?
+  ubicacion String?
   email     String?
   productos String[]
   telefono  String?
   web       String?
+  notas     String?
   repuestos Repuesto[]
   compras   Compra[]
 }

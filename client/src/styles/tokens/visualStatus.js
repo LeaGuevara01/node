@@ -11,12 +11,12 @@ const { colors, icons } = DESIGN_TOKENS;
 export const MAQUINARIA_STATUS = {
   operativa: {
     label: 'Operativa',
-    bg: 'bg-green-100',
-    text: 'text-green-800',
-    border: 'border-green-200',
+  bg: 'bg-brown-100',
+  text: 'text-brown-800',
+  border: 'border-brown-200',
     icon: '✅',
-    iconColor: 'text-green-600',
-    dot: 'bg-green-500',
+  iconColor: 'text-brown-600',
+  dot: 'bg-brown-500',
     description: 'Funcionando correctamente'
   },
   
@@ -55,12 +55,12 @@ export const MAQUINARIA_STATUS = {
   
   reservada: {
     label: 'Reservada',
-    bg: 'bg-blue-100',
-    text: 'text-blue-800',
-    border: 'border-blue-200',
+  bg: 'bg-brand-100',
+  text: 'text-brand-800',
+  border: 'border-brand-200',
     icon: '📅',
-    iconColor: 'text-blue-600',
-    dot: 'bg-blue-500',
+  iconColor: 'text-brand-600',
+  dot: 'bg-brand-500',
     description: 'Reservada para trabajo'
   }
 };
@@ -69,12 +69,12 @@ export const MAQUINARIA_STATUS = {
 export const STOCK_STATUS = {
   alto: {
     label: 'Stock Alto',
-    bg: 'bg-green-100',
-    text: 'text-green-800',
-    border: 'border-green-200',
+  bg: 'bg-brown-100',
+  text: 'text-brown-800',
+  border: 'border-brown-200',
     icon: '📈',
-    iconColor: 'text-green-600',
-    dot: 'bg-green-500',
+  iconColor: 'text-brown-600',
+  dot: 'bg-brown-500',
     threshold: (stock, min) => stock > min * 2,
     description: 'Stock abundante',
     priority: 1
@@ -82,12 +82,12 @@ export const STOCK_STATUS = {
   
   normal: {
     label: 'Stock Normal',
-    bg: 'bg-blue-100',
-    text: 'text-blue-800',
-    border: 'border-blue-200',
+  bg: 'bg-brand-100',
+  text: 'text-brand-800',
+  border: 'border-brand-200',
     icon: '📊',
-    iconColor: 'text-blue-600',
-    dot: 'bg-blue-500',
+  iconColor: 'text-brand-600',
+  dot: 'bg-brand-500',
     threshold: (stock, min) => stock > min && stock <= min * 2,
     description: 'Stock adecuado',
     priority: 2
@@ -181,12 +181,12 @@ export const REPARACION_STATUS = {
   
   completada: {
     label: 'Completada',
-    bg: 'bg-green-100',
-    text: 'text-green-800',
-    border: 'border-green-200',
+  bg: 'bg-brown-100',
+  text: 'text-brown-800',
+  border: 'border-brown-200',
     icon: '✅',
-    iconColor: 'text-green-600',
-    dot: 'bg-green-500',
+  iconColor: 'text-brown-600',
+  dot: 'bg-brown-500',
     description: 'Reparación finalizada'
   },
   
@@ -206,12 +206,12 @@ export const REPARACION_STATUS = {
 export const PROVEEDOR_STATUS = {
   activo: {
     label: 'Activo',
-    bg: 'bg-green-100',
-    text: 'text-green-800',
-    border: 'border-green-200',
+  bg: 'bg-brown-100',
+  text: 'text-brown-800',
+  border: 'border-brown-200',
     icon: '✅',
-    iconColor: 'text-green-600',
-    dot: 'bg-green-500',
+  iconColor: 'text-brown-600',
+  dot: 'bg-brown-500',
     description: 'Proveedor operativo'
   },
   
@@ -286,12 +286,12 @@ export const USER_STATUS = {
   
   nuevo: {
     label: 'Nuevo',
-    bg: 'bg-blue-100',
-    text: 'text-blue-800',
-    border: 'border-blue-200',
+  bg: 'bg-brand-100',
+  text: 'text-brand-800',
+  border: 'border-brand-200',
     icon: '🆕',
-    iconColor: 'text-blue-600',
-    dot: 'bg-blue-500',
+  iconColor: 'text-brand-600',
+  dot: 'bg-brand-500',
     description: 'Usuario recién registrado'
   }
 };

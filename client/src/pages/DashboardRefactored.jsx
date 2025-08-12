@@ -120,7 +120,7 @@ function DashboardContent({ token, role, onLogout }) {
       >
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-700 mx-auto"></div>
             <span className="mt-4 text-lg text-gray-600">Cargando datos del sistema...</span>
           </div>
         </div>
@@ -166,7 +166,7 @@ function DashboardContent({ token, role, onLogout }) {
     >
       <div className="space-y-6 lg:space-y-8">
         {/* Header del sistema */}
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center border border-gray-200 border-l-4 border-l-green-600">
+  <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm text-center border border-gray-200 border-l-4 border-l-brand-600">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
             {/*<Activity size={40} className="text-green-800" />*/}
             Sistema de Gestión Agrícola
@@ -180,7 +180,7 @@ function DashboardContent({ token, role, onLogout }) {
   <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200">
           <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 flex flex-col sm:flex-row sm:items-center">
             <span className="flex items-center gap-2">
-              <BarChart3 size={20} className="text-blue-600" />
+              <BarChart3 size={20} className="text-brand-700" />
               Resumen del Sistema
             </span>
             <span className="mt-1 sm:mt-0 sm:ml-2 text-xs sm:text-sm font-normal text-gray-500">
@@ -354,9 +354,9 @@ function DashboardContent({ token, role, onLogout }) {
 
 // Definiciones de estados de maquinaria (modular)
 const MACHINERY_STATUS_DEFS = [
-  { key: 'Operativa', label: 'Operativa', class: 'bg-green-100 text-green-800' },
+  { key: 'Operativa', label: 'Operativa', class: 'bg-brown-100 text-brown-800' },
   { key: 'En mantenimiento', label: 'En mantenimiento', class: 'bg-yellow-100 text-yellow-800' },
-  { key: 'En reparación', label: 'En reparación', class: 'bg-blue-100 text-blue-800' },
+  { key: 'En reparación', label: 'En reparación', class: 'bg-brand-100 text-brand-800' },
   { key: 'Averiada', label: 'Averiada', class: 'bg-red-100 text-red-800' },
   { key: 'Fuera de servicio', label: 'Fuera de servicio', class: 'bg-gray-100 text-gray-800' }
 ];
@@ -442,7 +442,7 @@ const StockSummary = ({ data, stockField, mode = 'discrete' }) => {
           <span>Bajo (1)</span>
           <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{summary.one}</span>
         </span>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-brown-100 text-brown-800">
           <span>Normal (≥2)</span>
           <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{summary.twoPlus}</span>
         </span>
@@ -467,7 +467,7 @@ const StockSummary = ({ data, stockField, mode = 'discrete' }) => {
         <span>Bajo</span>
         <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{stockAnalysis.low}</span>
       </span>
-      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-brown-100 text-brown-800">
         <span>Normal</span>
         <span className="ml-0.5 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1 rounded-full bg-white/70 text-gray-800 text-[11px] font-semibold">{stockAnalysis.normal}</span>
       </span>

@@ -73,7 +73,7 @@ const TextInputWithSuggestions = ({
         onFocus={handleInputFocus}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
+  className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent ${className}`}
         autoComplete="off"
       />
       
@@ -96,7 +96,7 @@ const TextInputWithSuggestions = ({
               <button
                 key={index}
                 type="button"
-                className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-blue-50"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-brand-50 hover:text-brand-700 transition-colors border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-brand-50"
                 onMouseDown={(e) => handleSuggestionClick(suggestion, e)}
                 tabIndex={-1} // Evita navegación con tab
               >

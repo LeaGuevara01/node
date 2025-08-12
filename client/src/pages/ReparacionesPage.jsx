@@ -179,10 +179,10 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
   const getEstadoBadge = (estado) => {
     switch (estado?.toLowerCase()) {
       case 'completada':
-        return 'bg-green-100 text-green-800';
+        return 'bg-brown-100 text-brown-800';
       case 'en_progreso':
       case 'en progreso':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-brand-100 text-brand-800';
       case 'pendiente':
         return 'bg-yellow-100 text-yellow-800';
       case 'cancelada':
@@ -193,13 +193,13 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
   };
 
   const getPrioridadBadge = (prioridad) => {
-    switch (prioridad?.toLowerCase()) {
+  switch (prioridad?.toLowerCase()) {
       case 'alta':
         return 'bg-red-100 text-red-800';
       case 'media':
         return 'bg-yellow-100 text-yellow-800';
       case 'baja':
-        return 'bg-green-100 text-green-800';
+    return 'bg-brown-100 text-brown-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -294,7 +294,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
           </div>
           <div className={LIST_STYLES.itemTagsRight}>
             {typeof reparacion.costo_estimado === 'number' && (
-              <span className={`${LIST_STYLES.itemTag} bg-green-100 text-green-800`}>
+              <span className={`${LIST_STYLES.itemTag} bg-brown-100 text-brown-800`}>
                 ${reparacion.costo_estimado.toFixed(2)}
               </span>
             )}

@@ -45,7 +45,7 @@ export const renderFieldWithIcon = (label, value, icon, link = null) => {
     <div className="mt-1 p-3 bg-gray-50 border border-gray-200 rounded-md flex items-center">
       {icon}
       {link ? (
-        <a href={link} className="text-blue-600 hover:text-blue-800 ml-2">
+  <a href={link} className="text-brand-700 hover:text-brand-900 ml-2">
           {value}
         </a>
       ) : (
@@ -81,7 +81,7 @@ export const renderField = (label, value, className = "sm:col-span-1") => {
 /**
  * Renderizar estadística
  */
-export const renderStat = (value, label, bgColor = "bg-blue-50", textColor = "text-blue-600") => {
+export const renderStat = (value, label, bgColor = "bg-brand-50", textColor = "text-brand-700") => {
   return (
     <div className={`text-center p-4 ${bgColor} rounded-lg`}>
       <div className={`text-2xl font-bold ${textColor}`}>
@@ -96,6 +96,16 @@ export const renderStat = (value, label, bgColor = "bg-blue-50", textColor = "te
  * Configuración de iconos SVG comunes
  */
 export const COMMON_ICONS = {
+  user: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 1112 21a9.003 9.003 0 01-6.879-3.196z" />
+    </svg>
+  ),
+  document: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  ),
   phone: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />

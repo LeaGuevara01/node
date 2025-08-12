@@ -215,11 +215,11 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
 
   const getStockBadge = (stock, ubicacion) => {
     if (typeof ubicacion === 'string' && ubicacion.toLowerCase().includes('insumos')) {
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-brand-100 text-brand-800';
     }
     if (stock <= 0) return 'bg-red-100 text-red-800'; // 0
     if (stock === 1) return 'bg-yellow-100 text-yellow-800'; // 1
-    return 'bg-green-100 text-green-800'; // ≥2
+    return 'bg-brown-100 text-brown-800'; // ≥2
   };
 
   /**
@@ -272,7 +272,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
             Stock: {repuesto.stock}
           </span>
           {/* Precio: solo en pantallas grandes */}
-          <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-800 hidden lg:inline-flex`}>
+          <span className={`${LIST_STYLES.itemTag} bg-brand-100 text-brand-800 hidden lg:inline-flex`}>
             ${repuesto.precio?.toFixed(2) || '0.00'}
           </span>
         </div>
