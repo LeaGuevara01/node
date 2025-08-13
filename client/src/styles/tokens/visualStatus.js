@@ -11,15 +11,15 @@ const { colors, icons } = DESIGN_TOKENS;
 export const MAQUINARIA_STATUS = {
   operativa: {
     label: 'Operativa',
-  bg: 'bg-brown-100',
-  text: 'text-brown-800',
-  border: 'border-brown-200',
+    bg: 'bg-brown-100',
+    text: 'text-brown-800',
+    border: 'border-brown-200',
     icon: '✅',
-  iconColor: 'text-brown-600',
-  dot: 'bg-brown-500',
-    description: 'Funcionando correctamente'
+    iconColor: 'text-brown-600',
+    dot: 'bg-brown-500',
+    description: 'Funcionando correctamente',
   },
-  
+
   mantenimiento: {
     label: 'En Mantenimiento',
     bg: 'bg-yellow-100',
@@ -28,9 +28,9 @@ export const MAQUINARIA_STATUS = {
     icon: '🔧',
     iconColor: 'text-yellow-600',
     dot: 'bg-yellow-500',
-    description: 'Requiere mantenimiento'
+    description: 'Requiere mantenimiento',
   },
-  
+
   reparacion: {
     label: 'En Reparación',
     bg: 'bg-orange-100',
@@ -39,9 +39,9 @@ export const MAQUINARIA_STATUS = {
     icon: '🛠️',
     iconColor: 'text-orange-600',
     dot: 'bg-orange-500',
-    description: 'Siendo reparada'
+    description: 'Siendo reparada',
   },
-  
+
   inactiva: {
     label: 'Inactiva',
     bg: 'bg-red-100',
@@ -50,49 +50,49 @@ export const MAQUINARIA_STATUS = {
     icon: '❌',
     iconColor: 'text-red-600',
     dot: 'bg-red-500',
-    description: 'No operativa'
+    description: 'No operativa',
   },
-  
+
   reservada: {
     label: 'Reservada',
-  bg: 'bg-brand-100',
-  text: 'text-brand-800',
-  border: 'border-brand-200',
+    bg: 'bg-brand-100',
+    text: 'text-brand-800',
+    border: 'border-brand-200',
     icon: '📅',
-  iconColor: 'text-brand-600',
-  dot: 'bg-brand-500',
-    description: 'Reservada para trabajo'
-  }
+    iconColor: 'text-brand-600',
+    dot: 'bg-brand-500',
+    description: 'Reservada para trabajo',
+  },
 };
 
 // Estados de Stock de Repuestos
 export const STOCK_STATUS = {
   alto: {
     label: 'Stock Alto',
-  bg: 'bg-brown-100',
-  text: 'text-brown-800',
-  border: 'border-brown-200',
+    bg: 'bg-brown-100',
+    text: 'text-brown-800',
+    border: 'border-brown-200',
     icon: '📈',
-  iconColor: 'text-brown-600',
-  dot: 'bg-brown-500',
+    iconColor: 'text-brown-600',
+    dot: 'bg-brown-500',
     threshold: (stock, min) => stock > min * 2,
     description: 'Stock abundante',
-    priority: 1
+    priority: 1,
   },
-  
+
   normal: {
     label: 'Stock Normal',
-  bg: 'bg-brand-100',
-  text: 'text-brand-800',
-  border: 'border-brand-200',
+    bg: 'bg-brand-100',
+    text: 'text-brand-800',
+    border: 'border-brand-200',
     icon: '📊',
-  iconColor: 'text-brand-600',
-  dot: 'bg-brand-500',
+    iconColor: 'text-brand-600',
+    dot: 'bg-brand-500',
     threshold: (stock, min) => stock > min && stock <= min * 2,
     description: 'Stock adecuado',
-    priority: 2
+    priority: 2,
   },
-  
+
   bajo: {
     label: 'Stock Bajo',
     bg: 'bg-yellow-100',
@@ -103,9 +103,9 @@ export const STOCK_STATUS = {
     dot: 'bg-yellow-500',
     threshold: (stock, min) => stock > 0 && stock <= min,
     description: 'Necesita reposición',
-    priority: 3
+    priority: 3,
   },
-  
+
   critico: {
     label: 'Stock Crítico',
     bg: 'bg-orange-100',
@@ -116,9 +116,9 @@ export const STOCK_STATUS = {
     dot: 'bg-orange-500',
     threshold: (stock, min) => stock > 0 && stock <= min * 0.5,
     description: 'Reposición urgente',
-    priority: 4
+    priority: 4,
   },
-  
+
   agotado: {
     label: 'Agotado',
     bg: 'bg-red-100',
@@ -129,8 +129,8 @@ export const STOCK_STATUS = {
     dot: 'bg-red-500',
     threshold: (stock) => stock === 0,
     description: 'Sin stock disponible',
-    priority: 5
-  }
+    priority: 5,
+  },
 };
 
 // Estados de Reparaciones
@@ -143,9 +143,9 @@ export const REPARACION_STATUS = {
     icon: '⏳',
     iconColor: 'text-gray-600',
     dot: 'bg-gray-500',
-    description: 'En cola de reparación'
+    description: 'En cola de reparación',
   },
-  
+
   enProgreso: {
     label: 'En Progreso',
     bg: 'bg-blue-100',
@@ -154,9 +154,9 @@ export const REPARACION_STATUS = {
     icon: '🔧',
     iconColor: 'text-blue-600',
     dot: 'bg-blue-500',
-    description: 'Siendo reparada'
+    description: 'Siendo reparada',
   },
-  
+
   esperandoRepuestos: {
     label: 'Esperando Repuestos',
     bg: 'bg-yellow-100',
@@ -165,9 +165,9 @@ export const REPARACION_STATUS = {
     icon: '📦',
     iconColor: 'text-yellow-600',
     dot: 'bg-yellow-500',
-    description: 'Aguardando componentes'
+    description: 'Aguardando componentes',
   },
-  
+
   enPruebas: {
     label: 'En Pruebas',
     bg: 'bg-purple-100',
@@ -176,20 +176,20 @@ export const REPARACION_STATUS = {
     icon: '🧪',
     iconColor: 'text-purple-600',
     dot: 'bg-purple-500',
-    description: 'Verificando funcionamiento'
+    description: 'Verificando funcionamiento',
   },
-  
+
   completada: {
     label: 'Completada',
-  bg: 'bg-brown-100',
-  text: 'text-brown-800',
-  border: 'border-brown-200',
+    bg: 'bg-brown-100',
+    text: 'text-brown-800',
+    border: 'border-brown-200',
     icon: '✅',
-  iconColor: 'text-brown-600',
-  dot: 'bg-brown-500',
-    description: 'Reparación finalizada'
+    iconColor: 'text-brown-600',
+    dot: 'bg-brown-500',
+    description: 'Reparación finalizada',
   },
-  
+
   cancelada: {
     label: 'Cancelada',
     bg: 'bg-red-100',
@@ -198,23 +198,23 @@ export const REPARACION_STATUS = {
     icon: '❌',
     iconColor: 'text-red-600',
     dot: 'bg-red-500',
-    description: 'Reparación cancelada'
-  }
+    description: 'Reparación cancelada',
+  },
 };
 
 // Estados de Proveedores
 export const PROVEEDOR_STATUS = {
   activo: {
     label: 'Activo',
-  bg: 'bg-brown-100',
-  text: 'text-brown-800',
-  border: 'border-brown-200',
+    bg: 'bg-brown-100',
+    text: 'text-brown-800',
+    border: 'border-brown-200',
     icon: '✅',
-  iconColor: 'text-brown-600',
-  dot: 'bg-brown-500',
-    description: 'Proveedor operativo'
+    iconColor: 'text-brown-600',
+    dot: 'bg-brown-500',
+    description: 'Proveedor operativo',
   },
-  
+
   inactivo: {
     label: 'Inactivo',
     bg: 'bg-gray-100',
@@ -223,9 +223,9 @@ export const PROVEEDOR_STATUS = {
     icon: '⏸️',
     iconColor: 'text-gray-600',
     dot: 'bg-gray-500',
-    description: 'Temporalmente inactivo'
+    description: 'Temporalmente inactivo',
   },
-  
+
   bloqueado: {
     label: 'Bloqueado',
     bg: 'bg-red-100',
@@ -234,9 +234,9 @@ export const PROVEEDOR_STATUS = {
     icon: '🚫',
     iconColor: 'text-red-600',
     dot: 'bg-red-500',
-    description: 'Acceso bloqueado'
+    description: 'Acceso bloqueado',
   },
-  
+
   revision: {
     label: 'En Revisión',
     bg: 'bg-yellow-100',
@@ -245,8 +245,8 @@ export const PROVEEDOR_STATUS = {
     icon: '🔍',
     iconColor: 'text-yellow-600',
     dot: 'bg-yellow-500',
-    description: 'Documentación en revisión'
-  }
+    description: 'Documentación en revisión',
+  },
 };
 
 // Estados de Usuarios
@@ -259,9 +259,9 @@ export const USER_STATUS = {
     icon: '✅',
     iconColor: 'text-green-600',
     dot: 'bg-green-500',
-    description: 'Usuario activo'
+    description: 'Usuario activo',
   },
-  
+
   inactivo: {
     label: 'Inactivo',
     bg: 'bg-gray-100',
@@ -270,9 +270,9 @@ export const USER_STATUS = {
     icon: '⏸️',
     iconColor: 'text-gray-600',
     dot: 'bg-gray-500',
-    description: 'Cuenta inactiva'
+    description: 'Cuenta inactiva',
   },
-  
+
   suspendido: {
     label: 'Suspendido',
     bg: 'bg-red-100',
@@ -281,19 +281,19 @@ export const USER_STATUS = {
     icon: '🚫',
     iconColor: 'text-red-600',
     dot: 'bg-red-500',
-    description: 'Acceso suspendido'
+    description: 'Acceso suspendido',
   },
-  
+
   nuevo: {
     label: 'Nuevo',
-  bg: 'bg-brand-100',
-  text: 'text-brand-800',
-  border: 'border-brand-200',
+    bg: 'bg-brand-100',
+    text: 'text-brand-800',
+    border: 'border-brand-200',
     icon: '🆕',
-  iconColor: 'text-brand-600',
-  dot: 'bg-brand-500',
-    description: 'Usuario recién registrado'
-  }
+    iconColor: 'text-brand-600',
+    dot: 'bg-brand-500',
+    description: 'Usuario recién registrado',
+  },
 };
 
 // Prioridades generales
@@ -306,9 +306,9 @@ export const PRIORITY_STATUS = {
     icon: '⬇️',
     iconColor: 'text-gray-600',
     dot: 'bg-gray-500',
-    value: 1
+    value: 1,
   },
-  
+
   normal: {
     label: 'Normal',
     bg: 'bg-blue-100',
@@ -317,9 +317,9 @@ export const PRIORITY_STATUS = {
     icon: '➡️',
     iconColor: 'text-blue-600',
     dot: 'bg-blue-500',
-    value: 2
+    value: 2,
   },
-  
+
   alta: {
     label: 'Alta',
     bg: 'bg-yellow-100',
@@ -328,9 +328,9 @@ export const PRIORITY_STATUS = {
     icon: '⬆️',
     iconColor: 'text-yellow-600',
     dot: 'bg-yellow-500',
-    value: 3
+    value: 3,
   },
-  
+
   urgente: {
     label: 'Urgente',
     bg: 'bg-orange-100',
@@ -339,9 +339,9 @@ export const PRIORITY_STATUS = {
     icon: '🔥',
     iconColor: 'text-orange-600',
     dot: 'bg-orange-500',
-    value: 4
+    value: 4,
   },
-  
+
   critica: {
     label: 'Crítica',
     bg: 'bg-red-100',
@@ -350,8 +350,8 @@ export const PRIORITY_STATUS = {
     icon: '🚨',
     iconColor: 'text-red-600',
     dot: 'bg-red-500',
-    value: 5
-  }
+    value: 5,
+  },
 };
 
 // Estados de conectividad/sincronización
@@ -364,9 +364,9 @@ export const SYNC_STATUS = {
     icon: '✅',
     iconColor: 'text-green-600',
     dot: 'bg-green-500',
-    description: 'Datos actualizados'
+    description: 'Datos actualizados',
   },
-  
+
   sincronizando: {
     label: 'Sincronizando',
     bg: 'bg-blue-100',
@@ -376,9 +376,9 @@ export const SYNC_STATUS = {
     iconColor: 'text-blue-600',
     dot: 'bg-blue-500',
     description: 'Actualizando datos',
-    animated: true
+    animated: true,
   },
-  
+
   desincronizado: {
     label: 'Desincronizado',
     bg: 'bg-yellow-100',
@@ -387,9 +387,9 @@ export const SYNC_STATUS = {
     icon: '⚠️',
     iconColor: 'text-yellow-600',
     dot: 'bg-yellow-500',
-    description: 'Datos desactualizados'
+    description: 'Datos desactualizados',
   },
-  
+
   error: {
     label: 'Error de Sync',
     bg: 'bg-red-100',
@@ -398,9 +398,9 @@ export const SYNC_STATUS = {
     icon: '❌',
     iconColor: 'text-red-600',
     dot: 'bg-red-500',
-    description: 'Error en sincronización'
+    description: 'Error en sincronización',
   },
-  
+
   offline: {
     label: 'Sin Conexión',
     bg: 'bg-gray-100',
@@ -409,8 +409,8 @@ export const SYNC_STATUS = {
     icon: '📴',
     iconColor: 'text-gray-600',
     dot: 'bg-gray-500',
-    description: 'Sin conexión a internet'
-  }
+    description: 'Sin conexión a internet',
+  },
 };
 
 // Funciones utilitarias para determinar estados
@@ -434,7 +434,7 @@ export const STATUS_UTILS = {
   getAllStatuses: (statusMap) => {
     return Object.entries(statusMap).map(([key, status]) => ({
       key,
-      ...status
+      ...status,
     }));
   },
 
@@ -445,18 +445,18 @@ export const STATUS_UTILS = {
 
   // Filtrar por estado
   filterByStatus: (items, statusField, statusKey) => {
-    return items.filter(item => item[statusField] === statusKey);
+    return items.filter((item) => item[statusField] === statusKey);
   },
 
   // Contar elementos por estado
   countByStatus: (items, statusField) => {
     const counts = {};
-    items.forEach(item => {
+    items.forEach((item) => {
       const status = item[statusField];
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
-  }
+  },
 };
 
 // Export principal
@@ -468,5 +468,5 @@ export const VISUAL_STATUS = {
   user: USER_STATUS,
   priority: PRIORITY_STATUS,
   sync: SYNC_STATUS,
-  utils: STATUS_UTILS
+  utils: STATUS_UTILS,
 };

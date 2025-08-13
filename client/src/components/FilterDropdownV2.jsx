@@ -1,6 +1,6 @@
 /**
  * FilterDropdownV2 - Versión mejorada con sugerencias optimizadas
- * 
+ *
  * Proporciona filtros avanzados con:
  * - Sugerencias desplegables en campos de texto
  * - Hook personalizado para manejo de estado
@@ -9,13 +9,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Filter, 
-  X, 
-  Search, 
-  RotateCcw,
-  SlidersHorizontal
-} from 'lucide-react';
+import { Filter, X, Search, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import TextInputWithSuggestions from './TextInputWithSuggestions';
 import useSuggestions, { createFieldConfig } from '../hooks/useSuggestions';
 
@@ -25,7 +19,7 @@ const FilterDropdownV2 = ({
   section = '',
   isOpen = false,
   onToggle,
-  data = []
+  data = [],
 }) => {
   const [localFilters, setLocalFilters] = useState(filters);
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -35,22 +29,23 @@ const FilterDropdownV2 = ({
   const sectionFieldConfig = {
     maquinarias: {
       marca: createFieldConfig.marca('marca'),
-      modelo: createFieldConfig.generic('modelo')
+      modelo: createFieldConfig.generic('modelo'),
     },
     repuestos: {
       proveedor: createFieldConfig.proveedor('proveedor'),
-      categoria: createFieldConfig.generic('categoria')
+      categoria: createFieldConfig.generic('categoria'),
     },
     proveedores: {
       localidad: createFieldConfig.localidad('localidad'),
-      nombre: createFieldConfig.generic('nombre')
+      nombre: createFieldConfig.generic('nombre'),
     },
     reparaciones: {
       tecnico: createFieldConfig.generic('tecnico'),
-      observaciones: createFieldConfig.generic('observaciones', (val) => 
-        val ? val.split(' ').slice(0, 3).join(' ') : '' // Primeras 3 palabras
-      )
-    }
+      observaciones: createFieldConfig.generic(
+        'observaciones',
+        (val) => (val ? val.split(' ').slice(0, 3).join(' ') : '') // Primeras 3 palabras
+      ),
+    },
   };
 
   // Hook de sugerencias
@@ -61,121 +56,121 @@ const FilterDropdownV2 = ({
     getInputValue,
     hasSuggestions,
     getSuggestions,
-    hideAllSuggestions
+    hideAllSuggestions,
   } = useSuggestions(data, sectionFieldConfig[section] || {});
 
   // Configuración de filtros por sección
   const sectionConfig = {
     maquinarias: {
       fields: [
-        { 
-          key: 'tipo', 
-          label: 'Tipo de Maquinaria', 
-          type: 'select', 
-          options: ['Tractor', 'Cosechadora', 'Arado', 'Sembradora'] 
+        {
+          key: 'tipo',
+          label: 'Tipo de Maquinaria',
+          type: 'select',
+          options: ['Tractor', 'Cosechadora', 'Arado', 'Sembradora'],
         },
-        { 
-          key: 'estado', 
-          label: 'Estado', 
-          type: 'select', 
-          options: ['Operativa', 'En mantenimiento', 'Averiada', 'Fuera de servicio'] 
+        {
+          key: 'estado',
+          label: 'Estado',
+          type: 'select',
+          options: ['Operativa', 'En mantenimiento', 'Averiada', 'Fuera de servicio'],
         },
-        { 
-          key: 'año', 
-          label: 'Año', 
-          type: 'range', 
-          min: 1990, 
-          max: new Date().getFullYear() 
+        {
+          key: 'año',
+          label: 'Año',
+          type: 'range',
+          min: 1990,
+          max: new Date().getFullYear(),
         },
-        { 
-          key: 'marca', 
-          label: 'Marca', 
+        {
+          key: 'marca',
+          label: 'Marca',
           type: 'text-suggestions',
-          placeholder: 'Buscar por marca...'
+          placeholder: 'Buscar por marca...',
         },
-        { 
-          key: 'modelo', 
-          label: 'Modelo', 
+        {
+          key: 'modelo',
+          label: 'Modelo',
           type: 'text-suggestions',
-          placeholder: 'Buscar por modelo...'
-        }
-      ]
+          placeholder: 'Buscar por modelo...',
+        },
+      ],
     },
     repuestos: {
       fields: [
-        { 
-          key: 'categoria', 
-          label: 'Categoría', 
-          type: 'select', 
-          options: ['Motor', 'Transmisión', 'Hidráulico', 'Eléctrico'] 
+        {
+          key: 'categoria',
+          label: 'Categoría',
+          type: 'select',
+          options: ['Motor', 'Transmisión', 'Hidráulico', 'Eléctrico'],
         },
-        { 
-          key: 'stockBajo', 
-          label: 'Stock Bajo', 
-          type: 'checkbox' 
+        {
+          key: 'stockBajo',
+          label: 'Stock Bajo',
+          type: 'checkbox',
         },
-        { 
-          key: 'proveedor', 
-          label: 'Proveedor', 
+        {
+          key: 'proveedor',
+          label: 'Proveedor',
           type: 'text-suggestions',
-          placeholder: 'Buscar por proveedor...'
+          placeholder: 'Buscar por proveedor...',
         },
-        { 
-          key: 'precio', 
-          label: 'Precio', 
-          type: 'range', 
-          min: 0, 
-          max: 10000 
-        }
-      ]
+        {
+          key: 'precio',
+          label: 'Precio',
+          type: 'range',
+          min: 0,
+          max: 10000,
+        },
+      ],
     },
     proveedores: {
       fields: [
-        { 
-          key: 'tipo', 
-          label: 'Tipo', 
-          type: 'select', 
-          options: ['Repuestos', 'Servicios', 'Maquinaria', 'Combustible'] 
+        {
+          key: 'tipo',
+          label: 'Tipo',
+          type: 'select',
+          options: ['Repuestos', 'Servicios', 'Maquinaria', 'Combustible'],
         },
-        { 
-          key: 'localidad', 
-          label: 'Localidad', 
+        {
+          key: 'localidad',
+          label: 'Localidad',
           type: 'text-suggestions',
-          placeholder: 'Buscar por localidad...'
+          placeholder: 'Buscar por localidad...',
         },
-        { 
-          key: 'activo', 
-          label: 'Solo Activos', 
-          type: 'checkbox' 
-        }
-      ]
+        {
+          key: 'activo',
+          label: 'Solo Activos',
+          type: 'checkbox',
+        },
+      ],
     },
     reparaciones: {
       fields: [
-        { 
-          key: 'estado', 
-          label: 'Estado', 
-          type: 'select', 
-          options: ['Pendiente', 'En proceso', 'Completada', 'Cancelada'] 
+        {
+          key: 'estado',
+          label: 'Estado',
+          type: 'select',
+          options: ['Pendiente', 'En proceso', 'Completada', 'Cancelada'],
         },
-        { 
-          key: 'tipo', 
-          label: 'Tipo', 
-          type: 'select', 
-          options: ['Preventivo', 'Correctivo', 'Emergencia'] 
+        {
+          key: 'tipo',
+          label: 'Tipo',
+          type: 'select',
+          options: ['Preventivo', 'Correctivo', 'Emergencia'],
         },
-        { 
-          key: 'fechaInicio', 
-          label: 'Fecha Inicio', 
-          type: 'date' 
+        {
+          key: 'fechaInicio',
+          label: 'Fecha Inicio',
+          type: 'date',
         },
-        { 
-          key: 'fechaFin', 
-          label: 'Fecha Fin', 
-          type: 'date' 
-        }
-      ]
-    }
+        {
+          key: 'fechaFin',
+          label: 'Fecha Fin',
+          type: 'date',
+        },
+      ],
+    },
   };
 
   const currentFields = sectionConfig[section]?.fields || [];
@@ -204,7 +199,7 @@ const FilterDropdownV2 = ({
   const handleApplyFilters = () => {
     const newFilters = {
       ...localFilters,
-      search: searchTerm
+      search: searchTerm,
     };
     onFiltersChange(newFilters);
     hideAllSuggestions();
@@ -222,16 +217,17 @@ const FilterDropdownV2 = ({
 
   // Actualizar filtro local
   const updateFilter = (key, value) => {
-    setLocalFilters(prev => ({
+    setLocalFilters((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
   // Contar filtros activos
-  const activeFiltersCount = Object.keys(localFilters).filter(key => 
-    localFilters[key] !== '' && localFilters[key] !== false && localFilters[key] != null
-  ).length + (searchTerm ? 1 : 0);
+  const activeFiltersCount =
+    Object.keys(localFilters).filter(
+      (key) => localFilters[key] !== '' && localFilters[key] !== false && localFilters[key] != null
+    ).length + (searchTerm ? 1 : 0);
 
   if (!isOpen) {
     return (
@@ -264,21 +260,19 @@ const FilterDropdownV2 = ({
             <Filter size={18} className="mr-2" />
             Filtros de {section?.charAt(0).toUpperCase() + section?.slice(1)}
           </h3>
-          <button
-            onClick={() => onToggle(false)}
-            className="text-gray-400 hover:text-gray-600 p-1"
-          >
+          <button onClick={() => onToggle(false)} className="text-gray-400 hover:text-gray-600 p-1">
             <X size={18} />
           </button>
         </div>
 
         {/* Búsqueda rápida */}
         <div className="p-4 border-b border-gray-100">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Búsqueda general
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Búsqueda general</label>
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            />
             <input
               type="text"
               placeholder="Buscar..."
@@ -293,10 +287,8 @@ const FilterDropdownV2 = ({
         <div className="p-4 space-y-4 max-h-64 overflow-y-auto">
           {currentFields.map((field) => (
             <div key={field.key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {field.label}
-              </label>
-              
+              <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+
               {field.type === 'select' && (
                 <select
                   value={localFilters[field.key] || ''}
@@ -304,7 +296,7 @@ const FilterDropdownV2 = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Todos</option>
-                  {field.options.map(option => (
+                  {field.options.map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>
@@ -317,8 +309,13 @@ const FilterDropdownV2 = ({
                   value={getInputValue(field.key, localFilters[field.key] || '')}
                   onChange={(value) => handleInputChange(field.key, value, updateFilter)}
                   placeholder={field.placeholder || `Filtrar por ${field.label.toLowerCase()}`}
-                  suggestions={getSuggestions(field.key, getInputValue(field.key, localFilters[field.key] || ''))}
-                  onSuggestionClick={(suggestion) => handleSuggestionClick(field.key, suggestion, updateFilter)}
+                  suggestions={getSuggestions(
+                    field.key,
+                    getInputValue(field.key, localFilters[field.key] || '')
+                  )}
+                  onSuggestionClick={(suggestion) =>
+                    handleSuggestionClick(field.key, suggestion, updateFilter)
+                  }
                   showSuggestions={hasSuggestions(field.key)}
                   onFocus={() => {
                     const currentValue = getInputValue(field.key, localFilters[field.key] || '');
@@ -339,9 +336,7 @@ const FilterDropdownV2 = ({
                     onChange={(e) => updateFilter(field.key, e.target.checked)}
                     className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
-                    {field.label}
-                  </span>
+                  <span className="ml-2 text-sm text-gray-700">{field.label}</span>
                 </label>
               )}
 
@@ -362,10 +357,12 @@ const FilterDropdownV2 = ({
                     min={field.min}
                     max={field.max}
                     value={localFilters[field.key]?.min || ''}
-                    onChange={(e) => updateFilter(field.key, {
-                      ...localFilters[field.key],
-                      min: e.target.value
-                    })}
+                    onChange={(e) =>
+                      updateFilter(field.key, {
+                        ...localFilters[field.key],
+                        min: e.target.value,
+                      })
+                    }
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                   <input
@@ -374,10 +371,12 @@ const FilterDropdownV2 = ({
                     min={field.min}
                     max={field.max}
                     value={localFilters[field.key]?.max || ''}
-                    onChange={(e) => updateFilter(field.key, {
-                      ...localFilters[field.key],
-                      max: e.target.value
-                    })}
+                    onChange={(e) =>
+                      updateFilter(field.key, {
+                        ...localFilters[field.key],
+                        max: e.target.value,
+                      })
+                    }
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -395,7 +394,7 @@ const FilterDropdownV2 = ({
             <RotateCcw size={16} className="mr-2" />
             Resetear
           </button>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={() => onToggle(false)}

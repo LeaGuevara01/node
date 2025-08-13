@@ -1,6 +1,6 @@
 /**
  * Página de listado de Equipos refactorizada
- * 
+ *
  * Esta página ahora utiliza el nuevo sistema de navegación unificado:
  * - AppLayout para layout consistente
  * - NavigationButtons para botones estándar
@@ -15,7 +15,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, MapPin, Tag } from 'lucide-react';
-import { createMaquinaria, getMaquinarias, getMaquinariaFilters, updateMaquinaria, deleteMaquinaria } from '../services/api';
+import {
+  createMaquinaria,
+  getMaquinarias,
+  getMaquinariaFilters,
+  updateMaquinaria,
+  deleteMaquinaria,
+} from '../services/api';
 import AppLayout from '../components/navigation/AppLayout';
 import FormHeaderActions from '../components/navigation/FormHeaderActions';
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
@@ -26,21 +32,21 @@ import { usePagination } from '../hooks/usePagination';
 import { useNavigation } from '../hooks/useNavigation';
 import { MAQUINARIA_FILTERS_CONFIG } from '../config/filtersConfig';
 import { getColorFromString } from '../utils/colorUtils';
-import { sortMaquinariasByCategory, getEstadoColorClass, formatAnio } from '../utils/maquinariaUtils';
+import {
+  sortMaquinariasByCategory,
+  getEstadoColorClass,
+  formatAnio,
+} from '../utils/maquinariaUtils';
 import { createLogger } from '../utils/logger';
 import { logFilterApplication, logPaginationChange, logBulkOperation } from '../utils/apiLogger';
-import { 
-  BUTTON_STYLES, 
-  ICON_STYLES,
-  LIST_STYLES
-} from '../styles/repuestoStyles';
+import { BUTTON_STYLES, ICON_STYLES, LIST_STYLES } from '../styles/repuestoStyles';
 
 // Logger específico para este componente
 const logger = createLogger('EquiposPage');
 
 function MaquinariasPage({ token, role, onLogout }) {
   const { navigateToDetailPage, navigate } = useNavigation();
-  
+
   // Estados principales
   const [maquinarias, setMaquinarias] = useState([]);
   const [selectedMaquinaria, setSelectedMaquinaria] = useState(null);
@@ -48,7 +54,7 @@ function MaquinariasPage({ token, role, onLogout }) {
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
-  
+
   // Ref para prevenir llamadas duplicadas
   const fetchingRef = useRef(false);
   const lastFetchParamsRef = useRef(null);
@@ -56,13 +62,9 @@ function MaquinariasPage({ token, role, onLogout }) {
   const fetchMaquinariasRef = useRef(null);
 
   // Hook de paginación
-  const { 
-    paginacion, 
-    loading, 
-    setLoading, 
-    handlePaginacion, 
-    actualizarPaginacion 
-  } = usePagination({ limit: 10 });
+  const { paginacion, loading, setLoading, handlePaginacion, actualizarPaginacion } = usePagination(
+    { limit: 10 }
+  );
 
   // Hook de filtros avanzados con configuración específica de maquinarias
   const {
@@ -74,7 +76,7 @@ function MaquinariasPage({ token, role, onLogout }) {
     aplicarFiltrosActuales,
     limpiarTodosFiltros,
     removerToken,
-    cargarOpcionesFiltros: cargarOpcionesFiltrosMaquinaria
+    cargarOpcionesFiltros: cargarOpcionesFiltrosMaquinaria,
   } = useAdvancedFilters({
     endpoint: getMaquinariaFilters,
     token,
@@ -83,7 +85,7 @@ function MaquinariasPage({ token, role, onLogout }) {
       if (fetchMaquinariasRef.current) {
         return fetchMaquinariasRef.current(filtros, pagina);
       }
-    }
+    },
   });
 
   /**
@@ -93,41 +95,45 @@ function MaquinariasPage({ token, role, onLogout }) {
   const fetchMaquinarias = async (filtrosActuales = {}, pagina = 1) => {
     // Generar clave única para esta llamada
     const fetchKey = JSON.stringify({ filtros: filtrosActuales, pagina });
-    
+
     // Prevenir llamadas duplicadas
     if (fetchingRef.current && lastFetchParamsRef.current === fetchKey) {
       logger.debug('🔄 Llamada duplicada prevenida', { filtros: filtrosActuales, pagina });
       return;
     }
-    
+
     fetchingRef.current = true;
     lastFetchParamsRef.current = fetchKey;
     setLoading(true);
-    
+
     try {
-      logger.data('📊 Cargando maquinarias', { 
+      logger.data('📊 Cargando maquinarias', {
         filtros: Object.keys(filtrosActuales).length,
-        pagina 
+        pagina,
       });
 
       const data = await getMaquinarias(token, filtrosActuales, pagina);
-      
+
       if (data.maquinarias) {
         setMaquinarias(data.maquinarias);
         actualizarPaginacion(data.paginacion || data.pagination);
-        
+
         logger.success(`Cargadas ${data.maquinarias.length} maquinarias`, {
           pagina,
-          total: data.paginacion?.totalElementos || data.pagination?.total || 0
+          total: data.paginacion?.totalElementos || data.pagination?.total || 0,
         });
       } else {
         logger.warn('Respuesta API sin datos de maquinarias', data);
         setMaquinarias([]);
       }
-      
+
       setError('');
     } catch (err) {
-      logger.error('Error al cargar maquinarias', { error: err.message, filtros: filtrosActuales, pagina });
+      logger.error('Error al cargar maquinarias', {
+        error: err.message,
+        filtros: filtrosActuales,
+        pagina,
+      });
       setError('Error al cargar las maquinarias');
       setMaquinarias([]);
     } finally {
@@ -171,7 +177,10 @@ function MaquinariasPage({ token, role, onLogout }) {
    * Navegar a detalles de maquinaria
    */
   const handleMaquinariaClick = (maquinaria) => {
-    logger.navigation('Navegando a detalle de maquinaria', { id: maquinaria.id, nombre: maquinaria.nombre });
+    logger.navigation('Navegando a detalle de maquinaria', {
+      id: maquinaria.id,
+      nombre: maquinaria.nombre,
+    });
     navigateToDetailPage('maquinarias', maquinaria.id);
   };
 
@@ -246,43 +255,46 @@ function MaquinariasPage({ token, role, onLogout }) {
 
     try {
       logger.data('🗂️ Iniciando importación masiva', { fileName: file.name, size: file.size });
-      
-  const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/maquinaria/bulk`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/maquinaria/bulk`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         const successMessage = `✅ ${data.count} maquinarias importadas correctamente`;
         setBulkSuccess(successMessage);
         setBulkError('');
-        
+
         logBulkOperation('IMPORT', 'maquinarias', data.count, { success: true });
         logger.success('Importación masiva completada', { count: data.count });
-        
+
         fetchMaquinarias(filtrosConsolidados, 1);
       } else {
         const errorData = await response.json();
         const errorMessage = `❌ Error: ${errorData.error || 'Error desconocido'}`;
         setBulkError(errorMessage);
-        
-        logBulkOperation('IMPORT', 'maquinarias', 0, { 
-          success: false, 
-          error: errorData.error 
+
+        logBulkOperation('IMPORT', 'maquinarias', 0, {
+          success: false,
+          error: errorData.error,
         });
         logger.error('Error en importación masiva', { error: errorData.error });
       }
     } catch (err) {
       const errorMessage = '❌ Error de conexión al importar';
       setBulkError(errorMessage);
-      
-      logBulkOperation('IMPORT', 'maquinarias', 0, { 
-        success: false, 
-        error: err.message 
+
+      logBulkOperation('IMPORT', 'maquinarias', 0, {
+        success: false,
+        error: err.message,
       });
       logger.error('Error de conexión en importación', { error: err.message });
     }
@@ -309,7 +321,9 @@ function MaquinariasPage({ token, role, onLogout }) {
               {maquinaria.ubicacion && (
                 <button
                   type="button"
-                  onClick={() => navigate(`/contexto/ubicacion/${encodeURIComponent(maquinaria.ubicacion)}`)}
+                  onClick={() =>
+                    navigate(`/contexto/ubicacion/${encodeURIComponent(maquinaria.ubicacion)}`)
+                  }
                   className="px-2 py-1 rounded text-xs font-medium flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
                   title="Ver contexto de ubicación"
                 >
@@ -324,7 +338,9 @@ function MaquinariasPage({ token, role, onLogout }) {
               {maquinaria.categoria && (
                 <button
                   type="button"
-                  onClick={() => navigate(`/contexto/categoria/${encodeURIComponent(maquinaria.categoria)}`)}
+                  onClick={() =>
+                    navigate(`/contexto/categoria/${encodeURIComponent(maquinaria.categoria)}`)
+                  }
                   className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getColorFromString(maquinaria.categoria)} hover:opacity-90 transition`}
                   title="Ver contexto de categoría"
                 >
@@ -333,12 +349,14 @@ function MaquinariasPage({ token, role, onLogout }) {
               )}
             </div>
           </div>
-          
+
           {/* Estado y acciones */}
           <div className="flex items-center space-x-3">
             {/* Estado visual como tag coherente */}
             <div className="text-right">
-              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${getEstadoColorClass(maquinaria.estado)}`}>
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${getEstadoColorClass(maquinaria.estado)}`}
+              >
                 <EstadoIcon estado={maquinaria.estado} className="w-3 h-3" />
                 {maquinaria.estado || 'Sin estado'}
               </span>
@@ -354,7 +372,7 @@ function MaquinariasPage({ token, role, onLogout }) {
     logger.info('🚀 Componente MaquinariasPage inicializado');
     fetchMaquinarias();
     cargarOpcionesFiltros();
-    
+
     return () => {
       logger.debug('🧹 Componente MaquinariasPage desmontado');
     };
@@ -362,13 +380,15 @@ function MaquinariasPage({ token, role, onLogout }) {
 
   useEffect(() => {
     // Solo ejecutar si hay filtros consolidados válidos
-    const hasValidFilters = Object.keys(filtrosConsolidados).some(key => {
+    const hasValidFilters = Object.keys(filtrosConsolidados).some((key) => {
       const value = filtrosConsolidados[key];
-      return value !== '' && 
-             value !== false && 
-             value !== null && 
-             value !== undefined &&
-             !(Array.isArray(value) && value.length === 0);
+      return (
+        value !== '' &&
+        value !== false &&
+        value !== null &&
+        value !== undefined &&
+        !(Array.isArray(value) && value.length === 0)
+      );
     });
 
     if (hasValidFilters) {
@@ -378,29 +398,29 @@ function MaquinariasPage({ token, role, onLogout }) {
   }, [filtrosConsolidados]);
 
   // Definir breadcrumbs
-  const breadcrumbs = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Equipos' }
-  ];
+  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Equipos' }];
 
   const handleExport = async () => {
     try {
       logger.user('🚀 Exportar maquinarias solicitado');
       const data = await getMaquinarias(token, filtrosConsolidados, 1, true);
-      const rows = Array.isArray(data) ? data : (data.maquinarias || []);
-      const csvHeader = 'id,nombre,marca,modelo,categoria,anio,numero_serie,proveedor,ubicacion,estado';
-      const csvRows = rows.map(m => [
-        m.id,
-        JSON.stringify(m.nombre || ''),
-        JSON.stringify(m.marca || ''),
-        JSON.stringify(m.modelo || ''),
-        JSON.stringify(m.categoria || ''),
-        m.anio ?? '',
-        JSON.stringify(m.numero_serie || ''),
-        JSON.stringify(m.proveedor || ''),
-        JSON.stringify(m.ubicacion || ''),
-        JSON.stringify(m.estado || '')
-      ].join(','));
+      const rows = Array.isArray(data) ? data : data.maquinarias || [];
+      const csvHeader =
+        'id,nombre,marca,modelo,categoria,anio,numero_serie,proveedor,ubicacion,estado';
+      const csvRows = rows.map((m) =>
+        [
+          m.id,
+          JSON.stringify(m.nombre || ''),
+          JSON.stringify(m.marca || ''),
+          JSON.stringify(m.modelo || ''),
+          JSON.stringify(m.categoria || ''),
+          m.anio ?? '',
+          JSON.stringify(m.numero_serie || ''),
+          JSON.stringify(m.proveedor || ''),
+          JSON.stringify(m.ubicacion || ''),
+          JSON.stringify(m.estado || ''),
+        ].join(',')
+      );
       const csv = [csvHeader, ...csvRows].join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -440,28 +460,26 @@ function MaquinariasPage({ token, role, onLogout }) {
     <AppLayout
       currentSection="maquinarias"
       breadcrumbs={breadcrumbs}
-  title="Gestión de Equipos"
-  subtitle="Administra el inventario de equipos agrícolas"
+      title="Gestión de Equipos"
+      subtitle="Administra el inventario de equipos agrícolas"
       actions={pageActions}
       token={token}
       role={role}
       onLogout={onLogout}
-  hideSearchOnDesktop={true}
-  collapseUserOnMd={true}
+      hideSearchOnDesktop={true}
+      collapseUserOnMd={true}
     >
       <BaseListPage
-  title="Listado de Equipos"
-  subtitle="Gestiona y filtra todos los equipos del sistema"
-  entityName="Equipo"
-  entityNamePlural="Equipos"
-  createRoute="/maquinarias/formulario"
-  showCsvUpload={false}
-  showNewButton={false}
-        
+        title="Listado de Equipos"
+        subtitle="Gestiona y filtra todos los equipos del sistema"
+        entityName="Equipo"
+        entityNamePlural="Equipos"
+        createRoute="/maquinarias/formulario"
+        showCsvUpload={false}
+        showNewButton={false}
         items={maquinarias}
         loading={loading}
         error={error}
-        
         filtrosTemporales={filtrosTemporales}
         handleFiltroChange={handleFiltroChange}
         aplicarFiltrosActuales={aplicarFiltros}
@@ -470,25 +488,21 @@ function MaquinariasPage({ token, role, onLogout }) {
         removerToken={removerToken}
         opcionesFiltros={opcionesFiltros}
         camposFiltros={MAQUINARIA_FILTERS_CONFIG(opcionesFiltros)}
-        
         paginacion={paginacion}
         handlePaginacion={(pagina) => {
           logPaginationChange(pagina, paginacion.totalPaginas, paginacion.totalElementos);
           fetchMaquinarias(filtrosConsolidados, pagina);
         }}
-        
-  onFileUpload={handleFileUpload}
+        onFileUpload={handleFileUpload}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
-        
-  onItemClick={handleMaquinariaClick}
-  onView={handleMaquinariaClick}
-  onEdit={openEditModal}
-  onDelete={handleDelete}
+        onItemClick={handleMaquinariaClick}
+        onView={handleMaquinariaClick}
+        onEdit={openEditModal}
+        onDelete={handleDelete}
         renderItem={renderMaquinaria}
-        
         sortFunction={(items) => sortMaquinariasByCategory(items)}
       />
 
@@ -512,7 +526,7 @@ function MaquinariasPage({ token, role, onLogout }) {
         />
       )}
 
-  {/* El input para importar se gestiona desde FormHeaderActions (maquinarias-import-input) */}
+      {/* El input para importar se gestiona desde FormHeaderActions (maquinarias-import-input) */}
     </AppLayout>
   );
 }

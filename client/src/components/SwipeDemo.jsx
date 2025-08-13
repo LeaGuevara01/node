@@ -1,6 +1,6 @@
 /**
  * SwipeDemo - Componente de demostración de gestos táctiles
- * 
+ *
  * Muestra visualmente cuando se detectan gestos de deslizamiento
  * y proporciona feedback al usuario sobre el funcionamiento
  */
@@ -17,13 +17,13 @@ const SwipeDemo = () => {
     () => {
       // Deslizar hacia izquierda
       setLastGesture({ direction: 'left', time: Date.now() });
-      setGestureCount(prev => ({ ...prev, left: prev.left + 1 }));
+      setGestureCount((prev) => ({ ...prev, left: prev.left + 1 }));
       console.log('👈 Deslizamiento hacia izquierda detectado');
     },
     () => {
       // Deslizar hacia derecha
       setLastGesture({ direction: 'right', time: Date.now() });
-      setGestureCount(prev => ({ ...prev, right: prev.right + 1 }));
+      setGestureCount((prev) => ({ ...prev, right: prev.right + 1 }));
       console.log('👉 Deslizamiento hacia derecha detectado');
     },
     50 // threshold
@@ -40,7 +40,7 @@ const SwipeDemo = () => {
         <Hand className="w-5 h-5 text-blue-600" />
         Demostración de Gestos Táctiles
       </h3>
-      
+
       <div
         ref={swipeRef}
         className="h-48 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border-2 border-dashed border-blue-300 flex flex-col items-center justify-center text-center p-4 mb-4 touch-none"
@@ -50,16 +50,14 @@ const SwipeDemo = () => {
           {lastGesture?.direction === 'right' && '👉'}
           {!lastGesture && '👆'}
         </div>
-        
+
         <p className="text-gray-600 text-sm mb-2">
           Desliza tu dedo hacia izquierda o derecha en esta área
         </p>
-        
+
         {lastGesture && (
           <div className="text-center">
-            <p className="text-lg font-semibold text-blue-600 mb-1">
-              ¡Gesto detectado!
-            </p>
+            <p className="text-lg font-semibold text-blue-600 mb-1">¡Gesto detectado!</p>
             <p className="text-sm text-gray-500">
               Deslizamiento hacia {lastGesture.direction === 'left' ? 'izquierda' : 'derecha'}
             </p>
@@ -73,21 +71,13 @@ const SwipeDemo = () => {
       {/* Estadísticas */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="text-center p-3 bg-red-50 rounded-lg">
-          <div className="text-2xl font-bold text-red-600">
-            {gestureCount.left}
-          </div>
-          <div className="text-xs text-red-600">
-            👈 Izquierda
-          </div>
+          <div className="text-2xl font-bold text-red-600">{gestureCount.left}</div>
+          <div className="text-xs text-red-600">👈 Izquierda</div>
         </div>
-        
+
         <div className="text-center p-3 bg-green-50 rounded-lg">
-          <div className="text-2xl font-bold text-green-600">
-            {gestureCount.right}
-          </div>
-          <div className="text-xs text-green-600">
-            👉 Derecha
-          </div>
+          <div className="text-2xl font-bold text-green-600">{gestureCount.right}</div>
+          <div className="text-xs text-green-600">👉 Derecha</div>
         </div>
       </div>
 
@@ -119,11 +109,16 @@ const SwipeDemo = () => {
       {/* Estado del dispositivo */}
       <div className="mt-4 text-center">
         <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
-          Dispositivo: {
-            'ontouchstart' in window 
-              ? (<><Monitor className="w-3 h-3" /> Táctil</>) 
-              : (<><Monitor className="w-3 h-3" /> Desktop</>)
-          }
+          Dispositivo:{' '}
+          {'ontouchstart' in window ? (
+            <>
+              <Monitor className="w-3 h-3" /> Táctil
+            </>
+          ) : (
+            <>
+              <Monitor className="w-3 h-3" /> Desktop
+            </>
+          )}
         </div>
       </div>
     </div>

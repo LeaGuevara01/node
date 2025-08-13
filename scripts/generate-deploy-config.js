@@ -12,12 +12,12 @@ require('dotenv').config();
  */
 function getEnvVar(name, defaultValue = null, required = true) {
   const value = process.env[name] || defaultValue;
-  
+
   if (required && !value) {
     console.error(`❌ Variable requerida no encontrada: ${name}`);
     process.exit(1);
   }
-  
+
   return value;
 }
 
@@ -25,11 +25,19 @@ function getEnvVar(name, defaultValue = null, required = true) {
  * Template para render.yaml con variables dinámicas
  */
 function generateRenderYaml() {
-  const backendService = getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola-api', false);
-  const frontendService = getEnvVar('RENDER_FRONTEND_SERVICE_NAME', 'sistemagestionagricola', false);
+  const backendService = getEnvVar(
+    'RENDER_BACKEND_SERVICE_NAME',
+    'sistemagestionagricola-api',
+    false
+  );
+  const frontendService = getEnvVar(
+    'RENDER_FRONTEND_SERVICE_NAME',
+    'sistemagestionagricola',
+    false
+  );
   const jwtSecret = getEnvVar('JWT_SECRET');
   const databaseUrl = getEnvVar('DATABASE_URL');
-  
+
   const template = `services:
   # Backend API
   - type: web
@@ -90,8 +98,12 @@ function generateRenderYaml() {
  * Template para .env.production del cliente
  */
 function generateClientEnvProduction() {
-  const backendService = getEnvVar('RENDER_BACKEND_SERVICE_NAME', 'sistemagestionagricola-api', false);
-  
+  const backendService = getEnvVar(
+    'RENDER_BACKEND_SERVICE_NAME',
+    'sistemagestionagricola-api',
+    false
+  );
+
   const template = `# Variables de entorno para PRODUCCION
 # Este archivo se genera automáticamente - NO editar manualmente
 
@@ -110,19 +122,19 @@ VITE_APP_VERSION="1.0.0"`;
  */
 function generateConfigs() {
   console.log('🔧 Generando archivos de configuración...');
-  
+
   try {
     // Crear directorio si no existe
     const configDir = path.join(__dirname, '..');
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
     }
-    
+
     // Generar render.yaml
     const renderYaml = generateRenderYaml();
     fs.writeFileSync(path.join(configDir, 'render.yaml'), renderYaml);
     console.log('✅ render.yaml generado');
-    
+
     // Generar .env.production para cliente
     const clientEnv = generateClientEnvProduction();
     const clientDir = path.join(configDir, 'client');
@@ -131,10 +143,9 @@ function generateConfigs() {
     }
     fs.writeFileSync(path.join(clientDir, '.env.production'), clientEnv);
     console.log('✅ client/.env.production generado');
-    
+
     console.log('\n🚀 Archivos de configuración generados exitosamente!');
     console.log('⚠️  IMPORTANTE: Estos archivos contienen credenciales - NO los subas a Git');
-    
   } catch (error) {
     console.error('❌ Error generando configuraciones:', error.message);
     process.exit(1);
@@ -149,5 +160,5 @@ if (require.main === module) {
 module.exports = {
   generateRenderYaml,
   generateClientEnvProduction,
-  generateConfigs
+  generateConfigs,
 };

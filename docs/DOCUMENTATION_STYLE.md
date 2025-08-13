@@ -17,7 +17,6 @@ Estilo: profesional, cercano, sintético. Prioriza la claridad sobre la exhausti
 
 - Bloques de función: usa JSDoc breve cuando la firma no es evidente o hay edge cases.
   /\*\*
-
   - Crea un proveedor.
   - @param {Request} req body: { nombre, cuit?, ... }
   - @param {Response} res 201 proveedor | 400 error validación

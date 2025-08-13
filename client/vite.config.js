@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,19 +13,19 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           ui: ['lucide-react'],
-          utils: ['papaparse', 'jwt-decode']
-        }
-      }
-    }
+          utils: ['papaparse', 'jwt-decode'],
+        },
+      },
+    },
   },
   server: {
     port: 3000,
     host: true,
-    strictPort: true
+    strictPort: true,
   },
   preview: {
     port: 3000,
     host: true,
-    strictPort: true
-  }
-})
+    strictPort: true,
+  },
+});

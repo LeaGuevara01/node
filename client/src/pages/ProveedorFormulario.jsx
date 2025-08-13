@@ -11,7 +11,7 @@ import {
   LAYOUT_STYLES,
   ICON_STYLES,
   TEXT_STYLES,
-  ALERT_STYLES
+  ALERT_STYLES,
 } from '../styles/repuestoStyles';
 import AppLayout from '../components/navigation/AppLayout';
 
@@ -26,8 +26,8 @@ function ProveedorFormulario({ token, onCreated }) {
     telefono: '',
     email: '',
     direccion: '',
-  ubicacion: '',
-  notas: ''
+    ubicacion: '',
+    notas: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ function ProveedorFormulario({ token, onCreated }) {
         email: data?.email || '',
         direccion: data?.direccion || '',
         ubicacion: data?.ubicacion || '',
-        notas: data?.notas || ''
+        notas: data?.notas || '',
       });
     } catch (err) {
       console.error('Error al cargar proveedor:', err);
@@ -58,7 +58,7 @@ function ProveedorFormulario({ token, onCreated }) {
   };
 
   const handleChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
     if (error) setError('');
     if (success) setSuccess('');
   };
@@ -97,7 +97,7 @@ function ProveedorFormulario({ token, onCreated }) {
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
     { label: 'Proveedores', href: '/proveedores' },
-    { label: isEditMode ? 'Editar' : 'Formulario' }
+    { label: isEditMode ? 'Editar' : 'Formulario' },
   ];
 
   return (
@@ -105,7 +105,11 @@ function ProveedorFormulario({ token, onCreated }) {
       currentSection="proveedores"
       breadcrumbs={breadcrumbs}
       title={isEditMode ? 'Editar Proveedor' : 'Nuevo Proveedor'}
-      subtitle={isEditMode ? 'Modifica los datos del proveedor' : 'Completa la información para registrar un proveedor'}
+      subtitle={
+        isEditMode
+          ? 'Modifica los datos del proveedor'
+          : 'Completa la información para registrar un proveedor'
+      }
       token={token}
       hideSearchOnDesktop={true}
       collapseUserOnMd={true}
@@ -124,9 +128,22 @@ function ProveedorFormulario({ token, onCreated }) {
                   : 'Completa la información para registrar un proveedor'}
               </p>
             </div>
-            <button onClick={handleCancel} className={`${BUTTON_STYLES.secondary} flex items-center gap-2`}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <button
+              onClick={handleCancel}
+              className={`${BUTTON_STYLES.secondary} flex items-center gap-2`}
+            >
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
               Volver al Listado
             </button>
@@ -142,9 +159,24 @@ function ProveedorFormulario({ token, onCreated }) {
           {loadingData ? (
             <div className="flex items-center justify-center py-8">
               <div className={TEXT_STYLES.loading}>
-                <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                  <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                <svg
+                  className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    className="opacity-25"
+                  ></circle>
+                  <path
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    className="opacity-75"
+                  ></path>
                 </svg>
                 Cargando datos...
               </div>
@@ -156,50 +188,122 @@ function ProveedorFormulario({ token, onCreated }) {
                 <div className={LAYOUT_STYLES.gridForm}>
                   <div>
                     <label className={INPUT_STYLES.label}>Nombre *</label>
-                    <input type="text" value={form.nombre} onChange={(e) => handleChange('nombre', e.target.value)} className={INPUT_STYLES.base} required />
+                    <input
+                      type="text"
+                      value={form.nombre}
+                      onChange={(e) => handleChange('nombre', e.target.value)}
+                      className={INPUT_STYLES.base}
+                      required
+                    />
                   </div>
                   <div>
                     <label className={INPUT_STYLES.label}>Contacto</label>
-                    <input type="text" value={form.contacto} onChange={(e) => handleChange('contacto', e.target.value)} className={INPUT_STYLES.base} />
+                    <input
+                      type="text"
+                      value={form.contacto}
+                      onChange={(e) => handleChange('contacto', e.target.value)}
+                      className={INPUT_STYLES.base}
+                    />
                   </div>
                   <div>
                     <label className={INPUT_STYLES.label}>Teléfono</label>
-                    <input type="tel" value={form.telefono} onChange={(e) => handleChange('telefono', e.target.value)} className={INPUT_STYLES.base} />
+                    <input
+                      type="tel"
+                      value={form.telefono}
+                      onChange={(e) => handleChange('telefono', e.target.value)}
+                      className={INPUT_STYLES.base}
+                    />
                   </div>
                   <div>
                     <label className={INPUT_STYLES.label}>Email</label>
-                    <input type="email" value={form.email} onChange={(e) => handleChange('email', e.target.value)} className={INPUT_STYLES.base} />
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => handleChange('email', e.target.value)}
+                      className={INPUT_STYLES.base}
+                    />
                   </div>
                   <div className="sm:col-span-2">
                     <label className={INPUT_STYLES.label}>Dirección</label>
-                    <input type="text" value={form.direccion} onChange={(e) => handleChange('direccion', e.target.value)} className={INPUT_STYLES.base} />
+                    <input
+                      type="text"
+                      value={form.direccion}
+                      onChange={(e) => handleChange('direccion', e.target.value)}
+                      className={INPUT_STYLES.base}
+                    />
                   </div>
                   <div>
                     <label className={INPUT_STYLES.label}>Ubicación</label>
-                    <input type="text" value={form.ubicacion} onChange={(e) => handleChange('ubicacion', e.target.value)} className={INPUT_STYLES.base} />
+                    <input
+                      type="text"
+                      value={form.ubicacion}
+                      onChange={(e) => handleChange('ubicacion', e.target.value)}
+                      className={INPUT_STYLES.base}
+                    />
                   </div>
                   <div className="sm:col-span-2">
                     <label className={INPUT_STYLES.label}>Notas</label>
-                    <textarea value={form.notas} onChange={(e) => handleChange('notas', e.target.value)} className={INPUT_STYLES.base} rows={3} />
+                    <textarea
+                      value={form.notas}
+                      onChange={(e) => handleChange('notas', e.target.value)}
+                      className={INPUT_STYLES.base}
+                      rows={3}
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
-                <button type="button" onClick={handleCancel} className={BUTTON_STYLES.secondary} disabled={loading}>Cancelar</button>
-                <button type="submit" className={BUTTON_STYLES.primary} disabled={loading || !form.nombre}>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className={BUTTON_STYLES.secondary}
+                  disabled={loading}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className={BUTTON_STYLES.primary}
+                  disabled={loading || !form.nombre}
+                >
                   {loading ? (
                     <>
-                      <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                      <svg
+                        className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          className="opacity-25"
+                        ></circle>
+                        <path
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          className="opacity-75"
+                        ></path>
                       </svg>
                       {isEditMode ? 'Actualizando...' : 'Creando...'}
                     </>
                   ) : (
                     <>
-                      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className={ICON_STYLES.small}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       {isEditMode ? 'Actualizar Proveedor' : 'Crear Proveedor'}
                     </>

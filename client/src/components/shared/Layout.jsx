@@ -9,25 +9,23 @@ import { COMPONENT_VARIANTS } from '../../styles/tokens/componentVariants';
 /**
  * Contenedor principal de página
  */
-export const PageContainer = ({ 
-  children, 
-  theme = 'default',
-  className = '' 
-}) => {
+export const PageContainer = ({ children, theme = 'default', className = '' }) => {
   const themeClasses = {
     default: 'bg-gradient-to-br from-gray-50 to-gray-100',
     agricultural: 'bg-gradient-agricultural',
     machinery: 'bg-gradient-machinery',
     earth: 'bg-gradient-earth',
-    sky: 'bg-gradient-sky'
+    sky: 'bg-gradient-sky',
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       min-h-screen transition-colors duration-300
       ${themeClasses[theme] || themeClasses.default}
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );
@@ -36,25 +34,27 @@ export const PageContainer = ({
 /**
  * Contenedor de contenido con padding responsivo
  */
-export const ContentContainer = ({ 
-  children, 
+export const ContentContainer = ({
+  children,
   maxWidth = '7xl',
   spacing = 'md',
-  className = '' 
+  className = '',
 }) => {
   const spacingClasses = {
     sm: 'space-y-4 py-4',
     md: 'space-y-6 py-6',
     lg: 'space-y-8 py-8',
-    xl: 'space-y-10 py-10'
+    xl: 'space-y-10 py-10',
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       max-w-${maxWidth} mx-auto px-4 sm:px-6 lg:px-8
       ${spacingClasses[spacing]}
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );
@@ -63,39 +63,27 @@ export const ContentContainer = ({
 /**
  * Sección con fondo y bordes
  */
-export const Section = ({ 
-  children, 
-  title,
-  subtitle,
-  padding = 'md',
-  className = '' 
-}) => {
+export const Section = ({ children, title, subtitle, padding = 'md', className = '' }) => {
   const paddingClasses = {
     none: 'p-0',
     sm: 'p-4',
     md: 'p-6',
     lg: 'p-8',
-    xl: 'p-10'
+    xl: 'p-10',
   };
 
   return (
-    <section className={`
+    <section
+      className={`
       bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden
       ${paddingClasses[padding]}
       ${className}
-    `}>
+    `}
+    >
       {(title || subtitle) && (
         <div className="mb-6">
-          {title && (
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {title}
-            </h2>
-          )}
-          {subtitle && (
-            <p className="text-gray-600">
-              {subtitle}
-            </p>
-          )}
+          {title && <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>}
+          {subtitle && <p className="text-gray-600">{subtitle}</p>}
         </div>
       )}
       {children}
@@ -106,28 +94,25 @@ export const Section = ({
 /**
  * Grid responsivo genérico
  */
-export const ResponsiveGrid = ({ 
-  children, 
-  columns = 'responsive',
-  gap = '6',
-  className = '' 
-}) => {
+export const ResponsiveGrid = ({ children, columns = 'responsive', gap = '6', className = '' }) => {
   const { grids } = COMPONENT_VARIANTS.layout;
-  
+
   const gridClasses = {
     responsive: grids.responsive,
     twoColumns: grids.twoColumns,
     fourColumns: grids.fourColumns,
     stats: grids.stats,
     form: grids.form,
-    custom: `grid gap-${gap}`
+    custom: `grid gap-${gap}`,
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       ${gridClasses[columns] || gridClasses.responsive}
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );
@@ -136,18 +121,18 @@ export const ResponsiveGrid = ({
 /**
  * Flex container con variantes comunes
  */
-export const FlexContainer = ({ 
-  children, 
+export const FlexContainer = ({
+  children,
   direction = 'horizontal',
   justify = 'start',
   align = 'center',
   wrap = false,
   gap = '4',
-  className = '' 
+  className = '',
 }) => {
   const directionClasses = {
     horizontal: 'flex-row',
-    vertical: 'flex-col'
+    vertical: 'flex-col',
   };
 
   const justifyClasses = {
@@ -156,7 +141,7 @@ export const FlexContainer = ({
     end: 'justify-end',
     between: 'justify-between',
     around: 'justify-around',
-    evenly: 'justify-evenly'
+    evenly: 'justify-evenly',
   };
 
   const alignClasses = {
@@ -164,11 +149,12 @@ export const FlexContainer = ({
     center: 'items-center',
     end: 'items-end',
     stretch: 'items-stretch',
-    baseline: 'items-baseline'
+    baseline: 'items-baseline',
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       flex
       ${directionClasses[direction]}
       ${justifyClasses[justify]}
@@ -176,7 +162,8 @@ export const FlexContainer = ({
       ${wrap ? 'flex-wrap' : ''}
       gap-${gap}
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );
@@ -185,23 +172,25 @@ export const FlexContainer = ({
 /**
  * Card container con variantes
  */
-export const Card = ({ 
-  children, 
+export const Card = ({
+  children,
   variant = 'default',
   padding = 'md',
   hover = false,
-  className = '' 
+  className = '',
 }) => {
   const { base, variants, padding: paddingVariants } = COMPONENT_VARIANTS.card;
 
   return (
-    <div className={`
+    <div
+      className={`
       ${base}
       ${variants[variant] || variants.default}
       ${paddingVariants[padding]}
       ${hover ? 'hover:shadow-lg hover:scale-[1.02]' : ''}
       ${className}
-    `}>
+    `}
+    >
       {children}
     </div>
   );
@@ -210,13 +199,7 @@ export const Card = ({
 /**
  * Header de página con breadcrumbs
  */
-export const PageHeader = ({ 
-  title, 
-  subtitle,
-  breadcrumbs = [],
-  actions,
-  className = '' 
-}) => {
+export const PageHeader = ({ title, subtitle, breadcrumbs = [], actions, className = '' }) => {
   return (
     <div className={`mb-8 ${className}`}>
       {/* Breadcrumbs */}
@@ -227,7 +210,11 @@ export const PageHeader = ({
               <li key={index} className="flex items-center">
                 {index > 0 && (
                   <svg className="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 )}
                 {crumb.href ? (
@@ -235,7 +222,9 @@ export const PageHeader = ({
                     {crumb.label}
                   </a>
                 ) : (
-                  <span className={index === breadcrumbs.length - 1 ? 'text-gray-900 font-medium' : ''}>
+                  <span
+                    className={index === breadcrumbs.length - 1 ? 'text-gray-900 font-medium' : ''}
+                  >
                     {crumb.label}
                   </span>
                 )}
@@ -248,21 +237,11 @@ export const PageHeader = ({
       {/* Header principal */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="mt-2 text-gray-600">
-              {subtitle}
-            </p>
-          )}
+          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
+          {subtitle && <p className="mt-2 text-gray-600">{subtitle}</p>}
         </div>
-        
-        {actions && (
-          <div className="mt-4 sm:mt-0 flex gap-3">
-            {actions}
-          </div>
-        )}
+
+        {actions && <div className="mt-4 sm:mt-0 flex gap-3">{actions}</div>}
       </div>
     </div>
   );
@@ -271,28 +250,14 @@ export const PageHeader = ({
 /**
  * Layout para formularios
  */
-export const FormLayout = ({ 
-  children, 
-  title,
-  subtitle,
-  maxWidth = '2xl',
-  className = '' 
-}) => {
+export const FormLayout = ({ children, title, subtitle, maxWidth = '2xl', className = '' }) => {
   return (
     <div className={`max-w-${maxWidth} mx-auto ${className}`}>
       <Card padding="lg">
         {(title || subtitle) && (
           <div className="mb-8">
-            {title && (
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {title}
-              </h2>
-            )}
-            {subtitle && (
-              <p className="text-gray-600">
-                {subtitle}
-              </p>
-            )}
+            {title && <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>}
+            {subtitle && <p className="text-gray-600">{subtitle}</p>}
           </div>
         )}
         {children}
@@ -304,31 +269,19 @@ export const FormLayout = ({
 /**
  * Layout para páginas de detalles
  */
-export const DetailsLayout = ({ 
-  children, 
-  header,
-  sidebar,
-  main,
-  className = '' 
-}) => {
+export const DetailsLayout = ({ children, header, sidebar, main, className = '' }) => {
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       {header}
-      
+
       {/* Contenido principal */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sidebar */}
-        {sidebar && (
-          <div className="lg:col-span-1">
-            {sidebar}
-          </div>
-        )}
-        
+        {sidebar && <div className="lg:col-span-1">{sidebar}</div>}
+
         {/* Main content */}
-        <div className={sidebar ? 'lg:col-span-2' : 'lg:col-span-3'}>
-          {main || children}
-        </div>
+        <div className={sidebar ? 'lg:col-span-2' : 'lg:col-span-3'}>{main || children}</div>
       </div>
     </div>
   );
@@ -337,44 +290,25 @@ export const DetailsLayout = ({
 /**
  * Layout para listados con filtros
  */
-export const ListLayout = ({ 
-  header,
-  filters,
-  toolbar,
-  content,
-  sidebar,
-  className = '' 
-}) => {
+export const ListLayout = ({ header, filters, toolbar, content, sidebar, className = '' }) => {
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       {header}
-      
+
       {/* Filtros */}
-      {filters && (
-        <Card padding="md">
-          {filters}
-        </Card>
-      )}
-      
+      {filters && <Card padding="md">{filters}</Card>}
+
       {/* Contenido principal */}
       <div className={sidebar ? 'grid grid-cols-1 lg:grid-cols-4 gap-6' : ''}>
         {/* Sidebar de filtros */}
-        {sidebar && (
-          <div className="lg:col-span-1">
-            {sidebar}
-          </div>
-        )}
-        
+        {sidebar && <div className="lg:col-span-1">{sidebar}</div>}
+
         {/* Área principal */}
         <div className={sidebar ? 'lg:col-span-3' : ''}>
           {/* Toolbar */}
-          {toolbar && (
-            <div className="mb-6">
-              {toolbar}
-            </div>
-          )}
-          
+          {toolbar && <div className="mb-6">{toolbar}</div>}
+
           {/* Contenido */}
           {content}
         </div>
@@ -386,60 +320,66 @@ export const ListLayout = ({
 /**
  * Modal layout
  */
-export const ModalLayout = ({ 
-  children, 
-  title,
-  size = 'md',
-  onClose,
-  className = '' 
-}) => {
+export const ModalLayout = ({ children, title, size = 'md', onClose, className = '' }) => {
   const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
-    full: 'max-w-7xl'
+    full: 'max-w-7xl',
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label={typeof title === 'string' ? title : undefined}
+    >
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-        onClick={onClose}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose?.();
+        }}
       />
-      
+
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className={`
+        <div
+          className={`
           relative bg-white rounded-xl shadow-xl
           ${sizeClasses[size]} w-full
           animate-slide-up
           ${className}
-        `}>
+        `}
+        >
           {/* Header */}
           {title && (
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {title}
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
               {onClose && (
                 <button
+                  aria-label="Cerrar modal"
                   onClick={onClose}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               )}
             </div>
           )}
-          
+
           {/* Content */}
-          <div className="p-6">
-            {children}
-          </div>
+          <div className="p-6">{children}</div>
         </div>
       </div>
     </div>
@@ -462,7 +402,7 @@ export const LayoutSkeleton = ({ type = 'page' }) => {
         <div className="h-64 bg-gray-200 rounded"></div>
       </div>
     ),
-    
+
     card: (
       <div className="animate-pulse p-6">
         <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -473,7 +413,7 @@ export const LayoutSkeleton = ({ type = 'page' }) => {
         </div>
       </div>
     ),
-    
+
     list: (
       <div className="animate-pulse space-y-4">
         {[...Array(5)].map((_, i) => (
@@ -486,7 +426,7 @@ export const LayoutSkeleton = ({ type = 'page' }) => {
           </div>
         ))}
       </div>
-    )
+    ),
   };
 
   return skeletons[type] || skeletons.page;
@@ -495,19 +435,11 @@ export const LayoutSkeleton = ({ type = 'page' }) => {
 /**
  * Layout con sticky header
  */
-export const StickyHeaderLayout = ({ 
-  header, 
-  children, 
-  className = '' 
-}) => {
+export const StickyHeaderLayout = ({ header, children, className = '' }) => {
   return (
     <div className={className}>
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
-        {header}
-      </div>
-      <div className="relative">
-        {children}
-      </div>
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-200">{header}</div>
+      <div className="relative">{children}</div>
     </div>
   );
 };
@@ -525,5 +457,5 @@ export default {
   ListLayout,
   ModalLayout,
   LayoutSkeleton,
-  StickyHeaderLayout
+  StickyHeaderLayout,
 };

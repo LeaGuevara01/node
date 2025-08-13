@@ -148,7 +148,7 @@ import {
   StatCard, // Tarjetas de estadísticas
   ActionButton, // Botones de acción consistentes
   ImageUpload, // Componente de upload de imágenes
-} from "../components/shared/DetailsComponents";
+} from '../components/shared/DetailsComponents';
 ```
 
 #### **Patrón de Uso para Nuevas Entidades**
@@ -158,7 +158,7 @@ function EntityDetails({ token }) {
   // Estados estándar
   const [entity, setEntity] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // Hooks estándar
   const { id } = useParams();
@@ -171,18 +171,11 @@ function EntityDetails({ token }) {
   return (
     <div className={DETAILS_CONTAINER.main}>
       <div className={DETAILS_CONTAINER.maxWidth}>
-        <DetailsHeader
-          title={entity.name}
-          onBack={() => navigate("/entities")}
-        />
+        <DetailsHeader title={entity.name} onBack={() => navigate('/entities')} />
 
         <div className={DETAILS_CONTAINER.grid}>
           <DetailsSection title="Información Básica">
-            <FieldWithIcon
-              icon={COMMON_ICONS.document}
-              label="Código"
-              value={entity.code}
-            />
+            <FieldWithIcon icon={COMMON_ICONS.document} label="Código" value={entity.code} />
             <SimpleField label="Descripción" value={entity.description} />
           </DetailsSection>
         </div>
@@ -592,19 +585,19 @@ npm run type-check
 
 ```javascript
 // Sistema de estilos modular
-import { DETAILS_CONTAINER } from "../styles/detailsStyles"; // Para páginas de detalles
-import { MODAL_STYLES } from "../styles/repuestoStyles"; // Para modales
-import { FORM_STYLES } from "../styles/formStyles"; // Para formularios
+import { DETAILS_CONTAINER } from '../styles/detailsStyles'; // Para páginas de detalles
+import { MODAL_STYLES } from '../styles/repuestoStyles'; // Para modales
+import { FORM_STYLES } from '../styles/formStyles'; // Para formularios
 
 // Componentes compartidos
 import {
   DetailsHeader,
   DetailsSection,
   FieldWithIcon,
-} from "../components/shared/DetailsComponents";
+} from '../components/shared/DetailsComponents';
 
 // Utilidades compartidas
-import { handleFileUpload, COMMON_ICONS } from "../utils/detailsUtils.jsx";
+import { handleFileUpload, COMMON_ICONS } from '../utils/detailsUtils.jsx';
 ```
 
 ---
@@ -852,13 +845,13 @@ chore: tareas de mantenimiento
 
 ```jsx
 // Orden de imports
-import React from "react"; // React core
-import { useState, useEffect } from "react"; // React hooks
-import { useNavigate } from "react-router-dom"; // Third party
-import { api } from "../services/api"; // Internal services
-import { ComponentName } from "../components"; // Internal components
-import { STYLES } from "../styles"; // Styles
-import "./Component.css"; // Component styles
+import React from 'react'; // React core
+import { useState, useEffect } from 'react'; // React hooks
+import { useNavigate } from 'react-router-dom'; // Third party
+import { api } from '../services/api'; // Internal services
+import { ComponentName } from '../components'; // Internal components
+import { STYLES } from '../styles'; // Styles
+import './Component.css'; // Component styles
 
 function ComponentName({ prop1, prop2 }) {
   // 1. Hooks

@@ -30,7 +30,7 @@ const getCorsOrigins = () => {
   const fromEnv = (() => {
     const corsOrigin = config.CORS_ORIGIN;
     if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
-      return corsOrigin.split(',').map(o => o.trim());
+      return corsOrigin.split(',').map((o) => o.trim());
     }
     if (typeof corsOrigin === 'string') {
       return [corsOrigin];
@@ -41,13 +41,15 @@ const getCorsOrigins = () => {
     return [];
   })();
 
-  const devDefaults = ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'];
+  const devDefaults = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
+  ];
   if (config.isDevelopment()) {
     // Unir y deduplicar
-    return Array.from(new Set([...
-      fromEnv,
-      ...devDefaults
-    ]));
+    return Array.from(new Set([...fromEnv, ...devDefaults]));
   }
   return fromEnv.length ? fromEnv : devDefaults;
 };
@@ -57,7 +59,7 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -70,10 +72,10 @@ app.use(express.json());
 
 // Health check endpoint para uptime y monitoreo
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
+  res.status(200).json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
@@ -89,10 +91,10 @@ app.get('/api/health/db', async (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Agroservicios API', 
+  res.json({
+    message: 'Agroservicios API',
     version: '1.0.0',
-    docs: '/api/docs'
+    docs: '/api/docs',
   });
 });
 
@@ -130,10 +132,12 @@ const PORT = config.PORT;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`📝 Environment: ${config.NODE_ENV}`);
-  
+
   const corsOrigins = getCorsOrigins();
-  console.log(`🌐 CORS habilitado para: ${Array.isArray(corsOrigins) ? corsOrigins.join(', ') : corsOrigins}`);
-  
+  console.log(
+    `🌐 CORS habilitado para: ${Array.isArray(corsOrigins) ? corsOrigins.join(', ') : corsOrigins}`
+  );
+
   if (fs.existsSync(__dirname + '/docs/openapi.yaml')) {
     console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
   }

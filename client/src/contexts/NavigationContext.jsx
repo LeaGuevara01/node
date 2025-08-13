@@ -23,104 +23,116 @@ export const NavigationProvider = ({ children }) => {
   const [sectionFilters, setSectionFilters] = useState({});
 
   // Funciones de navegación centralizadas
-  const navigateToListPage = useCallback((type, filters = {}) => {
-    const routes = {
-      maquinarias: '/maquinarias',
-      repuestos: '/repuestos', 
-      proveedores: '/proveedores',
-  reparaciones: '/reparaciones',
-  usuarios: '/usuarios',
-  compras: '/compras'
-    };
+  const navigateToListPage = useCallback(
+    (type, filters = {}) => {
+      const routes = {
+        maquinarias: '/maquinarias',
+        repuestos: '/repuestos',
+        proveedores: '/proveedores',
+        reparaciones: '/reparaciones',
+        usuarios: '/usuarios',
+        compras: '/compras',
+      };
 
-    const route = routes[type];
-    if (route) {
-      // Aplicar filtros si se proporcionan
-      if (Object.keys(filters).length > 0) {
-        setSectionFilters(prev => ({
-          ...prev,
-          [type]: filters
-        }));
+      const route = routes[type];
+      if (route) {
+        // Aplicar filtros si se proporcionan
+        if (Object.keys(filters).length > 0) {
+          setSectionFilters((prev) => ({
+            ...prev,
+            [type]: filters,
+          }));
+        }
+
+        navigate(route);
+        addToHistory({ type: 'list', entity: type, route, filters });
       }
-      
-      navigate(route);
-      addToHistory({ type: 'list', entity: type, route, filters });
-    }
-  }, [navigate]);
+    },
+    [navigate]
+  );
 
   // Nueva función para navegación directa desde dashboard
-  const navigateFromDashboard = useCallback((section, action = 'view', itemId = null) => {
-    const baseRoutes = {
-      maquinarias: '/maquinarias',
-      repuestos: '/repuestos', 
-      proveedores: '/proveedores',
-      reparaciones: '/reparaciones',
-      usuarios: '/usuarios',
-      compras: '/compras'
-    };
+  const navigateFromDashboard = useCallback(
+    (section, action = 'view', itemId = null) => {
+      const baseRoutes = {
+        maquinarias: '/maquinarias',
+        repuestos: '/repuestos',
+        proveedores: '/proveedores',
+        reparaciones: '/reparaciones',
+        usuarios: '/usuarios',
+        compras: '/compras',
+      };
 
-    let targetRoute = baseRoutes[section];
-    
-    if (action === 'create') {
-      // Para compras la ruta de creación es '/nueva'
-      if (section === 'compras') {
-        targetRoute += '/nueva';
-      } else {
-        targetRoute += '/nuevo';
+      let targetRoute = baseRoutes[section];
+
+      if (action === 'create') {
+        // Para compras la ruta de creación es '/nueva'
+        if (section === 'compras') {
+          targetRoute += '/nueva';
+        } else {
+          targetRoute += '/nuevo';
+        }
+      } else if (action === 'edit' && itemId) {
+        targetRoute += `/${itemId}/editar`;
+      } else if (action === 'detail' && itemId) {
+        targetRoute += `/${itemId}`;
       }
-    } else if (action === 'edit' && itemId) {
-      targetRoute += `/${itemId}/editar`;
-    } else if (action === 'detail' && itemId) {
-      targetRoute += `/${itemId}`;
-    }
-    
-    if (targetRoute) {
-      navigate(targetRoute);
-      addToHistory({ 
-        type: 'dashboard-navigation', 
-        entity: section, 
-        route: targetRoute,
-        action,
-        itemId 
-      });
-    }
-  }, [navigate]);
 
-  const navigateToDetailPage = useCallback((type, id) => {
-    const routes = {
-      maquinarias: `/maquinarias/${id}`,
-      repuestos: `/repuestos/${id}`,
-      proveedores: `/proveedores/${id}`,
-  reparaciones: `/reparaciones/${id}`,
-  usuarios: `/usuarios/${id}`,
-  compras: `/compras/${id}`
-    };
+      if (targetRoute) {
+        navigate(targetRoute);
+        addToHistory({
+          type: 'dashboard-navigation',
+          entity: section,
+          route: targetRoute,
+          action,
+          itemId,
+        });
+      }
+    },
+    [navigate]
+  );
 
-    const route = routes[type];
-    if (route) {
-      navigate(route);
-      addToHistory({ type: 'detail', entity: type, id, route });
-    }
-  }, [navigate]);
+  const navigateToDetailPage = useCallback(
+    (type, id) => {
+      const routes = {
+        maquinarias: `/maquinarias/${id}`,
+        repuestos: `/repuestos/${id}`,
+        proveedores: `/proveedores/${id}`,
+        reparaciones: `/reparaciones/${id}`,
+        usuarios: `/usuarios/${id}`,
+        compras: `/compras/${id}`,
+      };
 
-  const navigateToFormPage = useCallback((type, id = null) => {
-    const routes = {
-      maquinarias: id ? `/maquinarias/editar/${id}` : '/maquinarias/formulario',
-      repuestos: id ? `/repuestos/editar/${id}` : '/repuestos/formulario',
-      proveedores: id ? `/proveedores/editar/${id}` : '/proveedores/formulario',
-  // Reparaciones usa modales en la página de listado
-  reparaciones: '/reparaciones',
-  usuarios: id ? `/usuarios/editar/${id}` : '/usuarios/formulario',
-  // Para compras aún no hay edición dedicada; ambas rutas apuntan a creación
-  compras: '/compras/nueva'
-    };
+      const route = routes[type];
+      if (route) {
+        navigate(route);
+        addToHistory({ type: 'detail', entity: type, id, route });
+      }
+    },
+    [navigate]
+  );
 
-    const route = routes[type];
-    if (route) {
-      navigate(route);
-      addToHistory({ type: 'form', entity: type, id, route });
-    }
-  }, [navigate]);
+  const navigateToFormPage = useCallback(
+    (type, id = null) => {
+      const routes = {
+        maquinarias: id ? `/maquinarias/editar/${id}` : '/maquinarias/formulario',
+        repuestos: id ? `/repuestos/editar/${id}` : '/repuestos/formulario',
+        proveedores: id ? `/proveedores/editar/${id}` : '/proveedores/formulario',
+        // Reparaciones usa modales en la página de listado
+        reparaciones: '/reparaciones',
+        usuarios: id ? `/usuarios/editar/${id}` : '/usuarios/formulario',
+        // Para compras aún no hay edición dedicada; ambas rutas apuntan a creación
+        compras: '/compras/nueva',
+      };
+
+      const route = routes[type];
+      if (route) {
+        navigate(route);
+        addToHistory({ type: 'form', entity: type, id, route });
+      }
+    },
+    [navigate]
+  );
 
   const navigateToDashboard = useCallback(() => {
     navigate('/');
@@ -133,7 +145,7 @@ export const NavigationProvider = ({ children }) => {
 
   // Gestión del historial de navegación
   const addToHistory = useCallback((entry) => {
-    setNavigationHistory(prev => {
+    setNavigationHistory((prev) => {
       const newHistory = [...prev, { ...entry, timestamp: Date.now() }];
       // Mantener solo los últimos 10 elementos
       return newHistory.slice(-10);
@@ -144,36 +156,43 @@ export const NavigationProvider = ({ children }) => {
   const getCurrentPageInfo = useCallback(() => {
     const pathname = location.pathname;
     const segments = pathname.split('/').filter(Boolean);
-    
+
     if (segments.length === 0) {
       return { type: 'dashboard', entity: null, id: null };
     }
-    
+
     const [entity, action, id] = segments;
-    
+
     return {
-      type: action === 'formulario' || action === 'editar' ? 'form' : 
-            !isNaN(action) ? 'detail' : 'list',
+      type:
+        action === 'formulario' || action === 'editar'
+          ? 'form'
+          : !isNaN(action)
+            ? 'detail'
+            : 'list',
       entity,
       id: !isNaN(action) ? action : id,
-      action
+      action,
     };
   }, [location.pathname]);
 
   // Gestión de filtros por sección
   const updateSectionFilters = useCallback((section, filters) => {
-    setSectionFilters(prev => ({
+    setSectionFilters((prev) => ({
       ...prev,
-      [section]: filters
+      [section]: filters,
     }));
   }, []);
 
-  const getSectionFilters = useCallback((section) => {
-    return sectionFilters[section] || {};
-  }, [sectionFilters]);
+  const getSectionFilters = useCallback(
+    (section) => {
+      return sectionFilters[section] || {};
+    },
+    [sectionFilters]
+  );
 
   const clearSectionFilters = useCallback((section) => {
-    setSectionFilters(prev => {
+    setSectionFilters((prev) => {
       const newFilters = { ...prev };
       delete newFilters[section];
       return newFilters;
@@ -186,7 +205,7 @@ export const NavigationProvider = ({ children }) => {
     navigationHistory,
     currentPageInfo: getCurrentPageInfo(),
     sectionFilters,
-    
+
     // Funciones de navegación
     navigateToListPage,
     navigateToDetailPage,
@@ -195,21 +214,17 @@ export const NavigationProvider = ({ children }) => {
     navigateFromDashboard,
     goBack,
     navigate, // Función nativa para casos especiales
-    
+
     // Gestión de filtros
     updateSectionFilters,
     getSectionFilters,
     clearSectionFilters,
-    
+
     // Utilidades
-    addToHistory
+    addToHistory,
   };
 
-  return (
-    <NavigationContext.Provider value={value}>
-      {children}
-    </NavigationContext.Provider>
-  );
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 };
 
 export default NavigationProvider;

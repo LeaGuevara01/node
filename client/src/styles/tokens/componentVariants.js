@@ -99,7 +99,7 @@ export const BUTTON_VARIANTS = {
       hover:text-brand-900 hover:underline
       focus:ring-brand-500
       active:text-brand-950
-    `
+    `,
   },
 
   // Tamaños de botones
@@ -108,14 +108,14 @@ export const BUTTON_VARIANTS = {
     sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-2 text-base',
     lg: 'px-6 py-3 text-lg',
-    xl: 'px-8 py-4 text-xl'
+    xl: 'px-8 py-4 text-xl',
   },
 
   // Estados especiales
   states: {
     loading: 'opacity-75 cursor-wait',
-    disabled: 'opacity-50 cursor-not-allowed pointer-events-none'
-  }
+    disabled: 'opacity-50 cursor-not-allowed pointer-events-none',
+  },
 };
 
 // Variantes de Cards
@@ -191,7 +191,7 @@ export const CARD_VARIANTS = {
     flat: `
       shadow-none border-2 border-gray-200
       hover:border-gray-300
-    `
+    `,
   },
 
   // Tamaños de padding
@@ -200,8 +200,8 @@ export const CARD_VARIANTS = {
     sm: 'p-4',
     md: 'p-6',
     lg: 'p-8',
-    xl: 'p-10'
-  }
+    xl: 'p-10',
+  },
 };
 
 // Variantes de Inputs
@@ -248,15 +248,15 @@ export const INPUT_VARIANTS = {
       border-transparent bg-gray-50 text-gray-900
       focus:border-gray-300 focus:ring-gray-300
       placeholder:text-gray-400
-    `
+    `,
   },
 
   // Tamaños
   sizes: {
     sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-3 text-base',
-    lg: 'px-6 py-4 text-lg'
-  }
+    lg: 'px-6 py-4 text-lg',
+  },
 };
 
 // Variantes de Badges/Tags
@@ -319,15 +319,15 @@ export const BADGE_VARIANTS = {
     outline: `
       bg-transparent border border-gray-300 text-gray-700
       hover:bg-gray-50
-    `
+    `,
   },
 
   // Tamaños
   sizes: {
     sm: 'px-2 py-1 text-xs',
     md: 'px-2.5 py-1.5 text-sm',
-    lg: 'px-3 py-2 text-base'
-  }
+    lg: 'px-3 py-2 text-base',
+  },
 };
 
 // Variantes de Alertas
@@ -360,8 +360,8 @@ export const ALERT_VARIANTS = {
     agricultural: `
       bg-brown-50 border-brown-200 text-brown-800
       border-l-4 border-l-brown-500
-    `
-  }
+    `,
+  },
 };
 
 // Variantes de Layout
@@ -392,47 +392,47 @@ export const LAYOUT_VARIANTS = {
     machinery: `
       min-h-screen bg-gradient-to-br from-yellow-50 to-yellow-100
       transition-colors duration-300
-    `
+    `,
   },
 
   // Grids responsivos
   grids: {
     // Grid de 1 columna en móvil, 2 en tablet, 3 en desktop
     responsive: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
-    
+
     // Grid de 2 columnas responsivo
     twoColumns: 'grid grid-cols-1 lg:grid-cols-2 gap-6',
-    
+
     // Grid de 4 columnas responsivo
     fourColumns: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4',
-    
+
     // Grid de stats/métricas
     stats: 'grid grid-cols-2 md:grid-cols-4 gap-4',
-    
+
     // Grid de formulario
-    form: 'grid grid-cols-1 md:grid-cols-2 gap-4'
+    form: 'grid grid-cols-1 md:grid-cols-2 gap-4',
   },
 
   // Flexbox layouts
   flex: {
     // Centrado completo
     center: 'flex items-center justify-center',
-    
+
     // Entre elementos
     between: 'flex items-center justify-between',
-    
+
     // Columna centrada
     column: 'flex flex-col items-center',
-    
+
     // Horizontal con espacio
     horizontal: 'flex items-center space-x-4',
-    
+
     // Vertical con espacio
     vertical: 'flex flex-col space-y-4',
-    
+
     // Wrap responsivo
-    wrap: 'flex flex-wrap items-center gap-4'
-  }
+    wrap: 'flex flex-wrap items-center gap-4',
+  },
 };
 
 // Estados de loading
@@ -440,33 +440,33 @@ export const LOADING_VARIANTS = {
   // Spinners
   spinner: {
     base: 'animate-spin rounded-full border-2 border-gray-200',
-    
+
     variants: {
-  primary: 'border-t-brand-700',
-  success: 'border-t-brown-700',
+      primary: 'border-t-brand-700',
+      success: 'border-t-brown-700',
       warning: 'border-t-yellow-600',
-  agricultural: 'border-t-brown-600'
+      agricultural: 'border-t-brown-600',
     },
-    
+
     sizes: {
       sm: 'w-4 h-4',
       md: 'w-6 h-6',
       lg: 'w-8 h-8',
-      xl: 'w-12 h-12'
-    }
+      xl: 'w-12 h-12',
+    },
   },
 
   // Skeletons
   skeleton: {
     base: 'animate-pulse bg-gray-200 rounded',
-    
+
     variants: {
       text: 'h-4 bg-gray-200 rounded',
       title: 'h-6 bg-gray-200 rounded',
       avatar: 'w-10 h-10 bg-gray-200 rounded-full',
-      card: 'h-32 bg-gray-200 rounded-lg'
-    }
-  }
+      card: 'h-32 bg-gray-200 rounded-lg',
+    },
+  },
 };
 
 // Export principal
@@ -477,5 +477,5 @@ export const COMPONENT_VARIANTS = {
   badge: BADGE_VARIANTS,
   alert: ALERT_VARIANTS,
   layout: LAYOUT_VARIANTS,
-  loading: LOADING_VARIANTS
+  loading: LOADING_VARIANTS,
 };

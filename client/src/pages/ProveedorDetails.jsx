@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProveedorById, updateProveedor, deleteProveedor } from '../services/api';
-import { 
-  formatCuit, 
-  formatTelefono, 
-  extractCiudadFromDireccion, 
-  formatUrl 
+import {
+  formatCuit,
+  formatTelefono,
+  extractCiudadFromDireccion,
+  formatUrl,
 } from '../utils/proveedorUtils';
 import TagLink from '../components/TagLink';
 import { handleFileUpload, COMMON_ICONS } from '../utils/detailsUtils.jsx';
-import { DetailsLoading, FieldWithIcon, SimpleField, ImageUpload } from '../components/shared/DetailsComponents';
+import {
+  DetailsLoading,
+  FieldWithIcon,
+  SimpleField,
+  ImageUpload,
+} from '../components/shared/DetailsComponents';
 import AppLayout from '../components/navigation/AppLayout';
 import { useNavigation } from '../hooks/useNavigation';
-import { 
+import {
   CONTAINER_STYLES,
   INPUT_STYLES,
   BUTTON_STYLES,
   LAYOUT_STYLES,
   TEXT_STYLES,
-  ALERT_STYLES
+  ALERT_STYLES,
 } from '../styles/repuestoStyles';
 import { DETAILS_CONTAINER, DETAILS_SECTION, DETAILS_TAGS } from '../styles/detailsStyles';
 import { getCiudadColorClass } from '../utils/proveedorUtils';
@@ -52,10 +57,10 @@ function ProveedorDetails({ token }) {
     setUploading(true);
     setError('');
     setUploadSuccess('');
-    
+
     try {
       const result = await handleFileUpload(file, id, 'proveedores', token);
-      setProveedor(prev => ({ ...prev, imagen: result.imagen_url }));
+      setProveedor((prev) => ({ ...prev, imagen: result.imagen_url }));
       setUploadSuccess('Imagen subida exitosamente');
     } catch (err) {
       setError(err.message);
@@ -73,7 +78,7 @@ function ProveedorDetails({ token }) {
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
     { label: 'Proveedores', href: '/proveedores' },
-    { label: proveedor?.nombre || `Proveedor #${id}` }
+    { label: proveedor?.nombre || `Proveedor #${id}` },
   ];
 
   const handleEdit = () => navigateToFormPage('proveedores', id);
@@ -89,7 +94,13 @@ function ProveedorDetails({ token }) {
 
   if (loading) {
     return (
-      <AppLayout currentSection="proveedores" breadcrumbs={breadcrumbs} title="Cargando proveedor..." token={token} isDetails={true}>
+      <AppLayout
+        currentSection="proveedores"
+        breadcrumbs={breadcrumbs}
+        title="Cargando proveedor..."
+        token={token}
+        isDetails={true}
+      >
         <DetailsLoading message="Cargando proveedor..." />
       </AppLayout>
     );
@@ -116,151 +127,164 @@ function ProveedorDetails({ token }) {
       onDelete={handleDelete}
       token={token}
     >
-      {error && (
-        <div className={`${ALERT_STYLES.error} mb-4`}>{error}</div>
-      )}
-      {uploadSuccess && (
-        <div className={`${ALERT_STYLES.success} mb-4`}>{uploadSuccess}</div>
-      )}
+      {error && <div className={`${ALERT_STYLES.error} mb-4`}>{error}</div>}
+      {uploadSuccess && <div className={`${ALERT_STYLES.success} mb-4`}>{uploadSuccess}</div>}
       {proveedor && (
         <>
-            {/* Información principal */}
-            <div className={`${DETAILS_CONTAINER.card} ${DETAILS_CONTAINER.cardPadding}`}>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                
-                {/* Columna izquierda - Imagen */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Imagen</h3>
-                  <ImageUpload
-                    currentImage={proveedor.imagen}
-                    onUpload={handleImageUpload}
-                    uploading={uploading}
-                    altText={proveedor.nombre}
-                  />
-                </div>
-                  
-                {/* Columna derecha - Información */}
-                <div className="lg:col-span-2">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Información del Proveedor</h3>
-                  <div className="space-y-6">
-                    {/* Datos de contacto */}
-                    <div className="bg-white border border-gray-200 rounded-xl p-6">
-                      <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Datos de contacto</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {proveedor.contacto && (
-                          <FieldWithIcon
-                            icon={COMMON_ICONS.user || COMMON_ICONS.email}
-                            label="Contacto"
-                            value={proveedor.contacto}
-                          />
-                        )}
-                        {proveedor.cuit && (
-                          <FieldWithIcon
-                            icon={COMMON_ICONS.document}
-                            label="CUIT"
-                            value={formatCuit(proveedor.cuit)}
-                          />
-                        )}
-                        {proveedor.telefono && (
-                          <div className="flex flex-col gap-1">
-                            <span className="text-sm font-medium text-gray-700">Teléfono</span>
-                            <div>
-                              <TagLink
-                                type="whatsapp"
-                                value={proveedor.telefono}
-                                label={formatTelefono(proveedor.telefono)}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        {proveedor.email && (
-                          <FieldWithIcon
-                            icon={COMMON_ICONS.email}
-                            label="Email"
-                            value={proveedor.email}
-                            isLink={true}
-                            linkPrefix="mailto:"
-                          />
-                        )}
-                        {proveedor.web && (
-                          <FieldWithIcon
-                            icon={COMMON_ICONS.web}
-                            label="Sitio Web"
-                            value={formatUrl(proveedor.web)}
-                            isLink={true}
-                          />
-                        )}
-                        {(proveedor.direccion || proveedor.ubicacion) && (
-                          <div className="sm:col-span-2">
-                            <FieldWithIcon
-                              icon={COMMON_ICONS.location}
-                              label={proveedor.ubicacion ? `Dirección · ${proveedor.ubicacion}` : 'Dirección'}
-                              value={proveedor.direccion}
+          {/* Información principal */}
+          <div className={`${DETAILS_CONTAINER.card} ${DETAILS_CONTAINER.cardPadding}`}>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Columna izquierda - Imagen */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Imagen</h3>
+                <ImageUpload
+                  currentImage={proveedor.imagen}
+                  onUpload={handleImageUpload}
+                  uploading={uploading}
+                  altText={proveedor.nombre}
+                />
+              </div>
+
+              {/* Columna derecha - Información */}
+              <div className="lg:col-span-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Información del Proveedor
+                </h3>
+                <div className="space-y-6">
+                  {/* Datos de contacto */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6">
+                    <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+                      Datos de contacto
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {proveedor.contacto && (
+                        <FieldWithIcon
+                          icon={COMMON_ICONS.user || COMMON_ICONS.email}
+                          label="Contacto"
+                          value={proveedor.contacto}
+                        />
+                      )}
+                      {proveedor.cuit && (
+                        <FieldWithIcon
+                          icon={COMMON_ICONS.document}
+                          label="CUIT"
+                          value={formatCuit(proveedor.cuit)}
+                        />
+                      )}
+                      {proveedor.telefono && (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-sm font-medium text-gray-700">Teléfono</span>
+                          <div>
+                            <TagLink
+                              type="whatsapp"
+                              value={proveedor.telefono}
+                              label={formatTelefono(proveedor.telefono)}
                             />
                           </div>
+                        </div>
+                      )}
+                      {proveedor.email && (
+                        <FieldWithIcon
+                          icon={COMMON_ICONS.email}
+                          label="Email"
+                          value={proveedor.email}
+                          isLink={true}
+                          linkPrefix="mailto:"
+                        />
+                      )}
+                      {proveedor.web && (
+                        <FieldWithIcon
+                          icon={COMMON_ICONS.web}
+                          label="Sitio Web"
+                          value={formatUrl(proveedor.web)}
+                          isLink={true}
+                        />
+                      )}
+                      {(proveedor.direccion || proveedor.ubicacion) && (
+                        <div className="sm:col-span-2">
+                          <FieldWithIcon
+                            icon={COMMON_ICONS.location}
+                            label={
+                              proveedor.ubicacion
+                                ? `Dirección · ${proveedor.ubicacion}`
+                                : 'Dirección'
+                            }
+                            value={proveedor.direccion}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Productos */}
+                  {proveedor.productos &&
+                    (Array.isArray(proveedor.productos)
+                      ? proveedor.productos.length > 0
+                      : true) && (
+                      <div className="bg-white border border-gray-200 rounded-xl p-6">
+                        <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+                          Productos/Servicios
+                        </h4>
+                        <div className={DETAILS_TAGS.container}>
+                          {Array.isArray(proveedor.productos)
+                            ? proveedor.productos.map((producto, index) => (
+                                <span
+                                  key={index}
+                                  className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-brand-100 text-brand-800"
+                                >
+                                  {producto}
+                                </span>
+                              ))
+                            : proveedor.productos.split(',').map((producto, index) => (
+                                <span
+                                  key={index}
+                                  className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-brand-100 text-brand-800"
+                                >
+                                  {producto.trim()}
+                                </span>
+                              ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Notas */}
+                  {proveedor.notas && (
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                        Notas
+                      </h4>
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        {proveedor.notas}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Información del sistema */}
+                  {(proveedor.created_at || proveedor.updated_at) && (
+                    <div className="bg-white border border-gray-200 rounded-xl p-6">
+                      <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+                        Información del sistema
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {proveedor.created_at && (
+                          <SimpleField
+                            label="Fecha de creación"
+                            value={new Date(proveedor.created_at).toLocaleDateString()}
+                          />
+                        )}
+                        {proveedor.updated_at && (
+                          <SimpleField
+                            label="Última actualización"
+                            value={new Date(proveedor.updated_at).toLocaleDateString()}
+                          />
                         )}
                       </div>
                     </div>
-
-                    {/* Productos */}
-                    {proveedor.productos && (Array.isArray(proveedor.productos) ? proveedor.productos.length > 0 : true) && (
-                      <div className="bg-white border border-gray-200 rounded-xl p-6">
-                        <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Productos/Servicios</h4>
-                        <div className={DETAILS_TAGS.container}>
-                          {Array.isArray(proveedor.productos) ? 
-                            proveedor.productos.map((producto, index) => (
-                              <span 
-                                key={index}
-                                className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-brand-100 text-brand-800"
-                              >
-                                {producto}
-                              </span>
-                            )) :
-                            proveedor.productos.split(',').map((producto, index) => (
-                              <span 
-                                key={index}
-                                className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-brand-100 text-brand-800"
-                              >
-                                {producto.trim()}
-                              </span>
-                            ))
-                          }
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Notas */}
-                    {proveedor.notas && (
-                      <div className="bg-white border border-gray-200 rounded-xl p-6">
-                        <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Notas</h4>
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-line">{proveedor.notas}</p>
-                      </div>
-                    )}
-
-                    {/* Información del sistema */}
-                    {(proveedor.created_at || proveedor.updated_at) && (
-                      <div className="bg-white border border-gray-200 rounded-xl p-6">
-                        <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Información del sistema</h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {proveedor.created_at && (
-                            <SimpleField 
-                              label="Fecha de creación" 
-                              value={new Date(proveedor.created_at).toLocaleDateString()} 
-                            />
-                          )}
-                          {proveedor.updated_at && (
-                            <SimpleField 
-                              label="Última actualización" 
-                              value={new Date(proveedor.updated_at).toLocaleDateString()} 
-                            />
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
+          </div>
         </>
       )}
     </AppLayout>

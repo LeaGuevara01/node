@@ -23,12 +23,12 @@ const getCorsOrigins = () => {
   const corsOrigin = config.CORS_ORIGIN;
 
   // Si es una cadena separada por comas, dividir en array
-  if (typeof corsOrigin === "string" && corsOrigin.includes(",")) {
-    return corsOrigin.split(",").map((origin) => origin.trim());
+  if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
+    return corsOrigin.split(',').map((origin) => origin.trim());
   }
 
   // Si es una cadena simple, devolverla como array
-  if (typeof corsOrigin === "string") {
+  if (typeof corsOrigin === 'string') {
     return [corsOrigin];
   }
 
@@ -38,7 +38,7 @@ const getCorsOrigins = () => {
   }
 
   // Fallback por defecto
-  return ["http://localhost:3000"];
+  return ['http://localhost:3000'];
 };
 
 // Configuración CORS actualizada
@@ -46,8 +46,8 @@ const corsOptions = {
   origin: getCorsOrigins(), // Array en lugar de string
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -60,8 +60,7 @@ app.use(cors(corsOptions));
 module.exports = {
   PORT: process.env.PORT || 4000,
   JWT_SECRET: process.env.JWT_SECRET,
-  CORS_ORIGIN:
-    process.env.CORS_ORIGIN || "http://localhost:3000,http://localhost:5173",
+  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:5173',
   DATABASE_URL: process.env.DATABASE_URL,
 };
 ```
@@ -115,10 +114,10 @@ Access-Control-Allow-Credentials: true
 
 ```javascript
 // En consola del navegador
-fetch("http://localhost:4000/api/health")
+fetch('http://localhost:4000/api/health')
   .then((res) => res.json())
-  .then((data) => console.log("✅ CORS funcionando:", data))
-  .catch((err) => console.error("❌ Error CORS:", err));
+  .then((data) => console.log('✅ CORS funcionando:', data))
+  .catch((err) => console.error('❌ Error CORS:', err));
 ```
 
 ## 🔍 Análisis del Problema
@@ -128,7 +127,7 @@ fetch("http://localhost:4000/api/health")
 ```javascript
 // Esto causaba el error
 const corsOptions = {
-  origin: "http://localhost:3000,http://localhost:5173", // String con comas
+  origin: 'http://localhost:3000,http://localhost:5173', // String con comas
   credentials: true,
 };
 ```
@@ -144,7 +143,7 @@ Access-Control-Allow-Origin: http://localhost:3000,http://localhost:5173
 ```javascript
 // Esto funciona correctamente
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:5173"], // Array
+  origin: ['http://localhost:3000', 'http://localhost:5173'], // Array
   credentials: true,
 };
 ```
@@ -167,7 +166,7 @@ const validateOrigin = (origin, callback) => {
   if (allowedOrigins.includes(origin)) {
     callback(null, true);
   } else {
-    callback(new Error("No permitido por CORS"));
+    callback(new Error('No permitido por CORS'));
   }
 };
 
@@ -182,11 +181,11 @@ const corsOptions = {
 
 ```javascript
 app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    console.log("CORS Preflight:", {
+  if (req.method === 'OPTIONS') {
+    console.log('CORS Preflight:', {
       origin: req.headers.origin,
-      method: req.headers["access-control-request-method"],
-      headers: req.headers["access-control-request-headers"],
+      method: req.headers['access-control-request-method'],
+      headers: req.headers['access-control-request-headers'],
     });
   }
   next();
@@ -197,9 +196,9 @@ app.use((req, res, next) => {
 
 ```javascript
 app.use((err, req, res, next) => {
-  if (err.message === "No permitido por CORS") {
+  if (err.message === 'No permitido por CORS') {
     res.status(403).json({
-      error: "CORS: Origen no permitido",
+      error: 'CORS: Origen no permitido',
       origin: req.headers.origin,
       allowedOrigins: getCorsOrigins(),
     });
@@ -251,9 +250,9 @@ curl -H "Origin: https://sistemagestionagricola-frontend.onrender.com" \
 
 ```javascript
 // Endpoint para verificar CORS
-app.get("/api/cors-test", (req, res) => {
+app.get('/api/cors-test', (req, res) => {
   res.json({
-    status: "CORS OK",
+    status: 'CORS OK',
     origin: req.headers.origin,
     allowedOrigins: getCorsOrigins(),
     timestamp: new Date().toISOString(),
@@ -283,7 +282,7 @@ const corsOptions = {
     if (!origin || /^https:\/\/.*\.example\.com$/.test(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("No permitido por CORS"));
+      callback(new Error('No permitido por CORS'));
     }
   },
 };
@@ -301,10 +300,10 @@ const corsOptions = {
 };
 
 // Frontend
-fetch("/api/login", {
-  method: "POST",
-  credentials: "include", // ← Importante
-  headers: { "Content-Type": "application/json" },
+fetch('/api/login', {
+  method: 'POST',
+  credentials: 'include', // ← Importante
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(loginData),
 });
 ```
@@ -325,19 +324,17 @@ fetch("/api/login", {
 
 ```javascript
 // Test completo frontend-backend
-describe("CORS Integration", () => {
-  test("Login desde frontend funciona", async () => {
-    const response = await fetch("http://localhost:4000/api/auth/login", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "test@test.com", password: "test123" }),
+describe('CORS Integration', () => {
+  test('Login desde frontend funciona', async () => {
+    const response = await fetch('http://localhost:4000/api/auth/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'test@test.com', password: 'test123' }),
     });
 
     expect(response.ok).toBe(true);
-    expect(response.headers.get("access-control-allow-origin")).toBe(
-      "http://localhost:3000"
-    );
+    expect(response.headers.get('access-control-allow-origin')).toBe('http://localhost:3000');
   });
 });
 ```

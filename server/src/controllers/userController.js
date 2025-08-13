@@ -15,7 +15,7 @@ exports.createUser = async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { username, password: hashed, role },
-      select: { id: true, username: true, role: true }
+      select: { id: true, username: true, role: true },
     });
     res.status(201).json(user);
   } catch (err) {
@@ -40,9 +40,9 @@ exports.getUserFilters = async (req, res) => {
   try {
     const rolesRows = await prisma.user.findMany({
       distinct: ['role'],
-      select: { role: true }
+      select: { role: true },
     });
-    const roles = rolesRows.map(r => r.role).filter(Boolean);
+    const roles = rolesRows.map((r) => r.role).filter(Boolean);
     const total = await prisma.user.count();
     res.json({ roles, totalUsuarios: total });
   } catch (err) {
@@ -53,11 +53,11 @@ exports.getUserFilters = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
   const { username, role, password } = req.body;
-  
+
   try {
     const updateData = {
       username: username || undefined,
-      role: role || undefined
+      role: role || undefined,
     };
 
     // Only hash password if provided
@@ -66,16 +66,16 @@ exports.updateUser = async (req, res) => {
     }
 
     // Remove undefined fields
-    Object.keys(updateData).forEach(key => 
-      updateData[key] === undefined && delete updateData[key]
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined && delete updateData[key]
     );
 
     const user = await prisma.user.update({
       where: { id: parseInt(id) },
       data: updateData,
-      select: { id: true, username: true, role: true }
+      select: { id: true, username: true, role: true },
     });
-    
+
     res.json(user);
   } catch (err) {
     if (err.code === 'P2002') {
@@ -90,17 +90,19 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     await prisma.user.delete({
-      where: { id: parseInt(id) }
+      where: { id: parseInt(id) },
     });
     res.json({ message: 'Usuario eliminado exitosamente' });
   } catch (err) {
     if (err.code === 'P2025') {
       res.status(404).json({ error: 'Usuario no encontrado' });
     } else if (err.code === 'P2003') {
-      res.status(400).json({ error: 'No se puede eliminar el usuario porque tiene reparaciones asociadas' });
+      res
+        .status(400)
+        .json({ error: 'No se puede eliminar el usuario porque tiene reparaciones asociadas' });
     } else {
       res.status(500).json({ error: err.message });
     }

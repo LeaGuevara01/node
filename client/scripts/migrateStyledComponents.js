@@ -2,7 +2,7 @@
 
 /**
  * Script de Migración Automática: StyledComponents → Sistema Modular
- * 
+ *
  * Este script ayuda a migrar del sistema deprecado de styledComponents
  * al nuevo sistema de componentes modulares.
  */
@@ -15,36 +15,36 @@ const BACKUP_DIR = path.join(__dirname, '..', 'migration-backups');
 
 // Mapeos de migración
 const MIGRATION_MAP = {
-  'StyledPageWrapper': {
+  StyledPageWrapper: {
     replacement: 'AppLayout',
     import: "import AppLayout from '../components/navigation/AppLayout';",
-    note: 'Requiere props adicionales: token, role, onLogout, currentSection'
+    note: 'Requiere props adicionales: token, role, onLogout, currentSection',
   },
-  'StyledForm': {
+  StyledForm: {
     replacement: 'FormLayout',
     import: "import { FormLayout } from '../styles';",
-    note: 'Manejo manual de Alert y LoadingState requerido'
+    note: 'Manejo manual de Alert y LoadingState requerido',
   },
-  'StyledList': {
+  StyledList: {
     replacement: 'UniversalList + ListLayout',
     import: "import { UniversalList, ListLayout } from '../styles';",
-    note: 'Separar renderizado de lista del layout'
+    note: 'Separar renderizado de lista del layout',
   },
-  'StyledDashboard': {
+  StyledDashboard: {
     replacement: 'PageContainer + StatsGrid',
     import: "import { PageContainer, StatsGrid } from '../styles';",
-    note: 'Composición manual de dashboard requerida'
+    note: 'Composición manual de dashboard requerida',
   },
-  'withStyledPage': {
+  withStyledPage: {
     replacement: 'AppLayout directo',
     import: "import AppLayout from '../components/navigation/AppLayout';",
-    note: 'Eliminar HOC, usar AppLayout directamente'
+    note: 'Eliminar HOC, usar AppLayout directamente',
   },
-  'useStyledPage': {
+  useStyledPage: {
     replacement: 'AppLayout + PageContainer',
     import: "import { PageContainer } from '../styles';",
-    note: 'Hook no necesario con nuevo sistema'
-  }
+    note: 'Hook no necesario con nuevo sistema',
+  },
 };
 
 // Patrones de detección
@@ -60,7 +60,7 @@ const DEPRECATED_PATTERNS = [
   /<StyledList/g,
   /<StyledDashboard/g,
   /withStyledPage\(/g,
-  /useStyledPage\(/g
+  /useStyledPage\(/g,
 ];
 
 function crearBackupDir() {
@@ -74,11 +74,11 @@ function crearBackup(filePath, content) {
   const relativePath = path.relative(CLIENT_SRC, filePath);
   const backupPath = path.join(BACKUP_DIR, relativePath);
   const backupDir = path.dirname(backupPath);
-  
+
   if (!fs.existsSync(backupDir)) {
     fs.mkdirSync(backupDir, { recursive: true });
   }
-  
+
   fs.writeFileSync(backupPath, content);
   return backupPath;
 }
@@ -87,9 +87,9 @@ function analizarArchivo(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
     const usos = [];
-    
+
     // Detectar componentes deprecados
-    Object.keys(MIGRATION_MAP).forEach(component => {
+    Object.keys(MIGRATION_MAP).forEach((component) => {
       if (content.includes(component)) {
         const lines = content.split('\n');
         lines.forEach((line, index) => {
@@ -98,13 +98,13 @@ function analizarArchivo(filePath) {
               componente: component,
               linea: index + 1,
               contenido: line.trim(),
-              migracion: MIGRATION_MAP[component]
+              migracion: MIGRATION_MAP[component],
             });
           }
         });
       }
     });
-    
+
     return usos;
   } catch (error) {
     console.error(`❌ Error analizando ${filePath}:`, error.message);
@@ -114,13 +114,13 @@ function analizarArchivo(filePath) {
 
 function escanearDirectorio(dir) {
   const resultados = [];
-  
+
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
-      
+
       if (entry.isDirectory() && entry.name !== 'node_modules') {
         resultados.push(...escanearDirectorio(fullPath));
       } else if (entry.name.endsWith('.jsx') || entry.name.endsWith('.js')) {
@@ -128,7 +128,7 @@ function escanearDirectorio(dir) {
         if (usos.length > 0) {
           resultados.push({
             archivo: path.relative(CLIENT_SRC, fullPath),
-            usos: usos
+            usos: usos,
           });
         }
       }
@@ -136,21 +136,21 @@ function escanearDirectorio(dir) {
   } catch (error) {
     console.error(`❌ Error escaneando directorio ${dir}:`, error.message);
   }
-  
+
   return resultados;
 }
 
 function generarSugerenciasMigracion(resultados) {
   console.log('\n📋 PLAN DE MIGRACIÓN SUGERIDO:\n');
-  
+
   let totalArchivos = 0;
   let totalComponentes = 0;
-  
-  resultados.forEach(resultado => {
+
+  resultados.forEach((resultado) => {
     totalArchivos++;
     console.log(`📄 ${resultado.archivo}:`);
-    
-    resultado.usos.forEach(uso => {
+
+    resultado.usos.forEach((uso) => {
       totalComponentes++;
       console.log(`   Línea ${uso.linea}: ${uso.componente}`);
       console.log(`   ❌ ANTES: ${uso.contenido}`);
@@ -159,16 +159,16 @@ function generarSugerenciasMigracion(resultados) {
       console.log(`   💡 NOTA: ${uso.migracion.note}`);
       console.log('');
     });
-    
+
     console.log('');
   });
-  
+
   return { totalArchivos, totalComponentes };
 }
 
 function generarEjemploMigracion(componenteDeprecado, archivo) {
   const ejemplos = {
-    'StyledPageWrapper': `
+    StyledPageWrapper: `
 // ❌ ANTES:
 import { StyledPageWrapper } from '../styles/styledComponents';
 
@@ -200,7 +200,7 @@ function ${archivo.replace('.jsx', '')}({ token, role, onLogout }) {
   );
 }`,
 
-    'StyledForm': `
+    StyledForm: `
 // ❌ ANTES:
 import { StyledForm } from '../styles/styledComponents';
 
@@ -219,7 +219,7 @@ function MiFormulario() {
   );
 }`,
 
-    'StyledList': `
+    StyledList: `
 // ❌ ANTES:
 import { StyledList } from '../styles/styledComponents';
 
@@ -236,83 +236,83 @@ function MiLista() {
       />
     </ListLayout>
   );
-}`
+}`,
   };
-  
+
   return ejemplos[componenteDeprecado] || '// Ver documentación para ejemplos específicos';
 }
 
 function crearReporteMigracion(resultados, stats) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const reportePath = path.join(BACKUP_DIR, `migration-report-${timestamp}.md`);
-  
+
   let reporte = `# 📊 Reporte de Migración - StyledComponents\n\n`;
   reporte += `**Fecha:** ${new Date().toLocaleString()}\n`;
   reporte += `**Archivos afectados:** ${stats.totalArchivos}\n`;
   reporte += `**Componentes deprecados encontrados:** ${stats.totalComponentes}\n\n`;
-  
+
   reporte += `## 📋 Archivos que Requieren Migración\n\n`;
-  
-  resultados.forEach(resultado => {
+
+  resultados.forEach((resultado) => {
     reporte += `### ${resultado.archivo}\n\n`;
-    
-    resultado.usos.forEach(uso => {
+
+    resultado.usos.forEach((uso) => {
       reporte += `- **Línea ${uso.linea}:** \`${uso.componente}\`\n`;
       reporte += `  - Migrar a: \`${uso.migracion.replacement}\`\n`;
       reporte += `  - Import: \`${uso.migracion.import}\`\n`;
       reporte += `  - Nota: ${uso.migracion.note}\n\n`;
     });
   });
-  
+
   reporte += `\n## 🛠️ Próximos Pasos\n\n`;
   reporte += `1. Revisar cada archivo listado\n`;
   reporte += `2. Aplicar las migraciones sugeridas\n`;
   reporte += `3. Probar funcionalidad después de cada cambio\n`;
   reporte += `4. Eliminar imports no utilizados\n`;
   reporte += `5. Consultar [Guía de Migración](../docs/MIGRATION_STYLED_COMPONENTS.md)\n\n`;
-  
+
   fs.writeFileSync(reportePath, reporte);
   console.log(`📄 Reporte de migración guardado: ${reportePath}`);
-  
+
   return reportePath;
 }
 
 function main() {
   console.log('🔄 SCRIPT DE MIGRACIÓN: StyledComponents → Sistema Modular');
   console.log('='.repeat(65));
-  
+
   // Crear directorio de backup
   crearBackupDir();
-  
+
   // Escanear archivos
   console.log('🔍 Escaneando archivos...');
   const resultados = escanearDirectorio(CLIENT_SRC);
-  
+
   if (resultados.length === 0) {
     console.log('✅ ¡Excelente! No se encontraron componentes deprecados.');
     console.log('   Tu aplicación ya está usando el sistema modular.');
     return;
   }
-  
+
   // Generar sugerencias
   const stats = generarSugerenciasMigracion(resultados);
-  
+
   // Crear reporte
   const reportePath = crearReporteMigracion(resultados, stats);
-  
+
   console.log('='.repeat(65));
   console.log('📊 RESUMEN:');
   console.log(`   📁 Archivos afectados: ${stats.totalArchivos}`);
   console.log(`   🔧 Componentes a migrar: ${stats.totalComponentes}`);
   console.log(`   📄 Reporte generado: ${path.basename(reportePath)}`);
-  
+
   console.log('\n🚀 PRÓXIMOS PASOS:');
   console.log('   1. Revisar el reporte generado');
   console.log('   2. Consultar la guía: docs/MIGRATION_STYLED_COMPONENTS.md');
   console.log('   3. Migrar archivos uno por uno');
   console.log('   4. Probar funcionalidad después de cada cambio');
   console.log('   5. Ejecutar este script nuevamente para verificar');
-  
+
   console.log('\n💡 AYUDA:');
   console.log('   - Ejemplos en: src/pages/examples/');
   console.log('   - Playground: src/pages/StyleExamples.jsx');
@@ -327,5 +327,5 @@ module.exports = {
   analizarArchivo,
   escanearDirectorio,
   MIGRATION_MAP,
-  DEPRECATED_PATTERNS
+  DEPRECATED_PATTERNS,
 };

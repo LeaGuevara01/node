@@ -2,7 +2,10 @@ const prisma = require('../lib/prisma');
 
 // Helper to compute totals
 function computeTotal(detalles) {
-  return detalles.reduce((sum, d) => sum + (Number(d.precioUnitario || 0) * Number(d.cantidad || 0)), 0);
+  return detalles.reduce(
+    (sum, d) => sum + Number(d.precioUnitario || 0) * Number(d.cantidad || 0),
+    0
+  );
 }
 
 exports.listCompras = async (req, res) => {
@@ -20,7 +23,7 @@ exports.listCompras = async (req, res) => {
     if (q) {
       where.OR = [
         { notas: { contains: q, mode: 'insensitive' } },
-        { proveedor: { nombre: { contains: q, mode: 'insensitive' } } }
+        { proveedor: { nombre: { contains: q, mode: 'insensitive' } } },
       ];
     }
 
@@ -32,16 +35,19 @@ exports.listCompras = async (req, res) => {
         where,
         include: {
           proveedor: true,
-          detalles: { include: { repuesto: true, maquinaria: true, reparacion: true } }
+          detalles: { include: { repuesto: true, maquinaria: true, reparacion: true } },
         },
         orderBy: { fecha: 'desc' },
         skip,
-        take
+        take,
       }),
-      prisma.compra.count({ where })
+      prisma.compra.count({ where }),
     ]);
 
-    res.json({ data: compras, pagination: { current: Number(page), total: Math.ceil(total / take), totalItems: total } });
+    res.json({
+      data: compras,
+      pagination: { current: Number(page), total: Math.ceil(total / take), totalItems: total },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -54,8 +60,8 @@ exports.getCompra = async (req, res) => {
       where: { id: Number(id) },
       include: {
         proveedor: true,
-        detalles: { include: { repuesto: true, maquinaria: true, reparacion: true } }
-      }
+        detalles: { include: { repuesto: true, maquinaria: true, reparacion: true } },
+      },
     });
     if (!compra) return res.status(404).json({ error: 'Compra no encontrada' });
     res.json(compra);
@@ -89,16 +95,16 @@ exports.createCompra = async (req, res) => {
           notas: notas || null,
           total,
           detalles: {
-            create: detalles.map(d => ({
+            create: detalles.map((d) => ({
               repuestoId: Number(d.repuestoId),
               cantidad: Number(d.cantidad || 1),
               precioUnitario: d.precioUnitario ? Number(d.precioUnitario) : null,
               maquinariaId: d.maquinariaId ? Number(d.maquinariaId) : null,
-              reparacionId: d.reparacionId ? Number(d.reparacionId) : null
-            }))
-          }
+              reparacionId: d.reparacionId ? Number(d.reparacionId) : null,
+            })),
+          },
         },
-        include: { proveedor: true, detalles: true }
+        include: { proveedor: true, detalles: true },
       });
 
       // If estado RECIBIDA, update stock
@@ -106,7 +112,7 @@ exports.createCompra = async (req, res) => {
         for (const d of detalles) {
           await tx.repuesto.update({
             where: { id: Number(d.repuestoId) },
-            data: { stock: { increment: Number(d.cantidad || 0) } }
+            data: { stock: { increment: Number(d.cantidad || 0) } },
           });
         }
       }
@@ -125,7 +131,10 @@ exports.updateCompra = async (req, res) => {
     const { id } = req.params;
     const { fecha, proveedorId, estado, notas, detalles = [] } = req.body;
 
-    const original = await prisma.compra.findUnique({ where: { id: Number(id) }, include: { detalles: true } });
+    const original = await prisma.compra.findUnique({
+      where: { id: Number(id) },
+      include: { detalles: true },
+    });
     if (!original) return res.status(404).json({ error: 'Compra no encontrada' });
 
     // Basic validation
@@ -148,21 +157,21 @@ exports.updateCompra = async (req, res) => {
           estado: estado || original.estado,
           notas: typeof notas === 'undefined' ? original.notas : notas,
           total,
-          detalles: { deleteMany: {} }
-        }
+          detalles: { deleteMany: {} },
+        },
       });
 
       // Recreate details
       if (detalles.length) {
         await tx.compraDetalle.createMany({
-          data: detalles.map(d => ({
+          data: detalles.map((d) => ({
             compraId: compra.id,
             repuestoId: Number(d.repuestoId),
             cantidad: Number(d.cantidad || 1),
             precioUnitario: d.precioUnitario ? Number(d.precioUnitario) : null,
             maquinariaId: d.maquinariaId ? Number(d.maquinariaId) : null,
-            reparacionId: d.reparacionId ? Number(d.reparacionId) : null
-          }))
+            reparacionId: d.reparacionId ? Number(d.reparacionId) : null,
+          })),
         });
       }
 
@@ -171,7 +180,7 @@ exports.updateCompra = async (req, res) => {
         for (const d of detalles) {
           await tx.repuesto.update({
             where: { id: Number(d.repuestoId) },
-            data: { stock: { increment: Number(d.cantidad || 0) } }
+            data: { stock: { increment: Number(d.cantidad || 0) } },
           });
         }
       }
@@ -181,7 +190,10 @@ exports.updateCompra = async (req, res) => {
 
     const compraWithRels = await prisma.compra.findUnique({
       where: { id: updated.id },
-      include: { proveedor: true, detalles: { include: { repuesto: true, maquinaria: true, reparacion: true } } }
+      include: {
+        proveedor: true,
+        detalles: { include: { repuesto: true, maquinaria: true, reparacion: true } },
+      },
     });
 
     res.json(compraWithRels);
@@ -213,7 +225,7 @@ exports.statsCompras = async (req, res) => {
     const [porProveedor, porEstado, totalMensual] = await Promise.all([
       prisma.compra.groupBy({ by: ['proveedorId'], _count: { id: true }, _sum: { total: true } }),
       prisma.compra.groupBy({ by: ['estado'], _count: { id: true }, _sum: { total: true } }),
-      prisma.$queryRaw`SELECT date_trunc('month', fecha) as mes, COUNT(*) as cantidad, SUM(COALESCE(total,0)) as total FROM "Compra" GROUP BY mes ORDER BY mes DESC LIMIT 12`
+      prisma.$queryRaw`SELECT date_trunc('month', fecha) as mes, COUNT(*) as cantidad, SUM(COALESCE(total,0)) as total FROM "Compra" GROUP BY mes ORDER BY mes DESC LIMIT 12`,
     ]);
 
     res.json({ porProveedor, porEstado, totalMensual });

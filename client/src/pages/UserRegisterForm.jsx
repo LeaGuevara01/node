@@ -32,11 +32,11 @@ function UserRegisterForm({ token, onRegistered }) {
     fetchUsers();
   }, [token]);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -95,18 +95,52 @@ function UserRegisterForm({ token, onRegistered }) {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Registrar Usuario</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input name="username" value={form.username} onChange={handleChange} placeholder="Usuario" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
-          <input name="password" value={form.password} onChange={handleChange} placeholder="Contraseña" type="password" className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" required autoComplete="current-password" />
-          <select name="role" value={form.role} onChange={handleChange} className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent md:col-span-2">
+          <input
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            placeholder="Usuario"
+            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          />
+          <input
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Contraseña"
+            type="password"
+            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            autoComplete="current-password"
+          />
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent md:col-span-2"
+          >
             <option value="User">User</option>
             <option value="Admin">Admin</option>
           </select>
         </div>
         <div className="mt-4">
-          <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-md font-medium transition-colors duration-200">Registrar Usuario</button>
+          <button
+            type="submit"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-md font-medium transition-colors duration-200"
+          >
+            Registrar Usuario
+          </button>
         </div>
-        {error && <div className="text-red-500 mt-4 p-3 bg-red-50 border border-red-200 rounded-md">{error}</div>}
-        {success && <div className="text-green-600 mt-4 p-3 bg-green-50 border border-green-200 rounded-md">{success}</div>}
+        {error && (
+          <div className="text-red-500 mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="text-green-600 mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+            {success}
+          </div>
+        )}
       </form>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -124,10 +158,16 @@ function UserRegisterForm({ token, onRegistered }) {
               const form = new FormData();
               form.append('file', file);
               const url = `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/users/bulk`;
-              const res = await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+              const res = await fetch(url, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: form,
+              });
               const data = await res.json();
               if (!res.ok) throw new Error(data?.error || 'Error en importación');
-              setBulkSuccess(`Importación recibida (${data.filename || file.name}). Registros procesados: ${data.count}`);
+              setBulkSuccess(
+                `Importación recibida (${data.filename || file.name}). Registros procesados: ${data.count}`
+              );
             } catch (err) {
               setBulkError(err.message || 'Error al importar usuarios');
             } finally {
@@ -145,14 +185,22 @@ function UserRegisterForm({ token, onRegistered }) {
         <h2 className="text-lg mb-2">Lista de Usuarios</h2>
         <div className="grid grid-cols-1 gap-4">
           {users.map((user, index) => (
-            <div key={user.id || index} className="p-4 border rounded flex justify-between items-center">
+            <div
+              key={user.id || index}
+              className="p-4 border rounded flex justify-between items-center"
+            >
               <div>
                 <div className="font-semibold">{user.username}</div>
                 <div className="text-sm text-gray-600">
                   Rol: {user.role} - ID: {user.id}
                 </div>
               </div>
-              <button onClick={() => handleEdit(user)} className="bg-blue-500 text-white px-2 py-1 rounded">Editar</button>
+              <button
+                onClick={() => handleEdit(user)}
+                className="bg-blue-500 text-white px-2 py-1 rounded"
+              >
+                Editar
+              </button>
             </div>
           ))}
         </div>

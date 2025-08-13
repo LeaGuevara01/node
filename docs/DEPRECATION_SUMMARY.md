@@ -12,14 +12,12 @@
 ### 📚 **Documentación Creada**
 
 1. **`docs/MIGRATION_STYLED_COMPONENTS.md`**
-
    - Guía completa de migración
    - Ejemplos antes/después para cada componente
    - Beneficios del nuevo sistema
    - Timeline de deprecación
 
 2. **`docs/EJEMPLO_MIGRACION_PRACTICA.md`**
-
    - Ejemplo práctico paso a paso
    - Migración completa de `MaquinariaFormModular.jsx`
    - Comparación visual antes/después
@@ -58,8 +56,8 @@ El script detectó **5 archivos** con **81 instancias** de componentes deprecado
 ### En Desarrollo:
 
 ```javascript
-if (process.env.NODE_ENV === "development") {
-  console.warn("⚠️ [Componente] está DEPRECADO. Usa [Reemplazo] en su lugar.");
+if (process.env.NODE_ENV === 'development') {
+  console.warn('⚠️ [Componente] está DEPRECADO. Usa [Reemplazo] en su lugar.');
 }
 ```
 

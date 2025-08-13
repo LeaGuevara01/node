@@ -16,7 +16,7 @@ export const sortReparacionesByDate = (reparaciones) => {
  */
 export const buildReparacionQueryParams = (filtros, pagina = 1) => {
   const params = new URLSearchParams();
-  
+
   if (filtros.search) params.append('search', filtros.search);
   if (filtros.maquinariaId) params.append('maquinariaId', filtros.maquinariaId);
   if (filtros.userId) params.append('userId', filtros.userId);
@@ -26,7 +26,7 @@ export const buildReparacionQueryParams = (filtros, pagina = 1) => {
   if (filtros.estado) params.append('estado', filtros.estado);
   params.append('page', pagina.toString());
   params.append('limit', '20');
-  
+
   return params;
 };
 
@@ -40,7 +40,7 @@ export const clearReparacionFilters = () => ({
   repuestoId: '',
   fechaInicio: '',
   fechaFin: '',
-  estado: ''
+  estado: '',
 });
 
 /**
@@ -52,7 +52,7 @@ export const formatFecha = (fecha) => {
   return date.toLocaleDateString('es-AR', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 };
 
@@ -64,7 +64,7 @@ export const formatFechaCorta = (fecha) => {
   const date = new Date(fecha);
   return date.toLocaleDateString('en-US', {
     month: '2-digit',
-    day: '2-digit'
+    day: '2-digit',
   });
 };
 
@@ -93,13 +93,13 @@ export const diasDesdeReparacion = (fecha) => {
  */
 export const getEstadoReparacionColorClass = (estado) => {
   const estados = {
-    'pendiente': 'bg-yellow-100 text-yellow-700',
-    'en_progreso': 'bg-brand-100 text-brand-800',
-    'completada': 'bg-brown-100 text-brown-800',
-    'cancelada': 'bg-red-100 text-red-700',
-    'pausada': 'bg-gray-100 text-gray-700'
+    pendiente: 'bg-yellow-100 text-yellow-700',
+    en_progreso: 'bg-brand-100 text-brand-800',
+    completada: 'bg-brown-100 text-brown-800',
+    cancelada: 'bg-red-100 text-red-700',
+    pausada: 'bg-gray-100 text-gray-700',
   };
-  
+
   return estados[estado] || 'bg-gray-100 text-gray-700';
 };
 
@@ -108,12 +108,12 @@ export const getEstadoReparacionColorClass = (estado) => {
  */
 export const getPrioridadColorClass = (prioridad) => {
   const prioridades = {
-    'baja': 'bg-green-100 text-green-700',
-    'media': 'bg-yellow-100 text-yellow-700',
-    'alta': 'bg-orange-100 text-orange-700',
-    'critica': 'bg-red-100 text-red-700'
+    baja: 'bg-green-100 text-green-700',
+    media: 'bg-yellow-100 text-yellow-700',
+    alta: 'bg-orange-100 text-orange-700',
+    critica: 'bg-red-100 text-red-700',
   };
-  
+
   return prioridades[prioridad] || 'bg-gray-100 text-gray-700';
 };
 
@@ -122,11 +122,11 @@ export const getPrioridadColorClass = (prioridad) => {
  */
 export const calculateCostoRepuestos = (repuestos) => {
   if (!repuestos || !Array.isArray(repuestos)) return 0;
-  
+
   return repuestos.reduce((total, repuesto) => {
     const precio = repuesto.precio || 0;
     const cantidad = repuesto.cantidad || 1;
-    return total + (precio * cantidad);
+    return total + precio * cantidad;
   }, 0);
 };
 
@@ -135,11 +135,13 @@ export const calculateCostoRepuestos = (repuestos) => {
  */
 export const formatRepuestosUsados = (repuestos) => {
   if (!repuestos || !Array.isArray(repuestos)) return '';
-  
-  return repuestos.map(rep => {
-    const cantidad = rep.cantidad || 1;
-    return cantidad > 1 ? `${rep.nombre} (x${cantidad})` : rep.nombre;
-  }).join(', ');
+
+  return repuestos
+    .map((rep) => {
+      const cantidad = rep.cantidad || 1;
+      return cantidad > 1 ? `${rep.nombre} (x${cantidad})` : rep.nombre;
+    })
+    .join(', ');
 };
 
 /**
@@ -165,23 +167,23 @@ export const getDefaultPrioridad = () => 'media';
  */
 export const formatDuracion = (horas) => {
   if (!horas || horas === 0) return 'No especificado';
-  
+
   if (horas < 1) {
     const minutos = Math.round(horas * 60);
     return `${minutos} minutos`;
   }
-  
+
   if (horas < 24) {
     return `${horas} ${horas === 1 ? 'hora' : 'horas'}`;
   }
-  
+
   const dias = Math.floor(horas / 24);
   const horasRestantes = horas % 24;
-  
+
   if (horasRestantes === 0) {
     return `${dias} ${dias === 1 ? 'día' : 'días'}`;
   }
-  
+
   return `${dias} ${dias === 1 ? 'día' : 'días'} y ${horasRestantes} ${horasRestantes === 1 ? 'hora' : 'horas'}`;
 };
 
@@ -190,10 +192,10 @@ export const formatDuracion = (horas) => {
  */
 export const generateResumenReparacion = (reparacion) => {
   if (!reparacion) return '';
-  
+
   const maquinaria = reparacion.maquinaria?.nombre || 'Maquinaria no especificada';
   const fecha = formatFecha(reparacion.fecha);
   const repuestos = reparacion.repuestos?.length || 0;
-  
+
   return `${maquinaria} - ${fecha}${repuestos > 0 ? ` (${repuestos} repuestos)` : ''}`;
 };

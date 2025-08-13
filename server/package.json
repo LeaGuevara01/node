@@ -4,14 +4,16 @@
   "description": "Backend Node.js para gestión de taller agrícola",
   "main": "src/index.js",
   "scripts": {
-  "dev": "nodemon src/index.js",
-  "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
     "build": "prisma generate && tsc -p tsconfig.json",
     "migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "postinstall": "prisma generate",
     "deploy": "npm run migrate || npm run db:push && npm start",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint --ext .js src",
+    "lint:fix": "eslint --ext .js src --fix"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -30,7 +32,7 @@
     "helmet": "^7.1.0",
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.0",
-  "multer": "^1.4.5-lts.1",
+    "multer": "^1.4.5-lts.1",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {

@@ -6,31 +6,57 @@ const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 const auth = require('../middleware/auth');
-const { getMaquinarias, createMaquinaria, updateMaquinaria, deleteMaquinaria, getMaquinariaFilters, getMaquinariaById } = require('../controllers/maquinariaController');
+const {
+  getMaquinarias,
+  createMaquinaria,
+  updateMaquinaria,
+  deleteMaquinaria,
+  getMaquinariaFilters,
+  getMaquinariaById,
+} = require('../controllers/maquinariaController');
 
 router.get('/', auth, getMaquinarias);
 router.get('/filtros', auth, getMaquinariaFilters);
 router.get('/:id', auth, getMaquinariaById);
 
-router.post('/', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden crear maquinaria' });
-  next();
-}, createMaquinaria);
+router.post(
+  '/',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden crear maquinaria' });
+    next();
+  },
+  createMaquinaria
+);
 
-router.put('/:id', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden editar maquinaria' });
-  next();
-}, updateMaquinaria);
+router.put(
+  '/:id',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden editar maquinaria' });
+    next();
+  },
+  updateMaquinaria
+);
 
-router.delete('/:id', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden eliminar maquinaria' });
-  next();
-}, deleteMaquinaria);
+router.delete(
+  '/:id',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden eliminar maquinaria' });
+    next();
+  },
+  deleteMaquinaria
+);
 
 // Importación masiva (bulk) de maquinarias
 router.post('/bulk', auth, upload.single('file'), async (req, res) => {
   try {
-    if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden importar maquinarias' });
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden importar maquinarias' });
     if (!req.file) return res.status(400).json({ error: 'Archivo no proporcionado' });
 
     // TODO: Parsear CSV/XLSX del buffer req.file.buffer y crear registros

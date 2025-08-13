@@ -145,23 +145,23 @@ export const COLORS = {
       700: '#8b6f5e',
       800: '#74614f',
       900: '#5d4e43',
-    }
-  }
+    },
+  },
 };
 
 // Espaciado estandarizado
 export const SPACING = {
   // Espaciado en rem (base 16px)
-  xs: '0.25rem',   // 4px
-  sm: '0.5rem',    // 8px
-  md: '0.75rem',   // 12px
-  lg: '1rem',      // 16px
-  xl: '1.5rem',    // 24px
-  '2xl': '2rem',   // 32px
+  xs: '0.25rem', // 4px
+  sm: '0.5rem', // 8px
+  md: '0.75rem', // 12px
+  lg: '1rem', // 16px
+  xl: '1.5rem', // 24px
+  '2xl': '2rem', // 32px
   '3xl': '2.5rem', // 40px
-  '4xl': '3rem',   // 48px
-  '5xl': '4rem',   // 64px
-  '6xl': '5rem',   // 80px
+  '4xl': '3rem', // 48px
+  '5xl': '4rem', // 64px
+  '6xl': '5rem', // 80px
 
   // Espaciado de contenedores
   container: {
@@ -169,7 +169,7 @@ export const SPACING = {
     sm: '1.5rem',
     md: '2rem',
     lg: '3rem',
-    xl: '4rem'
+    xl: '4rem',
   },
 
   // Espaciado de componentes
@@ -178,30 +178,30 @@ export const SPACING = {
       sm: '0.5rem 1rem',
       md: '0.75rem 1.5rem',
       lg: '1rem 2rem',
-      xl: '1.25rem 2.5rem'
+      xl: '1.25rem 2.5rem',
     },
     margin: {
       sm: '0.5rem',
       md: '1rem',
       lg: '1.5rem',
-      xl: '2rem'
-    }
-  }
+      xl: '2rem',
+    },
+  },
 };
 
 // Tipografía
 export const TYPOGRAPHY = {
   // Tamaños de fuente
   fontSize: {
-    xs: '0.75rem',    // 12px
-    sm: '0.875rem',   // 14px
-    base: '1rem',     // 16px
-    lg: '1.125rem',   // 18px
-    xl: '1.25rem',    // 20px
-    '2xl': '1.5rem',  // 24px
+    xs: '0.75rem', // 12px
+    sm: '0.875rem', // 14px
+    base: '1rem', // 16px
+    lg: '1.125rem', // 18px
+    xl: '1.25rem', // 20px
+    '2xl': '1.5rem', // 24px
     '3xl': '1.875rem', // 30px
     '4xl': '2.25rem', // 36px
-    '5xl': '3rem',    // 48px
+    '5xl': '3rem', // 48px
     '6xl': '3.75rem', // 60px
   },
 
@@ -215,7 +215,7 @@ export const TYPOGRAPHY = {
     semibold: '600',
     bold: '700',
     extrabold: '800',
-    black: '900'
+    black: '900',
   },
 
   // Altura de línea
@@ -224,7 +224,7 @@ export const TYPOGRAPHY = {
     snug: '1.375',
     normal: '1.5',
     relaxed: '1.625',
-    loose: '2'
+    loose: '2',
   },
 
   // Familias de fuente
@@ -232,8 +232,8 @@ export const TYPOGRAPHY = {
     sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
     serif: ['Georgia', 'Cambria', 'serif'],
     mono: ['Monaco', 'Menlo', 'monospace'],
-    display: ['Poppins', 'system-ui', 'sans-serif']
-  }
+    display: ['Poppins', 'system-ui', 'sans-serif'],
+  },
 };
 
 // Sombras
@@ -251,8 +251,8 @@ export const SHADOWS = {
   agricultural: {
     card: '0 4px 6px -1px rgb(34 197 94 / 0.1), 0 2px 4px -2px rgb(34 197 94 / 0.1)',
     hover: '0 10px 15px -3px rgb(34 197 94 / 0.1), 0 4px 6px -4px rgb(34 197 94 / 0.1)',
-    focus: '0 0 0 3px rgb(34 197 94 / 0.1)'
-  }
+    focus: '0 0 0 3px rgb(34 197 94 / 0.1)',
+  },
 };
 
 // Bordes y radios
@@ -262,9 +262,9 @@ export const BORDERS = {
     1: '1px',
     2: '2px',
     4: '4px',
-    8: '8px'
+    8: '8px',
   },
-  
+
   radius: {
     none: '0px',
     sm: '0.125rem',
@@ -274,7 +274,7 @@ export const BORDERS = {
     xl: '0.75rem',
     '2xl': '1rem',
     '3xl': '1.5rem',
-    full: '9999px'
+    full: '9999px',
   },
 
   // Estilos de borde
@@ -283,8 +283,8 @@ export const BORDERS = {
     dashed: 'dashed',
     dotted: 'dotted',
     double: 'double',
-    none: 'none'
-  }
+    none: 'none',
+  },
 };
 
 // Animaciones y transiciones
@@ -297,24 +297,25 @@ export const ANIMATIONS = {
     300: '300ms',
     500: '500ms',
     700: '700ms',
-    1000: '1000ms'
+    1000: '1000ms',
   },
 
   easing: {
     linear: 'linear',
     in: 'cubic-bezier(0.4, 0, 1, 1)',
     out: 'cubic-bezier(0, 0, 0.2, 1)',
-    inOut: 'cubic-bezier(0.4, 0, 0.2, 1)'
+    inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
 
   // Transiciones predefinidas
   transition: {
     all: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-    colors: 'color 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+    colors:
+      'color 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1)',
     opacity: 'opacity 200ms cubic-bezier(0.4, 0, 0.2, 1)',
     shadow: 'box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-    transform: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)'
-  }
+    transform: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+  },
 };
 
 // Breakpoints para responsive design
@@ -323,7 +324,7 @@ export const BREAKPOINTS = {
   md: '768px',
   lg: '1024px',
   xl: '1280px',
-  '2xl': '1536px'
+  '2xl': '1536px',
 };
 
 // Z-index estándar
@@ -343,7 +344,7 @@ export const Z_INDEX = {
   modal: '1050',
   popover: '1060',
   tooltip: '1070',
-  notification: '1080'
+  notification: '1080',
 };
 
 // Iconografía temática agrícola
@@ -353,9 +354,9 @@ export const AGRICULTURAL_ICONS = {
     repuestos: '🔧',
     proveedores: '🏭',
     reparaciones: '🛠️',
-    usuarios: '👤'
+    usuarios: '👤',
   },
-  
+
   status: {
     operativa: '✅',
     mantenimiento: '🔧',
@@ -363,9 +364,9 @@ export const AGRICULTURAL_ICONS = {
     reparacion: '🛠️',
     disponible: '✅',
     agotado: '❌',
-    bajo: '⚠️'
+    bajo: '⚠️',
   },
-  
+
   actions: {
     crear: '➕',
     editar: '✏️',
@@ -376,9 +377,9 @@ export const AGRICULTURAL_ICONS = {
     buscar: '🔍',
     filtrar: '🔽',
     exportar: '📤',
-    importar: '📥'
+    importar: '📥',
   },
-  
+
   general: {
     home: '🏠',
     dashboard: '📊',
@@ -389,8 +390,8 @@ export const AGRICULTURAL_ICONS = {
     success: '✅',
     warning: '⚠️',
     error: '❌',
-    info: 'ℹ️'
-  }
+    info: 'ℹ️',
+  },
 };
 
 // Gradientes predefinidos
@@ -401,15 +402,15 @@ export const GRADIENTS = {
     sky: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
     machinery: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     sunset: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-    forest: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)'
+    forest: 'linear-gradient(135deg, #22c55e 0%, #15803d 100%)',
   },
-  
+
   backgrounds: {
     light: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
     subtle: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
     warm: 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
-    cool: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)'
-  }
+    cool: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+  },
 };
 
 // Configuración de componentes por defecto
@@ -419,24 +420,24 @@ export const COMPONENT_DEFAULTS = {
     borderRadius: BORDERS.radius.md,
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
-    transition: ANIMATIONS.transition.all
+    transition: ANIMATIONS.transition.all,
   },
-  
+
   card: {
     padding: SPACING.xl,
     borderRadius: BORDERS.radius.xl,
     shadow: SHADOWS.base,
     backgroundColor: '#ffffff',
-    border: `${BORDERS.width[1]} solid ${COLORS.neutral[200]}`
+    border: `${BORDERS.width[1]} solid ${COLORS.neutral[200]}`,
   },
-  
+
   input: {
     padding: SPACING.component.padding.md,
     borderRadius: BORDERS.radius.md,
     fontSize: TYPOGRAPHY.fontSize.base,
     border: `${BORDERS.width[1]} solid ${COLORS.neutral[300]}`,
-    focusBorder: `${BORDERS.width[2]} solid ${COLORS.agricultural.crop[500]}`
-  }
+    focusBorder: `${BORDERS.width[2]} solid ${COLORS.agricultural.crop[500]}`,
+  },
 };
 
 // Export del objeto completo de tokens
@@ -451,5 +452,5 @@ export const DESIGN_TOKENS = {
   zIndex: Z_INDEX,
   icons: AGRICULTURAL_ICONS,
   gradients: GRADIENTS,
-  defaults: COMPONENT_DEFAULTS
+  defaults: COMPONENT_DEFAULTS,
 };

@@ -40,27 +40,90 @@ const App: React.FC = () => {
     <NavigationProvider>
       <Routes>
         {/* Dashboard */}
-        <Route path="/" element={<Dashboard token={token as any} role={role as any} onLogout={onLogout} />} />
-        <Route path="/dashboard" element={<Dashboard token={token as any} role={role as any} onLogout={onLogout} />} />
+        <Route
+          path="/"
+          element={<Dashboard token={token as any} role={role as any} onLogout={onLogout} />}
+        />
+        <Route
+          path="/dashboard"
+          element={<Dashboard token={token as any} role={role as any} onLogout={onLogout} />}
+        />
 
         {/* Listados */}
-        <Route path="/maquinarias" element={<MaquinariasPage token={token as any} role={role as any} onLogout={onLogout} />} />
-  <Route path="/repuestos" element={<RepuestosPage token={token as any} role={role as any} onLogout={onLogout} onCreated={() => {}} />} />
-  <Route path="/proveedores" element={<ProveedoresPage token={token as any} role={role as any} onLogout={onLogout} onCreated={() => {}} />} />
-  <Route path="/reparaciones" element={<ReparacionesPage token={token as any} role={role as any} onLogout={onLogout} onCreated={() => {}} />} />
-  <Route path="/usuarios" element={<UsuariosPage token={token as any} role={role as any} onLogout={onLogout} onCreated={() => {}} />} />
-        <Route path="/compras" element={<ComprasPage token={token as any} role={role as any} onLogout={onLogout} />} />
+        <Route
+          path="/maquinarias"
+          element={<MaquinariasPage token={token as any} role={role as any} onLogout={onLogout} />}
+        />
+        <Route
+          path="/repuestos"
+          element={
+            <RepuestosPage
+              token={token as any}
+              role={role as any}
+              onLogout={onLogout}
+              onCreated={() => {}}
+            />
+          }
+        />
+        <Route
+          path="/proveedores"
+          element={
+            <ProveedoresPage
+              token={token as any}
+              role={role as any}
+              onLogout={onLogout}
+              onCreated={() => {}}
+            />
+          }
+        />
+        <Route
+          path="/reparaciones"
+          element={
+            <ReparacionesPage
+              token={token as any}
+              role={role as any}
+              onLogout={onLogout}
+              onCreated={() => {}}
+            />
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <UsuariosPage
+              token={token as any}
+              role={role as any}
+              onLogout={onLogout}
+              onCreated={() => {}}
+            />
+          }
+        />
+        <Route
+          path="/compras"
+          element={<ComprasPage token={token as any} role={role as any} onLogout={onLogout} />}
+        />
 
         {/* Formularios y detalles */}
         <Route path="/compras/nueva" element={<CompraForm token={token as any} />} />
         <Route path="/compras/:id" element={<CompraDetails token={token as any} />} />
-  <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token as any} onCreated={() => {}} />} />
-  <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token as any} onCreated={() => {}} />} />
+        <Route
+          path="/maquinarias/formulario"
+          element={<MaquinariaFormulario token={token as any} onCreated={() => {}} />}
+        />
+        <Route
+          path="/maquinarias/editar/:id"
+          element={<MaquinariaFormulario token={token as any} onCreated={() => {}} />}
+        />
         <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token as any} />} />
         <Route path="/repuestos/:id" element={<RepuestoDetails token={token as any} />} />
-  <Route path="/reparaciones/:id" element={<ReparacionDetails token={token as any} />} />
+        <Route path="/reparaciones/:id" element={<ReparacionDetails token={token as any} />} />
         <Route path="/proveedores/:id" element={<ProveedorDetails token={token as any} />} />
-        <Route path="/contexto/:tipo/:valor" element={<ContextPlaceholder token={token as any} role={role as any} onLogout={onLogout} />} />
+        <Route
+          path="/contexto/:tipo/:valor"
+          element={
+            <ContextPlaceholder token={token as any} role={role as any} onLogout={onLogout} />
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

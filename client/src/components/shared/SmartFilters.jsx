@@ -30,7 +30,7 @@ export const useSmartFilters = (initialFilters = {}, storageKey = 'smart_filters
 
   // Aplicar filtro
   const applyFilter = (newFilters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
   // Limpiar filtros
@@ -46,25 +46,25 @@ export const useSmartFilters = (initialFilters = {}, storageKey = 'smart_filters
       description,
       filters,
       createdAt: new Date().toISOString(),
-      appliedCount: 0
+      appliedCount: 0,
     };
 
     const updated = [...savedFilters, filterToken];
     setSavedFilters(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
-    
+
     return filterToken;
   };
 
   // Aplicar filtro guardado
   const applySavedFilter = (filterId) => {
-    const savedFilter = savedFilters.find(f => f.id === filterId);
+    const savedFilter = savedFilters.find((f) => f.id === filterId);
     if (savedFilter) {
       setFilters(savedFilter.filters);
-      
+
       // Incrementar contador de uso
-      const updated = savedFilters.map(f => 
-        f.id === filterId 
+      const updated = savedFilters.map((f) =>
+        f.id === filterId
           ? { ...f, appliedCount: f.appliedCount + 1, lastUsed: new Date().toISOString() }
           : f
       );
@@ -75,7 +75,7 @@ export const useSmartFilters = (initialFilters = {}, storageKey = 'smart_filters
 
   // Eliminar filtro guardado
   const deleteSavedFilter = (filterId) => {
-    const updated = savedFilters.filter(f => f.id !== filterId);
+    const updated = savedFilters.filter((f) => f.id !== filterId);
     setSavedFilters(updated);
     localStorage.setItem(storageKey, JSON.stringify(updated));
   };
@@ -99,17 +99,23 @@ export const useSmartFilters = (initialFilters = {}, storageKey = 'smart_filters
 
   // Verificar si hay filtros activos
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filters).some(value => 
-      value !== '' && value !== null && value !== undefined &&
-      !(Array.isArray(value) && value.length === 0)
+    return Object.values(filters).some(
+      (value) =>
+        value !== '' &&
+        value !== null &&
+        value !== undefined &&
+        !(Array.isArray(value) && value.length === 0)
     );
   }, [filters]);
 
   // Contar filtros activos
   const activeFilterCount = useMemo(() => {
-    return Object.values(filters).filter(value => 
-      value !== '' && value !== null && value !== undefined &&
-      !(Array.isArray(value) && value.length === 0)
+    return Object.values(filters).filter(
+      (value) =>
+        value !== '' &&
+        value !== null &&
+        value !== undefined &&
+        !(Array.isArray(value) && value.length === 0)
     ).length;
   }, [filters]);
 
@@ -127,25 +133,23 @@ export const useSmartFilters = (initialFilters = {}, storageKey = 'smart_filters
     hasActiveFilters,
     activeFilterCount,
     isLoading,
-    setIsLoading
+    setIsLoading,
   };
 };
 
 /**
  * Componente de filtro de texto
  */
-export const TextFilter = ({ 
-  label, 
-  value, 
-  onChange, 
+export const TextFilter = ({
+  label,
+  value,
+  onChange,
   placeholder = 'Buscar...',
-  className = '' 
+  className = '',
 }) => {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <input
         type="text"
         value={value || ''}
@@ -164,19 +168,17 @@ export const TextFilter = ({
 /**
  * Componente de filtro de selección
  */
-export const SelectFilter = ({ 
-  label, 
-  value, 
-  onChange, 
-  options = [], 
+export const SelectFilter = ({
+  label,
+  value,
+  onChange,
+  options = [],
   placeholder = 'Seleccionar...',
-  className = '' 
+  className = '',
 }) => {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <select
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
@@ -200,21 +202,19 @@ export const SelectFilter = ({
 /**
  * Componente de filtro de rango numérico
  */
-export const RangeFilter = ({ 
-  label, 
-  minValue, 
-  maxValue, 
-  onMinChange, 
-  onMaxChange, 
+export const RangeFilter = ({
+  label,
+  minValue,
+  maxValue,
+  onMinChange,
+  onMaxChange,
   minPlaceholder = 'Min',
   maxPlaceholder = 'Max',
-  className = '' 
+  className = '',
 }) => {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <div className="flex space-x-2">
         <input
           type="number"
@@ -247,19 +247,17 @@ export const RangeFilter = ({
 /**
  * Componente de filtro de fecha
  */
-export const DateFilter = ({ 
-  label, 
-  startDate, 
-  endDate, 
-  onStartDateChange, 
-  onEndDateChange, 
-  className = '' 
+export const DateFilter = ({
+  label,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+  className = '',
 }) => {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <div className="flex space-x-2">
         <input
           type="date"
@@ -301,7 +299,7 @@ export const SmartFilterPanel = ({
   hasActiveFilters = false,
   activeFilterCount = 0,
   isLoading = false,
-  className = ''
+  className = '',
 }) => {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [filterName, setFilterName] = useState('');
@@ -331,25 +329,15 @@ export const SmartFilterPanel = ({
             />
           )}
         </div>
-        
+
         <div className="flex space-x-2">
-          <RefreshButton
-            onClick={onClear}
-            disabled={!hasActiveFilters}
-            size="sm"
-          />
-          <SearchButton
-            onClick={onApply}
-            loading={isLoading}
-            size="sm"
-          />
+          <RefreshButton onClick={onClear} disabled={!hasActiveFilters} size="sm" />
+          <SearchButton onClick={onApply} loading={isLoading} size="sm" />
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="space-y-4">
-        {children}
-      </div>
+      <div className="space-y-4">{children}</div>
 
       {/* Acciones */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-200">
@@ -381,9 +369,7 @@ export const SmartFilterPanel = ({
               </Button>
             ))}
             {savedFilters.length > 3 && (
-              <span className="text-xs text-gray-400">
-                +{savedFilters.length - 3} más
-              </span>
+              <span className="text-xs text-gray-400">+{savedFilters.length - 3} más</span>
             )}
           </div>
         )}
@@ -394,7 +380,7 @@ export const SmartFilterPanel = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h4 className="text-lg font-semibold mb-4">Guardar Filtro</h4>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -408,7 +394,7 @@ export const SmartFilterPanel = ({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Descripción (opcional)
@@ -422,19 +408,12 @@ export const SmartFilterPanel = ({
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-3 mt-6">
-              <Button
-                variant="secondary"
-                onClick={() => setShowSaveModal(false)}
-              >
+              <Button variant="secondary" onClick={() => setShowSaveModal(false)}>
                 Cancelar
               </Button>
-              <Button
-                variant="success"
-                onClick={handleSave}
-                disabled={!filterName.trim()}
-              >
+              <Button variant="success" onClick={handleSave} disabled={!filterName.trim()}>
                 Guardar
               </Button>
             </div>
@@ -453,16 +432,14 @@ export const SavedFiltersManager = ({
   onApply,
   onDelete,
   onEdit,
-  className = ''
+  className = '',
 }) => {
   return (
     <Card className={`${className}`}>
       <h4 className="text-lg font-semibold mb-4">Filtros Guardados</h4>
-      
+
       {savedFilters.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">
-          No tienes filtros guardados
-        </p>
+        <p className="text-gray-500 text-center py-8">No tienes filtros guardados</p>
       ) : (
         <div className="space-y-3">
           {savedFilters.map((filter) => (
@@ -480,22 +457,12 @@ export const SavedFiltersManager = ({
                   <span>Creado {new Date(filter.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onApply(filter.id)}
-                  icon="▶️"
-                >
+                <Button variant="ghost" size="sm" onClick={() => onApply(filter.id)} icon="▶️">
                   Aplicar
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(filter.id)}
-                  icon="🗑️"
-                />
+                <Button variant="ghost" size="sm" onClick={() => onDelete(filter.id)} icon="🗑️" />
               </div>
             </div>
           ))}
@@ -512,11 +479,14 @@ export const ActiveFiltersIndicator = ({
   filters = {},
   onRemoveFilter,
   onClearAll,
-  className = ''
+  className = '',
 }) => {
-  const activeFilters = Object.entries(filters).filter(([key, value]) => 
-    value !== '' && value !== null && value !== undefined &&
-    !(Array.isArray(value) && value.length === 0)
+  const activeFilters = Object.entries(filters).filter(
+    ([key, value]) =>
+      value !== '' &&
+      value !== null &&
+      value !== undefined &&
+      !(Array.isArray(value) && value.length === 0)
   );
 
   if (activeFilters.length === 0) return null;
@@ -524,7 +494,7 @@ export const ActiveFiltersIndicator = ({
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
       <span className="text-sm text-gray-600">Filtros activos:</span>
-      
+
       {activeFilters.map(([key, value]) => (
         <StatusBadge
           key={key}
@@ -536,13 +506,8 @@ export const ActiveFiltersIndicator = ({
           size="sm"
         />
       ))}
-      
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onClearAll}
-        icon="❌"
-      >
+
+      <Button variant="ghost" size="sm" onClick={onClearAll} icon="❌">
         Limpiar todo
       </Button>
     </div>
@@ -557,5 +522,5 @@ export default {
   DateFilter,
   SmartFilterPanel,
   SavedFiltersManager,
-  ActiveFiltersIndicator
+  ActiveFiltersIndicator,
 };

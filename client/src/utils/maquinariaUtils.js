@@ -36,12 +36,17 @@ export const buildMaquinariaQueryParams = (filtros, pagina = 1, limit = 10) => {
     page: pagina.toString(),
     limit: limit.toString(),
     sortBy: 'categoria',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       params.append(key, filtros[key].toString());
     }
   });
@@ -59,7 +64,7 @@ export const clearMaquinariaFilters = () => ({
   estado: '',
   proveedor: '',
   anioMin: '',
-  anioMax: ''
+  anioMax: '',
 });
 
 /**
@@ -76,7 +81,13 @@ export const getEstadoColorClass = (estado) => {
   if (s.includes('fuera de servicio')) return 'bg-black text-white';
   if (s.includes('inoperativa')) return 'bg-red-100 text-red-700';
   if (s.includes('en taller')) return 'bg-brown-100 text-brown-800';
-  if (s.includes('en reparacion') || s.includes('reparacion') || s.includes('mantenimiento') || s.includes('revision')) return 'bg-yellow-100 text-yellow-700';
+  if (
+    s.includes('en reparacion') ||
+    s.includes('reparacion') ||
+    s.includes('mantenimiento') ||
+    s.includes('revision')
+  )
+    return 'bg-yellow-100 text-yellow-700';
   if (s.includes('operativa') || s.includes('operativo')) return 'bg-brand-100 text-brand-800';
 
   // Casos anteriores compatibles
@@ -100,7 +111,13 @@ export const getEstadoIconClass = (estado) => {
   if (s.includes('fuera de servicio')) return 'text-white'; // chip negro
   if (s.includes('inoperativa')) return 'text-red-700';
   if (s.includes('en taller')) return 'text-brown-800';
-  if (s.includes('en reparacion') || s.includes('reparacion') || s.includes('mantenimiento') || s.includes('revision')) return 'text-yellow-700';
+  if (
+    s.includes('en reparacion') ||
+    s.includes('reparacion') ||
+    s.includes('mantenimiento') ||
+    s.includes('revision')
+  )
+    return 'text-yellow-700';
   if (s.includes('operativa') || s.includes('operativo')) return 'text-brand-800';
 
   if (s.includes('averiado') || s.includes('roto')) return 'text-red-700';
@@ -132,6 +149,6 @@ export const formatFechaDetalle = (fecha) => {
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 };

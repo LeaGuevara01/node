@@ -5,31 +5,26 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { 
-  PageContainer, 
-  ContentContainer, 
-  PageHeader, 
-  ListLayout, 
+import {
+  PageContainer,
+  ContentContainer,
+  PageHeader,
+  ListLayout,
   Card,
   ResponsiveGrid,
-  LayoutSkeleton 
+  LayoutSkeleton,
 } from './Layout';
-import { 
-  SmartFilterPanel, 
-  useSmartFilters, 
-  TextFilter, 
-  SelectFilter, 
+import {
+  SmartFilterPanel,
+  useSmartFilters,
+  TextFilter,
+  SelectFilter,
   RangeFilter,
   ActiveFiltersIndicator,
-  SavedFiltersManager 
+  SavedFiltersManager,
 } from './SmartFilters';
 import { StatusBadge, StatusSummary, useStatus } from './StatusBadge';
-import Button, { 
-  CreateButton, 
-  ExportButton, 
-  RefreshButton,
-  ListActionGroup 
-} from './Button';
+import Button, { CreateButton, ExportButton, RefreshButton, ListActionGroup } from './Button';
 
 /**
  * Hook para gestión de datos de listado
@@ -42,7 +37,7 @@ export const useListData = (apiEndpoint, initialFilters = {}) => {
     page: 1,
     limit: 10,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
 
   const fetchData = async (filters = {}, page = 1, limit = 10) => {
@@ -53,7 +48,7 @@ export const useListData = (apiEndpoint, initialFilters = {}) => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        ...filters
+        ...filters,
       });
 
       const response = await fetch(`${apiEndpoint}?${params}`);
@@ -62,7 +57,7 @@ export const useListData = (apiEndpoint, initialFilters = {}) => {
       }
 
       const result = await response.json();
-      
+
       // Manejar diferentes formatos de respuesta
       if (result.data && Array.isArray(result.data)) {
         setData(result.data);
@@ -91,7 +86,7 @@ export const useListData = (apiEndpoint, initialFilters = {}) => {
     error,
     pagination,
     fetchData,
-    refresh
+    refresh,
   };
 };
 
@@ -104,10 +99,10 @@ export const ListItem = ({
   actions = [],
   statusConfig,
   onClick,
-  className = ''
+  className = '',
 }) => {
   return (
-    <Card 
+    <Card
       variant="interactive"
       padding="md"
       className={`cursor-pointer ${className}`}
@@ -123,7 +118,7 @@ export const ListItem = ({
                 {item[fields[0].key] || 'Sin título'}
               </h3>
             )}
-            
+
             {/* Estado */}
             {statusConfig && (
               <StatusBadge
@@ -134,33 +129,30 @@ export const ListItem = ({
               />
             )}
           </div>
-          
+
           {/* Campos adicionales */}
           <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {fields.slice(1).map((field) => (
               <div key={field.key} className="text-sm">
                 <span className="text-gray-500">{field.label}:</span>
                 <span className="ml-1 text-gray-900">
-                  {field.format 
-                    ? field.format(item[field.key]) 
-                    : item[field.key] || 'N/A'
-                  }
+                  {field.format ? field.format(item[field.key]) : item[field.key] || 'N/A'}
                 </span>
               </div>
             ))}
           </div>
         </div>
-        
+
         {/* Acciones */}
         {actions.length > 0 && (
           <div className="ml-4">
             <ListActionGroup
-              onView={() => actions.find(a => a.type === 'view')?.action(item)}
-              onEdit={() => actions.find(a => a.type === 'edit')?.action(item)}
-              onDelete={() => actions.find(a => a.type === 'delete')?.action(item)}
-              showView={actions.some(a => a.type === 'view')}
-              showEdit={actions.some(a => a.type === 'edit')}
-              showDelete={actions.some(a => a.type === 'delete')}
+              onView={() => actions.find((a) => a.type === 'view')?.action(item)}
+              onEdit={() => actions.find((a) => a.type === 'edit')?.action(item)}
+              onDelete={() => actions.find((a) => a.type === 'delete')?.action(item)}
+              showView={actions.some((a) => a.type === 'view')}
+              showEdit={actions.some((a) => a.type === 'edit')}
+              showDelete={actions.some((a) => a.type === 'delete')}
             />
           </div>
         )}
@@ -172,26 +164,21 @@ export const ListItem = ({
 /**
  * Componente de paginación
  */
-export const Pagination = ({
-  currentPage,
-  totalPages,
-  onPageChange,
-  className = ''
-}) => {
+export const Pagination = ({ currentPage, totalPages, onPageChange, className = '' }) => {
   const getPageNumbers = () => {
     const pages = [];
     const showPages = 5;
     let start = Math.max(1, currentPage - Math.floor(showPages / 2));
     let end = Math.min(totalPages, start + showPages - 1);
-    
+
     if (end - start + 1 < showPages) {
       start = Math.max(1, end - showPages + 1);
     }
-    
+
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
-    
+
     return pages;
   };
 
@@ -208,7 +195,7 @@ export const Pagination = ({
       >
         ←
       </Button>
-      
+
       {/* Números de página */}
       {getPageNumbers().map((page) => (
         <Button
@@ -220,7 +207,7 @@ export const Pagination = ({
           {page}
         </Button>
       ))}
-      
+
       {/* Botón siguiente */}
       <Button
         variant="ghost"
@@ -242,24 +229,24 @@ export const UniversalList = ({
   title,
   subtitle,
   apiEndpoint,
-  
+
   // Configuración de campos
   fields = [],
-  
+
   // Configuración de filtros
   filterConfig = [],
-  
+
   // Configuración de estado
   statusConfig,
-  
+
   // Configuración de acciones
   actions = [],
-  
+
   // Callbacks
   onItemClick,
   onCreateNew,
   onExport,
-  
+
   // Props adicionales
   className = '',
   pageSize = 20,
@@ -267,27 +254,20 @@ export const UniversalList = ({
   enableFilters = true,
   enablePagination = true,
   enableExport = false,
-  
+
   // Configuración de storage para filtros
-  storageKey = 'universal_list_filters'
+  storageKey = 'universal_list_filters',
 }) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   // Estado del listado
-  const {
-    data,
-    loading,
-    error,
-    pagination,
-    fetchData,
-    refresh
-  } = useListData(apiEndpoint);
-  
+  const { data, loading, error, pagination, fetchData, refresh } = useListData(apiEndpoint);
+
   // Filtros inteligentes
   const initialFilters = useMemo(() => {
     const filters = {};
-    filterConfig.forEach(config => {
+    filterConfig.forEach((config) => {
       const paramValue = searchParams.get(config.key);
       if (paramValue) {
         filters[config.key] = paramValue;
@@ -295,7 +275,7 @@ export const UniversalList = ({
     });
     return filters;
   }, [searchParams, filterConfig]);
-  
+
   const {
     filters,
     applyFilter,
@@ -307,15 +287,15 @@ export const UniversalList = ({
     hasActiveFilters,
     activeFilterCount,
     isLoading: isFilterLoading,
-    setIsLoading: setIsFilterLoading
+    setIsLoading: setIsFilterLoading,
   } = useSmartFilters(initialFilters, `${storageKey}_${title?.toLowerCase()}`);
-  
+
   // Estado para vista de filtros guardados
   const [showSavedFilters, setShowSavedFilters] = useState(false);
-  
+
   // Hook de estado para badges
   const statusHook = statusConfig ? useStatus(statusConfig.type) : null;
-  
+
   // Sincronizar filtros con URL
   useEffect(() => {
     const params = new URLSearchParams();
@@ -326,40 +306,40 @@ export const UniversalList = ({
     });
     setSearchParams(params);
   }, [filters, setSearchParams]);
-  
+
   // Cargar datos cuando cambien los filtros
   useEffect(() => {
     fetchData(filters, 1, pageSize);
   }, [filters, pageSize]);
-  
+
   // Aplicar filtros
   const handleApplyFilters = async () => {
     setIsFilterLoading(true);
     await fetchData(filters, 1, pageSize);
     setIsFilterLoading(false);
   };
-  
+
   // Limpiar filtros
   const handleClearFilters = () => {
     clearFilters();
     const params = new URLSearchParams();
     setSearchParams(params);
   };
-  
+
   // Cambiar página
   const handlePageChange = (page) => {
     fetchData(filters, page, pageSize);
   };
-  
+
   // Remover filtro específico
   const handleRemoveFilter = (filterKey) => {
     applyFilter({ [filterKey]: '' });
   };
-  
+
   // Renderizar filtros
   const renderFilters = () => {
     if (!enableFilters || filterConfig.length === 0) return null;
-    
+
     return (
       <SmartFilterPanel
         onApply={handleApplyFilters}
@@ -378,18 +358,13 @@ export const UniversalList = ({
               key: config.key,
               label: config.label,
               value: filters[config.key],
-              onChange: (value) => applyFilter({ [config.key]: value })
+              onChange: (value) => applyFilter({ [config.key]: value }),
             };
-            
+
             switch (config.type) {
               case 'text':
-                return (
-                  <TextFilter
-                    {...commonProps}
-                    placeholder={config.placeholder}
-                  />
-                );
-              
+                return <TextFilter {...commonProps} placeholder={config.placeholder} />;
+
               case 'select':
                 return (
                   <SelectFilter
@@ -398,7 +373,7 @@ export const UniversalList = ({
                     placeholder={config.placeholder}
                   />
                 );
-              
+
               case 'range':
                 return (
                   <RangeFilter
@@ -411,7 +386,7 @@ export const UniversalList = ({
                     maxPlaceholder={config.maxPlaceholder}
                   />
                 );
-              
+
               case 'status':
                 return statusHook ? (
                   <div key={config.key}>
@@ -425,7 +400,7 @@ export const UniversalList = ({
                     />
                   </div>
                 ) : null;
-              
+
               default:
                 return null;
             }
@@ -434,7 +409,7 @@ export const UniversalList = ({
       </SmartFilterPanel>
     );
   };
-  
+
   // Renderizar toolbar
   const renderToolbar = () => {
     return (
@@ -445,7 +420,7 @@ export const UniversalList = ({
           onRemoveFilter={handleRemoveFilter}
           onClearAll={handleClearFilters}
         />
-        
+
         {/* Acciones */}
         <div className="flex items-center space-x-3">
           {/* Botón de filtros guardados */}
@@ -459,30 +434,26 @@ export const UniversalList = ({
               Filtros ({savedFilters.length})
             </Button>
           )}
-          
+
           {/* Botón de exportar */}
-          {enableExport && (
-            <ExportButton onClick={onExport} />
-          )}
-          
+          {enableExport && <ExportButton onClick={onExport} />}
+
           {/* Botón de actualizar */}
           <RefreshButton onClick={refresh} loading={loading} />
-          
+
           {/* Botón de crear nuevo */}
-          {onCreateNew && (
-            <CreateButton onClick={onCreateNew} />
-          )}
+          {onCreateNew && <CreateButton onClick={onCreateNew} />}
         </div>
       </div>
     );
   };
-  
+
   // Renderizar contenido principal
   const renderContent = () => {
     if (loading && data.length === 0) {
       return <LayoutSkeleton type="list" />;
     }
-    
+
     if (error) {
       return (
         <Card padding="lg" className="text-center">
@@ -493,39 +464,32 @@ export const UniversalList = ({
         </Card>
       );
     }
-    
+
     if (data.length === 0 && !loading) {
       return (
         <Card padding="lg" className="text-center">
           <div className="text-gray-500 mb-4">
-            {hasActiveFilters 
+            {hasActiveFilters
               ? 'No se encontraron resultados con los filtros aplicados'
-              : 'No hay elementos para mostrar'
-            }
+              : 'No hay elementos para mostrar'}
           </div>
           {hasActiveFilters && (
             <Button variant="secondary" onClick={handleClearFilters}>
               Limpiar filtros
             </Button>
           )}
-          {onCreateNew && !hasActiveFilters && (
-            <CreateButton onClick={onCreateNew} />
-          )}
+          {onCreateNew && !hasActiveFilters && <CreateButton onClick={onCreateNew} />}
         </Card>
       );
     }
-    
+
     return (
       <div className="space-y-4">
         {/* Resumen de estados */}
         {statusConfig && statusHook && (
-          <StatusSummary
-            type={statusConfig.type}
-            data={data}
-            statusField={statusConfig.field}
-          />
+          <StatusSummary type={statusConfig.type} data={data} statusField={statusConfig.field} />
         )}
-        
+
         {/* Lista de elementos */}
         <div className="space-y-3">
           {data.map((item, index) => (
@@ -539,7 +503,7 @@ export const UniversalList = ({
             />
           ))}
         </div>
-        
+
         {/* Paginación */}
         {enablePagination && (
           <Pagination
@@ -552,7 +516,7 @@ export const UniversalList = ({
       </div>
     );
   };
-  
+
   return (
     <PageContainer className={className}>
       <ContentContainer>
@@ -561,26 +525,21 @@ export const UniversalList = ({
             <PageHeader
               title={title}
               subtitle={subtitle}
-              breadcrumbs={[
-                { label: 'Inicio', href: '/' },
-                { label: title }
-              ]}
+              breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: title }]}
             />
           }
-          
           filters={renderFilters()}
-          
           toolbar={renderToolbar()}
-          
           content={renderContent()}
-          
-          sidebar={showSavedFilters ? (
-            <SavedFiltersManager
-              savedFilters={savedFilters}
-              onApply={applySavedFilter}
-              onDelete={deleteSavedFilter}
-            />
-          ) : null}
+          sidebar={
+            showSavedFilters ? (
+              <SavedFiltersManager
+                savedFilters={savedFilters}
+                onApply={applySavedFilter}
+                onDelete={deleteSavedFilter}
+              />
+            ) : null
+          }
         />
       </ContentContainer>
     </PageContainer>

@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  CONTAINER_STYLES, 
-  INPUT_STYLES, 
-  BUTTON_STYLES, 
+import {
+  CONTAINER_STYLES,
+  INPUT_STYLES,
+  BUTTON_STYLES,
   LAYOUT_STYLES,
   ICON_STYLES,
   TEXT_STYLES,
-  POSITION_STYLES
+  POSITION_STYLES,
 } from '../../styles/repuestoStyles';
 
 /**
@@ -31,18 +31,15 @@ const AdvancedFilters = ({
   removerToken,
   opcionesFiltros,
   camposFiltros,
-  titulo = "Filtros Avanzados"
+  titulo = 'Filtros Avanzados',
 }) => {
-
   /**
    * Renderiza un campo de entrada de texto con icono
    */
   const renderTextInput = (campo) => (
-    <div className={campo.span || "md:col-span-2 lg:col-span-1 xl:col-span-1"} key={campo.name}>
+    <div className={campo.span || 'md:col-span-2 lg:col-span-1 xl:col-span-1'} key={campo.name}>
       <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>
-          {campo.icon}
-        </div>
+        <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
         <input
           type={campo.type === 'search' ? 'search' : 'text'}
           value={filtrosTemporales[campo.name] || ''}
@@ -69,26 +66,20 @@ const AdvancedFilters = ({
    * Renderiza un campo select con opciones
    */
   const renderSelect = (campo) => (
-    <div className={campo.span || "md:col-span-2 lg:col-span-1 xl:col-span-1"} key={campo.name}>
+    <div className={campo.span || 'md:col-span-2 lg:col-span-1 xl:col-span-1'} key={campo.name}>
       <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>
-          {campo.icon}
-        </div>
+        <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
         <select
           /*
            * Normalizamos el value del select a string para el DOM,
            * y convertimos de vuelta a primitivo (string|number) en onChange.
            */
           value={
-            filtrosTemporales[campo.name] === 0
-              ? '0'
-              : (filtrosTemporales[campo.name] ?? '') + ''
+            filtrosTemporales[campo.name] === 0 ? '0' : (filtrosTemporales[campo.name] ?? '') + ''
           }
           onChange={(e) => {
             const raw = e.target.value;
-            const normalized = raw === ''
-              ? ''
-              : (campo.valueType === 'number' ? Number(raw) : raw);
+            const normalized = raw === '' ? '' : campo.valueType === 'number' ? Number(raw) : raw;
             handleFiltroChange(campo.name, normalized);
           }}
           className={INPUT_STYLES.select}
@@ -109,7 +100,12 @@ const AdvancedFilters = ({
           })}
         </select>
         <div className={POSITION_STYLES.iconRight}>
-          <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -130,20 +126,27 @@ const AdvancedFilters = ({
       return map.lg || fallback || '';
     };
 
-    const minPh = getResponsivePlaceholder(campo?.responsivePlaceholders?.min, campo.minPlaceholder);
-    const maxPh = getResponsivePlaceholder(campo?.responsivePlaceholders?.max, campo.maxPlaceholder);
+    const minPh = getResponsivePlaceholder(
+      campo?.responsivePlaceholders?.min,
+      campo.minPlaceholder
+    );
+    const maxPh = getResponsivePlaceholder(
+      campo?.responsivePlaceholders?.max,
+      campo.maxPlaceholder
+    );
 
     return (
-      <div className={campo.span || "sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full"} key={campo.name}>
+      <div
+        className={campo.span || 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full'}
+        key={campo.name}
+      >
         <div className={POSITION_STYLES.relative}>
-          <div className={POSITION_STYLES.iconLeft}>
-            {campo.icon}
-          </div>
+          <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
           {/* Contenedor con altura y estilos consistentes con inputs estándar */}
           <div className="pl-10 pr-3 h-12 sm:h-12 flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent bg-white relative">
             <div className="flex items-center gap-2 w-full">
               <input
-                type={campo.inputType || "number"}
+                type={campo.inputType || 'number'}
                 value={
                   filtrosTemporales[campo.minField] === 0
                     ? 0
@@ -151,19 +154,20 @@ const AdvancedFilters = ({
                 }
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const normalized = raw === '' ? '' : (campo.inputType === 'date' ? raw : Number(raw));
+                  const normalized =
+                    raw === '' ? '' : campo.inputType === 'date' ? raw : Number(raw);
                   handleFiltroChange(campo.minField, normalized);
                 }}
                 placeholder={minPh}
                 className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
                 min={campo.min}
                 max={campo.max}
-                step={campo.inputType === 'date' ? undefined : (campo.step || "1")}
+                step={campo.inputType === 'date' ? undefined : campo.step || '1'}
                 inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
               />
               <span className="text-gray-300 text-sm">-</span>
               <input
-                type={campo.inputType || "number"}
+                type={campo.inputType || 'number'}
                 value={
                   filtrosTemporales[campo.maxField] === 0
                     ? 0
@@ -171,14 +175,15 @@ const AdvancedFilters = ({
                 }
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const normalized = raw === '' ? '' : (campo.inputType === 'date' ? raw : Number(raw));
+                  const normalized =
+                    raw === '' ? '' : campo.inputType === 'date' ? raw : Number(raw);
                   handleFiltroChange(campo.maxField, normalized);
                 }}
                 placeholder={maxPh}
                 className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
                 min={campo.min}
                 max={campo.max}
-                step={campo.inputType === 'date' ? undefined : (campo.step || "1")}
+                step={campo.inputType === 'date' ? undefined : campo.step || '1'}
                 inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
               />
             </div>
@@ -192,11 +197,9 @@ const AdvancedFilters = ({
    * Renderiza un campo de fecha
    */
   const renderDateInput = (campo) => (
-    <div className={campo.span || "md:col-span-2 lg:col-span-1 xl:col-span-1"} key={campo.name}>
+    <div className={campo.span || 'md:col-span-2 lg:col-span-1 xl:col-span-1'} key={campo.name}>
       <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>
-          {campo.icon}
-        </div>
+        <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
         <input
           type="date"
           value={filtrosTemporales[campo.name] || ''}
@@ -229,9 +232,9 @@ const AdvancedFilters = ({
   return (
     <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
       <h2 className={TEXT_STYLES.sectionTitle}>{titulo}</h2>
-      
+
       <div className={LAYOUT_STYLES.gridFilters}>
-        {camposFiltros.map(campo => renderField(campo))}
+        {camposFiltros.map((campo) => renderField(campo))}
       </div>
 
       {/* Botones de acción de filtros */}
@@ -242,7 +245,12 @@ const AdvancedFilters = ({
           className={`${BUTTON_STYLES.filter.clear} w-full flex items-center justify-center gap-2`}
         >
           <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
           Limpiar
         </button>
@@ -251,10 +259,17 @@ const AdvancedFilters = ({
           type="button"
           onClick={aplicarFiltrosActuales}
           className={`${BUTTON_STYLES.primary} w-full flex items-center justify-center gap-2`}
-          disabled={Object.values(filtrosTemporales).every(val => val === '' || val === null || val === undefined)}
+          disabled={Object.values(filtrosTemporales).every(
+            (val) => val === '' || val === null || val === undefined
+          )}
         >
           <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+            />
           </svg>
           Aplicar
         </button>
@@ -264,15 +279,23 @@ const AdvancedFilters = ({
       {tokensActivos.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="flex items-center gap-2 mb-3">
-            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            <svg
+              className="w-4 h-4 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              />
             </svg>
-            <span className="text-sm font-medium text-gray-700">
-              Filtros activos:
-            </span>
+            <span className="text-sm font-medium text-gray-700">Filtros activos:</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {tokensActivos.map(token => (
+            {tokensActivos.map((token) => (
               <span
                 key={token.id}
                 className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200 transition-colors"
@@ -285,7 +308,12 @@ const AdvancedFilters = ({
                   title="Remover filtro"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </span>

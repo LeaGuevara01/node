@@ -15,30 +15,30 @@ const RepuestosPage = ({ token }) => {
     {
       key: 'nombre',
       label: 'Nombre',
-      format: (value) => value || 'Sin nombre'
+      format: (value) => value || 'Sin nombre',
     },
     {
       key: 'codigo',
-      label: 'Código'
+      label: 'Código',
     },
     {
       key: 'categoria',
-      label: 'Categoría'
+      label: 'Categoría',
     },
     {
       key: 'ubicacion',
-      label: 'Ubicación'
+      label: 'Ubicación',
     },
     {
       key: 'cantidad',
       label: 'Stock',
-      format: (value) => `${value || 0} unidades`
+      format: (value) => `${value || 0} unidades`,
     },
     {
       key: 'precio',
       label: 'Precio',
-      format: (value) => value ? `$${parseFloat(value).toLocaleString()}` : 'N/A'
-    }
+      format: (value) => (value ? `$${parseFloat(value).toLocaleString()}` : 'N/A'),
+    },
   ];
 
   // Configuración de filtros inteligentes
@@ -47,7 +47,7 @@ const RepuestosPage = ({ token }) => {
       key: 'search',
       type: 'text',
       label: 'Buscar',
-      placeholder: 'Buscar por nombre, código o descripción...'
+      placeholder: 'Buscar por nombre, código o descripción...',
     },
     {
       key: 'categoria',
@@ -62,8 +62,8 @@ const RepuestosPage = ({ token }) => {
         { value: 'neumatico', label: 'Neumáticos' },
         { value: 'filtros', label: 'Filtros' },
         { value: 'aceites', label: 'Aceites y Lubricantes' },
-        { value: 'otros', label: 'Otros' }
-      ]
+        { value: 'otros', label: 'Otros' },
+      ],
     },
     {
       key: 'ubicacion',
@@ -74,8 +74,8 @@ const RepuestosPage = ({ token }) => {
         { value: 'deposito', label: 'Depósito Principal' },
         { value: 'taller', label: 'Taller' },
         { value: 'oficina', label: 'Oficina' },
-        { value: 'campo', label: 'Campo' }
-      ]
+        { value: 'campo', label: 'Campo' },
+      ],
     },
     {
       key: 'stockRange',
@@ -84,13 +84,13 @@ const RepuestosPage = ({ token }) => {
       minKey: 'stockMin',
       maxKey: 'stockMax',
       minPlaceholder: 'Min',
-      maxPlaceholder: 'Max'
+      maxPlaceholder: 'Max',
     },
     {
       key: 'estado',
       type: 'status',
       label: 'Estado de Stock',
-      statusType: 'stock'
+      statusType: 'stock',
     },
     {
       key: 'sinStock',
@@ -99,9 +99,9 @@ const RepuestosPage = ({ token }) => {
       placeholder: 'Todos',
       options: [
         { value: 'true', label: 'Solo sin stock' },
-        { value: 'false', label: 'Solo con stock' }
-      ]
-    }
+        { value: 'false', label: 'Solo con stock' },
+      ],
+    },
   ];
 
   // Configuración de estado visual
@@ -110,19 +110,19 @@ const RepuestosPage = ({ token }) => {
     field: 'estado',
     data: (item) => ({
       cantidad: item.cantidad,
-      stockMinimo: item.stockMinimo || 10
-    })
+      stockMinimo: item.stockMinimo || 10,
+    }),
   };
 
   // Configuración de acciones
   const actions = [
     {
       type: 'view',
-      action: (item) => navigate(`/repuestos/${item.id}`)
+      action: (item) => navigate(`/repuestos/${item.id}`),
     },
     {
       type: 'edit',
-      action: (item) => navigate(`/repuestos/${item.id}/edit`)
+      action: (item) => navigate(`/repuestos/${item.id}/edit`),
     },
     {
       type: 'delete',
@@ -131,8 +131,8 @@ const RepuestosPage = ({ token }) => {
           // Lógica de eliminación
           console.log('Eliminar repuesto:', item);
         }
-      }
-    }
+      },
+    },
   ];
 
   // Handlers
@@ -154,22 +154,18 @@ const RepuestosPage = ({ token }) => {
       title="Gestión de Repuestos"
       subtitle="Administra el inventario de repuestos y componentes"
       apiEndpoint={`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/repuestos`}
-      
       fields={fields}
       filterConfig={filterConfig}
       statusConfig={statusConfig}
       actions={actions}
-      
       onItemClick={handleItemClick}
       onCreateNew={handleCreateNew}
       onExport={handleExport}
-      
       pageSize={20}
       enableSearch={true}
       enableFilters={true}
       enablePagination={true}
       enableExport={true}
-      
       storageKey="repuestos_filters"
     />
   );

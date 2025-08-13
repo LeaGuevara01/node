@@ -24,7 +24,7 @@ export {
   FormButtonGroup,
   ListActionGroup,
   ToggleButton,
-  FloatingActionButton
+  FloatingActionButton,
 } from '../components/shared/Button';
 
 export {
@@ -32,7 +32,7 @@ export {
   StatusIndicator,
   StatusFilter,
   StatusSummary,
-  useStatus
+  useStatus,
 } from '../components/shared/StatusBadge';
 
 export {
@@ -48,7 +48,7 @@ export {
   ListLayout,
   ModalLayout,
   LayoutSkeleton,
-  StickyHeaderLayout
+  StickyHeaderLayout,
 } from '../components/shared/Layout';
 
 export {
@@ -59,22 +59,18 @@ export {
   RangeFilter,
   DateFilter,
   SavedFiltersManager,
-  ActiveFiltersIndicator
+  ActiveFiltersIndicator,
 } from '../components/shared/SmartFilters';
 
 export {
   UniversalList,
   useListData,
   ListItem,
-  Pagination
+  Pagination,
 } from '../components/shared/UniversalList';
 
 // Componente de estadísticas mejorado
-export {
-  default as StatsCard,
-  StatsGrid,
-  useStats
-} from '../components/shared/StatsCard';
+export { default as StatsCard, StatsGrid, useStats } from '../components/shared/StatsCard';
 
 // Sistema modular de estilos para páginas
 export {
@@ -93,7 +89,7 @@ export {
   SPACING,
   ANIMATIONS,
   classNames,
-  conditionalClass
+  conditionalClass,
 } from './pageStyles';
 
 // Componentes con estilos automáticos - ⚠️ DEPRECADOS
@@ -113,7 +109,7 @@ export {
   /** @deprecated No usar */
   applyPageStyles,
   /** @deprecated No usar */
-  styledPage
+  styledPage,
 } from './styledComponents';
 
 // Componentes de detalles existentes (migrados)
@@ -126,7 +122,7 @@ export {
   SimpleField,
   StatCard,
   ActionButton,
-  ImageUpload
+  ImageUpload,
 } from '../components/shared/DetailsComponents';
 
 // Estilos actualizados
@@ -140,13 +136,11 @@ export {
   DETAILS_ACTIONS,
   DETAILS_ICONS,
   DETAILS_ALERTS,
-  DETAILS_LOADING
+  DETAILS_LOADING,
 } from './detailsStyles';
 
 // Utilidades
-export {
-  STATUS_UTILS
-} from './tokens/visualStatus';
+export { STATUS_UTILS } from './tokens/visualStatus';
 
 // Re-exportaciones para compatibilidad
 export * from './tokens/designTokens';

@@ -1,0 +1,18 @@
+# Dependencies and build outputs
+node_modules/
+dist/
+build/
+coverage/
+server/prisma/
+
+# Lock files
+package-lock.json
+
+# Generated client
+**/.prisma/
+
+# Logs
+*.log
+
+# Deployment descriptors (exclude from prettier)
+render.yaml

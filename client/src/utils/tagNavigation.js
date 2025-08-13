@@ -9,16 +9,21 @@ export function resolveTagAction({ entity, tagKey, tagValue, entityId }) {
 
   if (entity === 'maquinaria') {
     if (tagKey === 'seccion' && tagValue) {
-      return { type: 'link', value: `/maquinarias/${entityId}?section=${encodeURIComponent(tagValue)}` };
+      return {
+        type: 'link',
+        value: `/maquinarias/${entityId}?section=${encodeURIComponent(tagValue)}`,
+      };
     }
     if (tagKey === 'catalogo') {
-      return { type: 'link', value: `/catalogo?maquinaria=${encodeURIComponent(entityId)}` };
+      // Align to compras list with maquinaria filter
+      return { type: 'link', value: `/compras?maquinaria=${encodeURIComponent(entityId)}` };
     }
   }
 
   if (entity === 'repuesto') {
     if (tagKey === 'catalogo') {
-      return { type: 'link', value: `/compras/catalogo?repuesto=${encodeURIComponent(entityId)}` };
+      // Align to compras list with repuesto filter
+      return { type: 'link', value: `/compras?repuesto=${encodeURIComponent(entityId)}` };
     }
   }
 

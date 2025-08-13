@@ -61,14 +61,14 @@ GET /api/repuestos
 ```javascript
 // Buscar filtros de aceite en JD 4730 con stock bajo
 const response = await fetch(
-  "/api/repuestos?" +
+  '/api/repuestos?' +
     new URLSearchParams({
-      search: "aceite",
-      categoria: "Filtros",
-      ubicacion: "JD 4730",
-      stockMax: "10",
-      page: "1",
-      limit: "10",
+      search: 'aceite',
+      categoria: 'Filtros',
+      ubicacion: 'JD 4730',
+      stockMax: '10',
+      page: '1',
+      limit: '10',
     })
 );
 ```
@@ -196,11 +196,11 @@ Componente principal que maneja:
 
 ```jsx
 const [filtros, setFiltros] = useState({
-  search: "",
-  categoria: "",
-  ubicacion: "",
-  stockMin: "",
-  stockMax: "",
+  search: '',
+  categoria: '',
+  ubicacion: '',
+  stockMin: '',
+  stockMax: '',
   sinStock: false,
 });
 ```
@@ -214,7 +214,7 @@ Componente de búsqueda con:
 - Navegación por teclado
 
 ```jsx
-const [query, setQuery] = useState("");
+const [query, setQuery] = useState('');
 const [resultados, setResultados] = useState([]);
 const [isOpen, setIsOpen] = useState(false);
 ```
@@ -245,8 +245,8 @@ exports.getRepuestos = async (req, res) => {
       codigo,
       page = 1,
       limit = 10,
-      sortBy = "createdAt",
-      sortOrder = "desc",
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
     } = req.query;
 
     // Construcción de filtros dinámicos
@@ -254,18 +254,18 @@ exports.getRepuestos = async (req, res) => {
 
     if (search) {
       whereClause.OR = [
-        { nombre: { contains: search, mode: "insensitive" } },
-        { descripcion: { contains: search, mode: "insensitive" } },
-        { codigo: { contains: search, mode: "insensitive" } },
+        { nombre: { contains: search, mode: 'insensitive' } },
+        { descripcion: { contains: search, mode: 'insensitive' } },
+        { codigo: { contains: search, mode: 'insensitive' } },
       ];
     }
 
     if (categoria) whereClause.categoria = categoria;
     if (ubicacion) whereClause.ubicacion = ubicacion;
-    if (codigo) whereClause.codigo = { contains: codigo, mode: "insensitive" };
+    if (codigo) whereClause.codigo = { contains: codigo, mode: 'insensitive' };
 
     // Filtros de stock
-    if (sinStock === "true") {
+    if (sinStock === 'true') {
       whereClause.stock = 0;
     } else {
       if (stockMin || stockMax) {
@@ -326,9 +326,9 @@ exports.busquedaRapida = async (req, res) => {
     const resultados = await prisma.repuesto.findMany({
       where: {
         OR: [
-          { nombre: { contains: q, mode: "insensitive" } },
-          { codigo: { contains: q, mode: "insensitive" } },
-          { descripcion: { contains: q, mode: "insensitive" } },
+          { nombre: { contains: q, mode: 'insensitive' } },
+          { codigo: { contains: q, mode: 'insensitive' } },
+          { descripcion: { contains: q, mode: 'insensitive' } },
         ],
       },
       select: {
@@ -340,7 +340,7 @@ exports.busquedaRapida = async (req, res) => {
         stock: true,
       },
       take: 10,
-      orderBy: { nombre: "asc" },
+      orderBy: { nombre: 'asc' },
     });
 
     res.json({
@@ -359,10 +359,10 @@ exports.busquedaRapida = async (req, res) => {
 
 ```javascript
 const filtros = {
-  search: "filtro",
-  stockMax: "10",
-  sortBy: "stock",
-  sortOrder: "asc",
+  search: 'filtro',
+  stockMax: '10',
+  sortBy: 'stock',
+  sortOrder: 'asc',
 };
 ```
 
@@ -370,7 +370,7 @@ const filtros = {
 
 ```javascript
 const filtros = {
-  ubicacion: "JD 4730",
+  ubicacion: 'JD 4730',
   sinStock: true,
 };
 ```
@@ -379,9 +379,9 @@ const filtros = {
 
 ```javascript
 const filtros = {
-  categoria: "Lubricantes",
-  codigo: "SAE",
-  sortBy: "nombre",
+  categoria: 'Lubricantes',
+  codigo: 'SAE',
+  sortBy: 'nombre',
 };
 ```
 

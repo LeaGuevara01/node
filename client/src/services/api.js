@@ -2,7 +2,7 @@
 
 /**
  * Servicio API para la comunicación con el backend
- * 
+ *
  * Este módulo centraliza todas las llamadas HTTP al servidor backend,
  * proporcionando una interfaz unificada para:
  * - Autenticación y autorización
@@ -10,17 +10,17 @@
  * - Manejo consistente de headers y tokens
  * - Configuración del endpoint base
  * - Sistema de logging centralizado y modular
- * 
+ *
  * Todas las funciones retornan el resultado parseado de la respuesta JSON
  * y manejan automáticamente los headers de autorización cuando se requiere.
  */
 
-import { 
-  logApiRequest, 
-  logApiSuccess, 
-  logApiError, 
+import {
+  logApiRequest,
+  logApiSuccess,
+  logApiError,
   formatFiltersForLog,
-  logCrudOperation 
+  logCrudOperation,
 } from '../utils/apiLogger';
 
 // Configuración del endpoint base de la API
@@ -37,7 +37,7 @@ export async function login(username, password) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, password }),
   });
   return res.json();
 }
@@ -53,7 +53,7 @@ export async function register(username, password, role) {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, role })
+    body: JSON.stringify({ username, password, role }),
   });
   return res.json();
 }
@@ -73,12 +73,17 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
     page: pagina.toString(),
     limit: forStats ? '10000' : '20',
     sortBy: 'categoria',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       // Si es un array, convertir a string separado por comas
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
@@ -91,10 +96,10 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
   });
 
   const url = `${API_URL}/maquinaria?${params}`;
-  
+
   // Logging con sistema centralizado
   const startTime = logApiRequest(url, 'GET', filtros);
-  
+
   // Si es un request duplicado, aún ejecutarlo pero no loggearlo como nuevo
   // Nota: En desarrollo (StrictMode) los efectos pueden ejecutarse dos veces.
   // Si detectamos duplicado (startTime === null), simplemente continuamos
@@ -102,28 +107,27 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
 
   try {
     const res = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
-    
+
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     }
-    
+
     const data = await res.json();
-    
+
     // Log de éxito con información específica
     logApiSuccess(url, 'GET', data, startTime, {
-      expectedField: 'maquinarias'
+      expectedField: 'maquinarias',
     });
-    
+
     // Si es para estadísticas, retornar solo el array
     if (forStats) {
       return data.maquinarias || data || [];
     }
-    
+
     // Para uso normal, retornar el objeto completo con paginación
     return data;
-    
   } catch (error) {
     logApiError(url, 'GET', error, startTime);
     throw error;
@@ -137,7 +141,7 @@ export async function getMaquinarias(token, filtros = {}, pagina = 1, forStats =
  */
 export async function getMaquinariaFilters(token) {
   const res = await fetch(`${API_URL}/maquinaria/filtros`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -150,7 +154,7 @@ export async function getMaquinariaFilters(token) {
  */
 export async function getMaquinariaById(id, token) {
   const res = await fetch(`${API_URL}/maquinaria/${id}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -166,9 +170,9 @@ export async function createMaquinaria(data, token) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return res.json();
 }
@@ -184,9 +188,9 @@ export async function updateMaquinaria(data, token) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return res.json();
 }
@@ -195,8 +199,8 @@ export async function deleteMaquinaria(id, token) {
   const res = await fetch(`${API_URL}/maquinaria/${id}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   return res.json();
 }
@@ -216,12 +220,17 @@ export async function getRepuestos(token, filtros = {}, pagina = 1, forStats = f
     page: pagina.toString(),
     limit: forStats ? '10000' : '20',
     sortBy: 'nombre',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
           params.append(key, filtros[key].join(','));
@@ -233,7 +242,7 @@ export async function getRepuestos(token, filtros = {}, pagina = 1, forStats = f
   });
 
   const res = await fetch(`${API_URL}/repuestos?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
 
@@ -254,7 +263,7 @@ export async function getRepuestos(token, filtros = {}, pagina = 1, forStats = f
  */
 export async function getRepuestoById(id, token) {
   const res = await fetch(`${API_URL}/repuestos/${id}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -264,9 +273,9 @@ export async function createRepuesto(data, token) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return res.json();
 }
@@ -276,16 +285,16 @@ export async function updateRepuesto(id, data, token) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -293,15 +302,15 @@ export async function deleteRepuesto(id, token) {
   const res = await fetch(`${API_URL}/repuestos/${id}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -312,7 +321,7 @@ export async function deleteRepuesto(id, token) {
  */
 export async function getRepuestoFilters(token) {
   const res = await fetch(`${API_URL}/repuestos/filtros`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -324,7 +333,7 @@ export async function getRepuestoFilters(token) {
  */
 export async function getEstadisticasRepuestos(token) {
   const res = await fetch(`${API_URL}/repuestos/estadisticas`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -337,7 +346,7 @@ export async function getEstadisticasRepuestos(token) {
  */
 export async function busquedaRapidaRepuestos(query, token) {
   const res = await fetch(`${API_URL}/repuestos/busqueda?q=${encodeURIComponent(query)}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -357,12 +366,17 @@ export async function getProveedores(token, filtros = {}, pagina = 1, forStats =
     page: pagina.toString(),
     limit: forStats ? '10000' : '20',
     sortBy: 'nombre',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
           params.append(key, filtros[key].join(','));
@@ -374,7 +388,7 @@ export async function getProveedores(token, filtros = {}, pagina = 1, forStats =
   });
 
   const res = await fetch(`${API_URL}/proveedores?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
 
@@ -389,7 +403,7 @@ export async function getProveedores(token, filtros = {}, pagina = 1, forStats =
 
 export async function getProveedorById(id, token) {
   const res = await fetch(`${API_URL}/proveedores/${id}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -399,9 +413,9 @@ export async function createProveedor(data, token) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return res.json();
 }
@@ -411,9 +425,9 @@ export async function updateProveedor(id, data, token) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return res.json();
 }
@@ -422,8 +436,8 @@ export async function deleteProveedor(id, token) {
   const res = await fetch(`${API_URL}/proveedores/${id}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   return res.json();
 }
@@ -435,7 +449,7 @@ export async function deleteProveedor(id, token) {
  */
 export async function getProveedorFilters(token) {
   const res = await fetch(`${API_URL}/proveedores/filtros`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -455,12 +469,17 @@ export async function getReparaciones(token, filtros = {}, pagina = 1, forStats 
     page: pagina.toString(),
     limit: forStats ? '10000' : '20',
     sortBy: 'fecha',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
           params.append(key, filtros[key].join(','));
@@ -472,11 +491,13 @@ export async function getReparaciones(token, filtros = {}, pagina = 1, forStats 
   });
 
   const res = await fetch(`${API_URL}/reparaciones?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
     let detail = '';
-    try { detail = (await res.json()).error || res.statusText; } catch {}
+    try {
+      detail = (await res.json()).error || res.statusText;
+    } catch {}
     throw new Error(`Error ${res.status}: ${detail}`);
   }
   const data = await res.json();
@@ -490,7 +511,15 @@ export async function getReparaciones(token, filtros = {}, pagina = 1, forStats 
   // Para uso normal, retornar el objeto completo con paginación
   // Normalizar para que las páginas puedan manejar ambos formatos
   if (Array.isArray(data)) {
-    return { reparaciones: data, pagination: { current: Number(pagina) || 1, total: 1, totalItems: data.length, limit: Number(params.get('limit')) || 20 } };
+    return {
+      reparaciones: data,
+      pagination: {
+        current: Number(pagina) || 1,
+        total: 1,
+        totalItems: data.length,
+        limit: Number(params.get('limit')) || 20,
+      },
+    };
   }
   if (data && (data.data || data.reparaciones)) {
     return { reparaciones: data.reparaciones || data.data, pagination: data.pagination };
@@ -500,7 +529,7 @@ export async function getReparaciones(token, filtros = {}, pagina = 1, forStats 
 
 export async function getReparacion(id, token) {
   const res = await fetch(`${API_URL}/reparaciones/${id}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -510,16 +539,16 @@ export async function createReparacion(data, token) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -528,16 +557,16 @@ export async function updateReparacion(id, data, token) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -545,8 +574,8 @@ export async function deleteReparacion(id, token) {
   const res = await fetch(`${API_URL}/reparaciones/${id}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
   return res.json();
 }
@@ -558,11 +587,13 @@ export async function deleteReparacion(id, token) {
  */
 export async function getReparacionFilters(token) {
   const res = await fetch(`${API_URL}/reparaciones/filtros`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
     let detail = '';
-    try { detail = (await res.json()).error || res.statusText; } catch {}
+    try {
+      detail = (await res.json()).error || res.statusText;
+    } catch {}
     throw new Error(`Error ${res.status}: ${detail}`);
   }
   return res.json();
@@ -583,12 +614,17 @@ export async function getUsuarios(token, filtros = {}, pagina = 1, forStats = fa
     page: pagina.toString(),
     limit: forStats ? '10000' : '20',
     sortBy: 'username',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) {
           params.append(key, filtros[key].join(','));
@@ -600,7 +636,7 @@ export async function getUsuarios(token, filtros = {}, pagina = 1, forStats = fa
   });
 
   const res = await fetch(`${API_URL}/users?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
 
@@ -621,7 +657,7 @@ export async function getUsuarios(token, filtros = {}, pagina = 1, forStats = fa
  */
 export async function getUsuarioById(id, token) {
   const res = await fetch(`${API_URL}/users/${id}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -637,16 +673,16 @@ export async function createUsuario(data, token) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -662,16 +698,16 @@ export async function updateUsuario(id, data, token) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -685,15 +721,15 @@ export async function deleteUsuario(id, token) {
   const res = await fetch(`${API_URL}/users/${id}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
-  
+
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || `Error ${res.status}: ${res.statusText}`);
   }
-  
+
   return res.json();
 }
 
@@ -704,7 +740,7 @@ export async function deleteUsuario(id, token) {
  */
 export async function getUsuarioFilters(token) {
   const res = await fetch(`${API_URL}/usuarios/filtros`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
@@ -714,10 +750,15 @@ export async function getUsuarioFilters(token) {
 export async function getCompras(token, filtros = {}, pagina = 1, forStats = false) {
   const params = new URLSearchParams({
     page: pagina.toString(),
-    limit: forStats ? '10000' : '20'
+    limit: forStats ? '10000' : '20',
   });
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       if (Array.isArray(filtros[key])) {
         if (filtros[key].length > 0) params.append(key, filtros[key].join(','));
       } else {
@@ -726,22 +767,24 @@ export async function getCompras(token, filtros = {}, pagina = 1, forStats = fal
     }
   });
   const res = await fetch(`${API_URL}/compras?${params}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   const data = await res.json();
-  return forStats ? (data.data || data || []) : data;
+  return forStats ? data.data || data || [] : data;
 }
 
 export async function getCompra(id, token) {
-  const res = await fetch(`${API_URL}/compras/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const res = await fetch(`${API_URL}/compras/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.json();
 }
 
 export async function createCompra(data, token) {
   const res = await fetch(`${API_URL}/compras`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(data)
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error((await res.json()).error || 'Error al crear compra');
   return res.json();
@@ -750,8 +793,8 @@ export async function createCompra(data, token) {
 export async function updateCompra(id, data, token) {
   const res = await fetch(`${API_URL}/compras/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(data)
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error((await res.json()).error || 'Error al actualizar compra');
   return res.json();
@@ -760,13 +803,15 @@ export async function updateCompra(id, data, token) {
 export async function deleteCompra(id, token) {
   const res = await fetch(`${API_URL}/compras/${id}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error((await res.json()).error || 'Error al eliminar compra');
   return res.json();
 }
 
 export async function getComprasStats(token) {
-  const res = await fetch(`${API_URL}/compras/stats`, { headers: { 'Authorization': `Bearer ${token}` } });
+  const res = await fetch(`${API_URL}/compras/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return res.json();
 }

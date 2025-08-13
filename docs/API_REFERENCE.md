@@ -523,18 +523,18 @@ GET /api/health
 class ApiClient {
   constructor(baseURL) {
     this.baseURL = baseURL;
-    this.token = localStorage.getItem("token");
+    this.token = localStorage.getItem('token');
   }
 
   setToken(token) {
     this.token = token;
-    localStorage.setItem("token", token);
+    localStorage.setItem('token', token);
   }
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...options.headers,
     };
 
@@ -549,7 +549,7 @@ class ApiClient {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || "Error en la solicitud");
+      throw new Error(error.error || 'Error en la solicitud');
     }
 
     return response.json();
@@ -557,8 +557,8 @@ class ApiClient {
 
   // Métodos específicos
   async login(email, password) {
-    const response = await this.request("/auth/login", {
-      method: "POST",
+    const response = await this.request('/auth/login', {
+      method: 'POST',
       body: JSON.stringify({ email, password }),
     });
     this.setToken(response.token);
@@ -571,31 +571,31 @@ class ApiClient {
   }
 
   async createRepuesto(data) {
-    return this.request("/repuestos", {
-      method: "POST",
+    return this.request('/repuestos', {
+      method: 'POST',
       body: JSON.stringify(data),
     });
   }
 }
 
 // Uso
-const api = new ApiClient("http://localhost:4000/api");
+const api = new ApiClient('http://localhost:4000/api');
 
 // Login
-await api.login("admin@example.com", "password");
+await api.login('admin@example.com', 'password');
 
 // Obtener repuestos con filtros
 const repuestos = await api.getRepuestos({
-  search: "filtro",
-  categoria: "Filtros",
+  search: 'filtro',
+  categoria: 'Filtros',
   page: 1,
   limit: 10,
 });
 
 // Crear repuesto
 const nuevoRepuesto = await api.createRepuesto({
-  nombre: "Filtro Nuevo",
-  categoria: "Filtros",
+  nombre: 'Filtro Nuevo',
+  categoria: 'Filtros',
   stock: 10,
   precioUnitario: 25.5,
 });
@@ -606,14 +606,14 @@ const nuevoRepuesto = await api.createRepuesto({
 ```javascript
 try {
   const repuestos = await api.getRepuestos();
-  console.log("Repuestos:", repuestos);
+  console.log('Repuestos:', repuestos);
 } catch (error) {
-  if (error.message.includes("Token inválido")) {
+  if (error.message.includes('Token inválido')) {
     // Redirigir a login
-    window.location.href = "/login";
+    window.location.href = '/login';
   } else {
     // Mostrar error al usuario
-    console.error("Error:", error.message);
+    console.error('Error:', error.message);
   }
 }
 ```

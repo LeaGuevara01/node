@@ -1,13 +1,13 @@
 /**
  * Dashboard Principal Mejorado del Sistema de Gestión Agrícola
- * 
+ *
  * Versión modernizada que utiliza:
  * - Sistema de design tokens para consistencia visual
  * - Componentes modulares reutilizables
  * - Navegación mejorada con cartas clickeables
  * - Layout responsivo con agricultural theming
  * - Mejor accesibilidad y UX
- * 
+ *
  * @param {string} token - Token de autenticación del usuario
  * @param {string} role - Rol del usuario (Admin/User)
  * @param {function} onLogout - Función para cerrar sesión
@@ -35,25 +35,25 @@ import {
   StatsGrid,
   useStats,
   StatusSummary,
-  DESIGN_TOKENS
+  DESIGN_TOKENS,
 } from '../styles';
 
 function DashboardModern({ token, role, onLogout }) {
   const navigate = useNavigate();
   const { navigateToListPage } = useNavigation();
-  
+
   // Estados para almacenar los datos de cada entidad
   const [data, setData] = useState({
     maquinarias: [],
     repuestos: [],
     proveedores: [],
-    reparaciones: []
+    reparaciones: [],
   });
-  
+
   // Estados de control de la UI
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState(null);
-  
+
   // Usar el hook de estadísticas
   const stats = useStats(data);
 
@@ -63,32 +63,39 @@ function DashboardModern({ token, role, onLogout }) {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [maquinariasData, repuestosData, proveedoresData, reparacionesData] = await Promise.all([
-        getMaquinarias(token, {}, 1, true), // forStats = true para obtener todos
-        getRepuestos(token, {}, 1, true), // forStats = true para obtener todos
-        getProveedores(token, {}, 1, true), // forStats = true para obtener todos
-        getReparaciones(token, {}, 1, true) // forStats = true para obtener todos
-      ]);
-      
+      const [maquinariasData, repuestosData, proveedoresData, reparacionesData] = await Promise.all(
+        [
+          getMaquinarias(token, {}, 1, true), // forStats = true para obtener todos
+          getRepuestos(token, {}, 1, true), // forStats = true para obtener todos
+          getProveedores(token, {}, 1, true), // forStats = true para obtener todos
+          getReparaciones(token, {}, 1, true), // forStats = true para obtener todos
+        ]
+      );
+
       // Procesar y normalizar datos
       const processedData = {
-        maquinarias: Array.isArray(maquinariasData) ? maquinariasData : (maquinariasData?.maquinarias || []),
-        repuestos: Array.isArray(repuestosData) ? repuestosData : (repuestosData?.repuestos || []),
-        proveedores: Array.isArray(proveedoresData) ? proveedoresData : (proveedoresData?.proveedores || []),
-        reparaciones: Array.isArray(reparacionesData) ? reparacionesData : (reparacionesData?.data || reparacionesData?.reparaciones || [])
+        maquinarias: Array.isArray(maquinariasData)
+          ? maquinariasData
+          : maquinariasData?.maquinarias || [],
+        repuestos: Array.isArray(repuestosData) ? repuestosData : repuestosData?.repuestos || [],
+        proveedores: Array.isArray(proveedoresData)
+          ? proveedoresData
+          : proveedoresData?.proveedores || [],
+        reparaciones: Array.isArray(reparacionesData)
+          ? reparacionesData
+          : reparacionesData?.data || reparacionesData?.reparaciones || [],
       };
-      
+
       setData(processedData);
-      
+
       console.log('Dashboard Modern - Datos cargados:', {
         maquinarias: processedData.maquinarias.length,
         repuestos: processedData.repuestos.length,
         proveedores: processedData.proveedores.length,
-        reparaciones: processedData.reparaciones.length
+        reparaciones: processedData.reparaciones.length,
       });
-      
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -153,17 +160,20 @@ function DashboardModern({ token, role, onLogout }) {
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar de navegación */}
       <Sidebar active={activeSection} setActive={setActiveSection} />
-      
+
       {/* Área de contenido principal */}
       <div className="pl-12 md:pl-60">
         <PageContainer theme="agricultural">
           <ContentContainer>
-            
             {/* Dashboard principal */}
             {!activeSection && (
               <div className="space-y-6">
                 {/* Header del sistema */}
-                <Card variant="agricultural" padding="lg" className="text-center border-l-4 border-agricultural-crop-500">
+                <Card
+                  variant="agricultural"
+                  padding="lg"
+                  className="text-center border-l-4 border-agricultural-crop-500"
+                >
                   <div className="space-y-2">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex items-center justify-center gap-3">
                       <Wheat className="w-8 h-8 text-green-600" />
@@ -181,7 +191,7 @@ function DashboardModern({ token, role, onLogout }) {
                     </div>
                   </div>
                 </Card>
-                
+
                 {/* Grid de estadísticas */}
                 <div>
                   <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -191,7 +201,7 @@ function DashboardModern({ token, role, onLogout }) {
                       (Haz click en una carta para ver detalles)
                     </span>
                   </h2>
-                  <StatsGrid 
+                  <StatsGrid
                     stats={stats}
                     onCardClick={handleStatsCardClick}
                     variant="agricultural"
@@ -205,11 +215,7 @@ function DashboardModern({ token, role, onLogout }) {
                       <Wrench className="w-5 h-5 text-orange-600" />
                       Estado de Maquinarias
                     </h3>
-                    <StatusSummary
-                      type="maquinaria"
-                      data={data.maquinarias}
-                      statusField="estado"
-                    />
+                    <StatusSummary type="maquinaria" data={data.maquinarias} statusField="estado" />
                   </Card>
 
                   <Card variant="default" padding="lg">
@@ -217,24 +223,24 @@ function DashboardModern({ token, role, onLogout }) {
                       <Package className="w-5 h-5 text-purple-600" />
                       Estado de Stock
                     </h3>
-                    <StatusSummary
-                      type="stock"
-                      data={data.repuestos}
-                      statusField="cantidad"
-                    />
+                    <StatusSummary type="stock" data={data.repuestos} statusField="cantidad" />
                   </Card>
                 </div>
-                
+
                 {/* Welcome Card */}
                 <WelcomeCard role={role} />
               </div>
             )}
-            
+
             {/* Secciones específicas con botón de regreso */}
             {activeSection && (
               <div className="space-y-4">
                 {/* Header de sección con navegación */}
-                <Card variant="default" padding="md" className="border-l-4 border-agricultural-sky-500">
+                <Card
+                  variant="default"
+                  padding="md"
+                  className="border-l-4 border-agricultural-sky-500"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <button
@@ -261,33 +267,32 @@ function DashboardModern({ token, role, onLogout }) {
 
                 {/* Contenido de la sección */}
                 {activeSection === 'maquinarias' && (
-                  <RoleGuard role={role} allowed={["Admin", "User"]}>
+                  <RoleGuard role={role} allowed={['Admin', 'User']}>
                     <MaquinariaForm token={token} onCreated={fetchData} />
                   </RoleGuard>
                 )}
                 {activeSection === 'repuestos' && (
-                  <RoleGuard role={role} allowed={["Admin", "User"]}>
+                  <RoleGuard role={role} allowed={['Admin', 'User']}>
                     <RepuestoForm token={token} onCreated={fetchData} />
                   </RoleGuard>
                 )}
                 {activeSection === 'proveedores' && (
-                  <RoleGuard role={role} allowed={["Admin", "User"]}>
+                  <RoleGuard role={role} allowed={['Admin', 'User']}>
                     <ProveedorForm token={token} onCreated={fetchData} />
                   </RoleGuard>
                 )}
                 {activeSection === 'reparaciones' && (
-                  <RoleGuard role={role} allowed={["Admin"]}>
+                  <RoleGuard role={role} allowed={['Admin']}>
                     <ReparacionForm token={token} onCreated={fetchData} />
                   </RoleGuard>
                 )}
                 {activeSection === 'usuarios' && (
-                  <RoleGuard role={role} allowed={["Admin"]}>
+                  <RoleGuard role={role} allowed={['Admin']}>
                     <UserRegisterForm token={token} onRegistered={fetchData} />
                   </RoleGuard>
                 )}
               </div>
             )}
-            
           </ContentContainer>
         </PageContainer>
       </div>

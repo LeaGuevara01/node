@@ -4,15 +4,15 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { 
-  getRepuestos, 
-  createRepuesto, 
-  updateRepuesto, 
-  deleteRepuesto, 
-  getFilterOptions, 
-  getEstadisticas, 
+const {
+  getRepuestos,
+  createRepuesto,
+  updateRepuesto,
+  deleteRepuesto,
+  getFilterOptions,
+  getEstadisticas,
   busquedaRapida,
-  getRepuestoById
+  getRepuestoById,
 } = require('../controllers/repuestoController');
 
 // Rutas públicas (o con autenticación básica)
@@ -23,19 +23,37 @@ router.get('/busqueda', auth, busquedaRapida);
 router.get('/:id', auth, getRepuestoById);
 
 // Rutas que requieren permisos de administrador
-router.post('/', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden crear repuestos' });
-  next();
-}, createRepuesto);
+router.post(
+  '/',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden crear repuestos' });
+    next();
+  },
+  createRepuesto
+);
 
-router.put('/:id', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden editar repuestos' });
-  next();
-}, updateRepuesto);
+router.put(
+  '/:id',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden editar repuestos' });
+    next();
+  },
+  updateRepuesto
+);
 
-router.delete('/:id', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden eliminar repuestos' });
-  next();
-}, deleteRepuesto);
+router.delete(
+  '/:id',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden eliminar repuestos' });
+    next();
+  },
+  deleteRepuesto
+);
 
 module.exports = router;

@@ -6,25 +6,25 @@ const prisma = require('../lib/prisma');
 
 exports.getReparaciones = async (req, res) => {
   try {
-    const { 
-      search, 
-      maquinariaId, 
-      userId, 
+    const {
+      search,
+      maquinariaId,
+      userId,
       repuestoId,
-      fechaInicio, 
-      fechaFin, 
-      fechaMin, 
+      fechaInicio,
+      fechaFin,
+      fechaMin,
       fechaMax,
       estado,
-      page = 1, 
-      limit = 20 
+      page = 1,
+      limit = 20,
     } = req.query;
 
     const where = {};
     const include = {
-      repuestos: { include: { repuesto: true } }, 
+      repuestos: { include: { repuesto: true } },
       usuario: { select: { id: true, username: true } },
-      maquinaria: { select: { id: true, nombre: true, modelo: true } }
+      maquinaria: { select: { id: true, nombre: true, modelo: true } },
     };
 
     // Filtro por búsqueda de texto
@@ -32,7 +32,7 @@ exports.getReparaciones = async (req, res) => {
       where.OR = [
         { descripcion: { contains: search, mode: 'insensitive' } },
         { maquinaria: { nombre: { contains: search, mode: 'insensitive' } } },
-        { usuario: { username: { contains: search, mode: 'insensitive' } } }
+        { usuario: { username: { contains: search, mode: 'insensitive' } } },
       ];
     }
 
@@ -49,8 +49,8 @@ exports.getReparaciones = async (req, res) => {
     if (repuestoId) {
       where.repuestos = {
         some: {
-          repuestoId: Number(repuestoId)
-        }
+          repuestoId: Number(repuestoId),
+        },
       };
     }
 
@@ -77,9 +77,9 @@ exports.getReparaciones = async (req, res) => {
         include,
         skip,
         take,
-        orderBy: { fecha: 'desc' }
+        orderBy: { fecha: 'desc' },
       }),
-      prisma.reparacion.count({ where })
+      prisma.reparacion.count({ where }),
     ]);
 
     res.json({
@@ -87,8 +87,8 @@ exports.getReparaciones = async (req, res) => {
       pagination: {
         current: Number(page),
         total: Math.ceil(total / take),
-        totalItems: total
-      }
+        totalItems: total,
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -104,17 +104,17 @@ exports.getReparacion = async (req, res) => {
     }
     const reparacion = await prisma.reparacion.findUnique({
       where: { id: Number(id) },
-      include: { 
-        repuestos: { include: { repuesto: true } }, 
+      include: {
+        repuestos: { include: { repuesto: true } },
         usuario: { select: { id: true, username: true } },
-        maquinaria: { select: { id: true, nombre: true, modelo: true } }
-      }
+        maquinaria: { select: { id: true, nombre: true, modelo: true } },
+      },
     });
-    
+
     if (!reparacion) {
       return res.status(404).json({ error: 'Reparación no encontrada' });
     }
-    
+
     res.json(reparacion);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -145,14 +145,17 @@ exports.createReparacion = async (req, res) => {
         descripcion: descripcion || null,
         userId: userId || null,
         repuestos: {
-          create: (repuestos || []).map(r => ({ repuestoId: r.repuestoId, cantidad: r.cantidad }))
-        }
+          create: (repuestos || []).map((r) => ({
+            repuestoId: r.repuestoId,
+            cantidad: r.cantidad,
+          })),
+        },
       },
-      include: { 
-        repuestos: { include: { repuesto: true } }, 
+      include: {
+        repuestos: { include: { repuesto: true } },
         usuario: { select: { id: true, username: true } },
-        maquinaria: { select: { id: true, nombre: true, modelo: true } }
-      }
+        maquinaria: { select: { id: true, nombre: true, modelo: true } },
+      },
     });
     res.status(201).json(reparacion);
   } catch (err) {
@@ -180,7 +183,7 @@ exports.updateReparacion = async (req, res) => {
 
     // First, delete existing repuestos relationships
     await prisma.reparacionRepuesto.deleteMany({
-      where: { reparacionId: Number(id) }
+      where: { reparacionId: Number(id) },
     });
 
     // Update the reparacion with new data
@@ -192,14 +195,17 @@ exports.updateReparacion = async (req, res) => {
         descripcion: descripcion || null,
         userId: userId || null,
         repuestos: {
-          create: (repuestos || []).map(r => ({ repuestoId: r.repuestoId, cantidad: r.cantidad }))
-        }
+          create: (repuestos || []).map((r) => ({
+            repuestoId: r.repuestoId,
+            cantidad: r.cantidad,
+          })),
+        },
       },
-      include: { 
-        repuestos: { include: { repuesto: true } }, 
+      include: {
+        repuestos: { include: { repuesto: true } },
         usuario: { select: { id: true, username: true } },
-        maquinaria: { select: { id: true, nombre: true, modelo: true } }
-      }
+        maquinaria: { select: { id: true, nombre: true, modelo: true } },
+      },
     });
     res.json(reparacion);
   } catch (err) {
@@ -216,7 +222,7 @@ exports.deleteReparacion = async (req, res) => {
   try {
     // Delete the reparacion (cascading will handle repuestos relationships)
     await prisma.reparacion.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     });
     res.json({ message: 'Reparación eliminada' });
   } catch (err) {
@@ -236,7 +242,7 @@ exports.getReparacionFilters = async (req, res) => {
     const stats = await prisma.reparacion.aggregate({
       _min: { fecha: true },
       _max: { fecha: true },
-      _count: { id: true }
+      _count: { id: true },
     });
 
     const fechaMin = stats._min.fecha ? stats._min.fecha.toISOString().slice(0, 10) : null;
@@ -252,7 +258,7 @@ exports.getReparacionFilters = async (req, res) => {
       estados,
       prioridades,
       fechaRange: { min: fechaMin, max: fechaMax },
-      totalReparaciones: stats._count.id
+      totalReparaciones: stats._count.id,
     });
   } catch (err) {
     console.error('Error en getReparacionFilters:', err);

@@ -249,10 +249,10 @@ const swipeRef = useSwipeGestures(
 ```javascript
 // Agregar nuevo tipo de filtro
 const customField = {
-  key: "customField",
-  label: "Campo Personalizado",
-  type: "multiselect", // nuevo tipo
-  options: ["Opción 1", "Opción 2"],
+  key: 'customField',
+  label: 'Campo Personalizado',
+  type: 'multiselect', // nuevo tipo
+  options: ['Opción 1', 'Opción 2'],
   multiple: true,
 };
 ```
@@ -262,11 +262,11 @@ const customField = {
 ```javascript
 const customQuickActions = [
   {
-    key: "export",
-    label: "Exportar",
+    key: 'export',
+    label: 'Exportar',
     icon: <Download size={14} />,
     action: () => exportData(),
-    color: "text-purple-600 hover:bg-purple-50",
+    color: 'text-purple-600 hover:bg-purple-50',
   },
 ];
 ```

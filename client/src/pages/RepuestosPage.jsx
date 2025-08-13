@@ -4,12 +4,12 @@
 // client/src/pages/RepuestosPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  getRepuestos, 
-  getRepuestoFilters, 
-  createRepuesto, 
-  updateRepuesto, 
-  deleteRepuesto 
+import {
+  getRepuestos,
+  getRepuestoFilters,
+  createRepuesto,
+  updateRepuesto,
+  deleteRepuesto,
 } from '../services/api';
 import RepuestoEditModal from '../components/RepuestoEditModal';
 import BaseListPage from '../components/shared/BaseListPage';
@@ -17,14 +17,14 @@ import { useAdvancedFilters } from '../hooks/useAdvancedFilters.jsx';
 import { usePagination } from '../hooks/usePagination';
 import { REPUESTO_FILTERS_CONFIG } from '../config/filtersConfig';
 import { getColorFromString } from '../utils/colorUtils';
-import { 
-  BUTTON_STYLES, 
+import {
+  BUTTON_STYLES,
   ICON_STYLES,
   LIST_STYLES,
   MODAL_STYLES,
   INPUT_STYLES,
   LAYOUT_STYLES,
-  ALERT_STYLES
+  ALERT_STYLES,
 } from '../styles/repuestoStyles';
 import AppLayout from '../components/navigation/AppLayout';
 import FormHeaderActions from '../components/navigation/FormHeaderActions';
@@ -32,7 +32,7 @@ import Papa from 'papaparse';
 
 function RepuestosPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
-  
+
   // Estados principales
   const [repuestos, setRepuestos] = useState([]);
   const [selectedRepuesto, setSelectedRepuesto] = useState(null);
@@ -40,20 +40,23 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  
+
   // Estado del formulario
   const [form, setForm] = useState({
-    nombre: '', stock: '', codigo: '', descripcion: '', precio: '', proveedor: '', ubicacion: '', categoria: ''
+    nombre: '',
+    stock: '',
+    codigo: '',
+    descripcion: '',
+    precio: '',
+    proveedor: '',
+    ubicacion: '',
+    categoria: '',
   });
 
   // Hook de paginación
-  const { 
-    paginacion, 
-    loading, 
-    setLoading, 
-    handlePaginacion, 
-    actualizarPaginacion 
-  } = usePagination({ limit: 10 });
+  const { paginacion, loading, setLoading, handlePaginacion, actualizarPaginacion } = usePagination(
+    { limit: 10 }
+  );
 
   /**
    * Carga los repuestos con filtros aplicados
@@ -62,13 +65,13 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     setLoading(true);
     try {
       const data = await getRepuestos(token, filtrosActuales, pagina);
-      
+
       if (data.repuestos) {
         setRepuestos(data.repuestos);
-  actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
+        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         setRepuestos(data || []);
-  actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
+        actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
       }
       setError('');
     } catch (err) {
@@ -98,42 +101,46 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     filtrosTemporales,
     tokensActivos,
     filtrosConsolidados,
-  opcionesFiltros,
+    opcionesFiltros,
     handleFiltroChange,
     aplicarFiltrosActuales,
     removerToken,
     limpiarTodosFiltros,
-    cargarOpcionesFiltros
+    cargarOpcionesFiltros,
   } = useAdvancedFilters({}, fetchRepuestos, fetchOpcionesFiltros);
 
   /**
    * Maneja la carga masiva de CSV
    */
   const handleFileUpload = async (csvData) => {
-    const validRows = csvData.filter(row => row.nombre && row.codigo);
-    let successCount = 0, failCount = 0;
-    
+    const validRows = csvData.filter((row) => row.nombre && row.codigo);
+    let successCount = 0,
+      failCount = 0;
+
     for (const row of validRows) {
       try {
-        await createRepuesto({
-          nombre: row.nombre || '',
-          codigo: row.codigo || '',
-          categoria: row.categoria || '',
-          ubicacion: row.ubicacion || '',
-          stock: row.stock ? Number(row.stock) : 0,
-          precio: row.precio ? Number(row.precio) : 0,
-          descripcion: row.descripcion || ''
-        }, token);
+        await createRepuesto(
+          {
+            nombre: row.nombre || '',
+            codigo: row.codigo || '',
+            categoria: row.categoria || '',
+            ubicacion: row.ubicacion || '',
+            stock: row.stock ? Number(row.stock) : 0,
+            precio: row.precio ? Number(row.precio) : 0,
+            descripcion: row.descripcion || '',
+          },
+          token
+        );
         successCount++;
       } catch (err) {
         console.error('Error creating repuesto:', err);
         failCount++;
       }
     }
-    
+
     setBulkSuccess(`Creados: ${successCount}`);
     setBulkError(failCount ? `Fallidas: ${failCount}` : '');
-    
+
     if (successCount > 0) {
       if (onCreated) onCreated();
       fetchRepuestos(filtrosConsolidados, 1);
@@ -203,7 +210,16 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         stock: Number(form.stock),
       };
       await createRepuesto(repuestoData, token);
-      setForm({ nombre: '', stock: '', codigo: '', descripcion: '', precio: '', proveedor: '', ubicacion: '', categoria: '' });
+      setForm({
+        nombre: '',
+        stock: '',
+        codigo: '',
+        descripcion: '',
+        precio: '',
+        proveedor: '',
+        ubicacion: '',
+        categoria: '',
+      });
       if (onCreated) onCreated();
       fetchRepuestos(filtrosConsolidados, 1);
       cargarOpcionesFiltros();
@@ -233,34 +249,76 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         </div>
       </div>
       {repuesto.descripcion && (
-        <div className={LIST_STYLES.itemDescription}>
-          {repuesto.descripcion}
-        </div>
+        <div className={LIST_STYLES.itemDescription}>{repuesto.descripcion}</div>
       )}
       <div className={LIST_STYLES.itemTagsRow}>
         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
           {/* Código: visible en todos los tamaños */}
-          <span className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`} title={repuesto.codigo || 'Sin código'}>
-            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          <span
+            className={`${LIST_STYLES.itemTagCode} bg-gray-100 text-gray-700`}
+            title={repuesto.codigo || 'Sin código'}
+          >
+            <svg
+              className={ICON_STYLES.small}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+              />
             </svg>
             <span className="tag-truncate">{repuesto.codigo || 'Sin código'}</span>
           </span>
           {/* Ubicación: visible en md+ y con estilo gris como código */}
           {repuesto.ubicacion && (
-            <span className={`${LIST_STYLES.itemTagLocation} bg-gray-100 text-gray-700 hidden md:inline-flex`} title={repuesto.ubicacion}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            <span
+              className={`${LIST_STYLES.itemTagLocation} bg-gray-100 text-gray-700 hidden md:inline-flex`}
+              title={repuesto.ubicacion}
+            >
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
               <span className="tag-truncate">{repuesto.ubicacion}</span>
             </span>
           )}
           {/* Categoría: visible siempre, con colores de alto contraste */}
           {repuesto.categoria && (
-            <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`} title={repuesto.categoria}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <span
+              className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(repuesto.categoria, 'categoria')}`}
+              title={repuesto.categoria}
+            >
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
               </svg>
               <span className="tag-truncate">{repuesto.categoria}</span>
             </span>
@@ -268,11 +326,15 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         </div>
         <div className={LIST_STYLES.itemTagsRight}>
           {/* Stock: visible en todos los tamaños */}
-          <span className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock, repuesto.ubicacion)}`}>
+          <span
+            className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock, repuesto.ubicacion)}`}
+          >
             Stock: {repuesto.stock}
           </span>
           {/* Precio: solo en pantallas grandes */}
-          <span className={`${LIST_STYLES.itemTag} bg-brand-100 text-brand-800 hidden lg:inline-flex`}>
+          <span
+            className={`${LIST_STYLES.itemTag} bg-brand-100 text-brand-800 hidden lg:inline-flex`}
+          >
             ${repuesto.precio?.toFixed(2) || '0.00'}
           </span>
         </div>
@@ -287,22 +349,21 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
   }, []);
 
   // Breadcrumbs y acciones para el encabezado
-  const breadcrumbs = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Repuestos' }
-  ];
+  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Repuestos' }];
 
   const handleExport = () => {
     if (!repuestos || repuestos.length === 0) return;
-    const csv = Papa.unparse(repuestos.map(r => ({
-      id: r.id,
-      nombre: r.nombre,
-      codigo: r.codigo,
-      categoria: r.categoria,
-      ubicacion: r.ubicacion,
-      stock: r.stock,
-      precio: r.precio
-    })));
+    const csv = Papa.unparse(
+      repuestos.map((r) => ({
+        id: r.id,
+        nombre: r.nombre,
+        codigo: r.codigo,
+        categoria: r.categoria,
+        ubicacion: r.ubicacion,
+        stock: r.stock,
+        precio: r.precio,
+      }))
+    );
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -320,19 +381,23 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     Papa.parse(file, {
       header: true,
       complete: async (results) => {
-        const validRows = results.data.filter(row => row.nombre && row.codigo);
-        let successCount = 0, failCount = 0;
+        const validRows = results.data.filter((row) => row.nombre && row.codigo);
+        let successCount = 0,
+          failCount = 0;
         for (const row of validRows) {
           try {
-            await createRepuesto({
-              nombre: row.nombre || '',
-              codigo: row.codigo || '',
-              categoria: row.categoria || '',
-              ubicacion: row.ubicacion || '',
-              stock: row.stock ? Number(row.stock) : 0,
-              precio: row.precio ? Number(row.precio) : 0,
-              descripcion: row.descripcion || ''
-            }, token);
+            await createRepuesto(
+              {
+                nombre: row.nombre || '',
+                codigo: row.codigo || '',
+                categoria: row.categoria || '',
+                ubicacion: row.ubicacion || '',
+                stock: row.stock ? Number(row.stock) : 0,
+                precio: row.precio ? Number(row.precio) : 0,
+                descripcion: row.descripcion || '',
+              },
+              token
+            );
             successCount++;
           } catch (err) {
             failCount++;
@@ -371,8 +436,8 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
       token={token}
       role={role}
       onLogout={onLogout}
-  hideSearchOnDesktop={true}
-  collapseUserOnMd={true}
+      hideSearchOnDesktop={true}
+      collapseUserOnMd={true}
     >
       <BaseListPage
         title="Listado de Repuestos"
@@ -380,12 +445,10 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         entityName="Repuesto"
         entityNamePlural="Repuestos"
         showNewButton={false}
-  showCsvUpload={false}
-        
+        showCsvUpload={false}
         items={repuestos}
         loading={loading}
         error={error}
-        
         filtrosTemporales={filtrosTemporales}
         handleFiltroChange={handleFiltroChange}
         aplicarFiltrosActuales={aplicarFiltrosActuales}
@@ -394,17 +457,14 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         removerToken={removerToken}
         opcionesFiltros={opcionesFiltros}
         camposFiltros={REPUESTO_FILTERS_CONFIG(opcionesFiltros)}
-        
         paginacion={paginacion}
         handlePaginacion={(pagina) => fetchRepuestos(filtrosConsolidados, pagina)}
-        
-  onItemClick={(item) => navigate(`/repuestos/${item.id}`)}
-  onFileUpload={undefined}
+        onItemClick={(item) => navigate(`/repuestos/${item.id}`)}
+        onFileUpload={undefined}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
-        
         renderItem={renderRepuesto}
       />
 
@@ -415,10 +475,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
             <div className={MODAL_STYLES.content}>
               <div className={MODAL_STYLES.header}>
                 <h2 className={MODAL_STYLES.title}>Nuevo Repuesto</h2>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className={MODAL_STYLES.closeButton}
-                >
+                <button onClick={() => setShowAddModal(false)} className={MODAL_STYLES.closeButton}>
                   ×
                 </button>
               </div>
@@ -430,7 +487,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.nombre}
-                      onChange={(e) => setForm({...form, nombre: e.target.value})}
+                      onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                       className={INPUT_STYLES.base}
                       required
                     />
@@ -440,7 +497,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="number"
                       value={form.stock}
-                      onChange={(e) => setForm({...form, stock: e.target.value})}
+                      onChange={(e) => setForm({ ...form, stock: e.target.value })}
                       className={INPUT_STYLES.base}
                       required
                     />
@@ -450,7 +507,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.codigo}
-                      onChange={(e) => setForm({...form, codigo: e.target.value})}
+                      onChange={(e) => setForm({ ...form, codigo: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
@@ -459,7 +516,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="number"
                       value={form.precio}
-                      onChange={(e) => setForm({...form, precio: e.target.value})}
+                      onChange={(e) => setForm({ ...form, precio: e.target.value })}
                       className={INPUT_STYLES.base}
                       step="0.01"
                     />
@@ -469,7 +526,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.proveedor}
-                      onChange={(e) => setForm({...form, proveedor: e.target.value})}
+                      onChange={(e) => setForm({ ...form, proveedor: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
@@ -478,7 +535,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.ubicacion}
-                      onChange={(e) => setForm({...form, ubicacion: e.target.value})}
+                      onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
@@ -487,7 +544,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.categoria}
-                      onChange={(e) => setForm({...form, categoria: e.target.value})}
+                      onChange={(e) => setForm({ ...form, categoria: e.target.value })}
                       className={INPUT_STYLES.base}
                       required
                     />
@@ -496,18 +553,14 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     <label className={INPUT_STYLES.label}>Descripción</label>
                     <textarea
                       value={form.descripcion}
-                      onChange={(e) => setForm({...form, descripcion: e.target.value})}
+                      onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
                       className={INPUT_STYLES.base}
                       rows={3}
                     />
                   </div>
                 </div>
 
-                {error && (
-                  <div className={ALERT_STYLES.errorModal}>
-                    {error}
-                  </div>
-                )}
+                {error && <div className={ALERT_STYLES.errorModal}>{error}</div>}
 
                 <div className={MODAL_STYLES.buttonGroup}>
                   <button
@@ -517,10 +570,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                   >
                     Cancelar
                   </button>
-                  <button
-                    type="submit"
-                    className={BUTTON_STYLES.primary}
-                  >
+                  <button type="submit" className={BUTTON_STYLES.primary}>
                     Crear Repuesto
                   </button>
                 </div>
@@ -540,7 +590,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
           token={token}
         />
       )}
-  </AppLayout>
+    </AppLayout>
   );
 }
 

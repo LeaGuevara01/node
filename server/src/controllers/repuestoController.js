@@ -11,77 +11,77 @@ const parseStockRange = (rangeString) => {
   }
 
   const trimmed = rangeString.trim();
-  
+
   // Formato "min-max" (ej: "10-50")
   if (trimmed.includes('-') && !trimmed.startsWith('-')) {
     const [minStr, maxStr] = trimmed.split('-');
     return {
       min: minStr ? parseInt(minStr) : null,
-      max: maxStr ? parseInt(maxStr) : null
+      max: maxStr ? parseInt(maxStr) : null,
     };
   }
-  
+
   // Formato "min+" (ej: "10+")
   if (trimmed.endsWith('+')) {
     const minStr = trimmed.slice(0, -1);
     return {
       min: minStr ? parseInt(minStr) : null,
-      max: null
+      max: null,
     };
   }
-  
+
   // Formato "-max" (ej: "-50")
   if (trimmed.startsWith('-')) {
     const maxStr = trimmed.slice(1);
     return {
       min: null,
-      max: maxStr ? parseInt(maxStr) : null
+      max: maxStr ? parseInt(maxStr) : null,
     };
   }
-  
+
   // Formato simple "valor" (se interpreta como valor exacto)
   const value = parseInt(trimmed);
   if (!isNaN(value)) {
     return { min: value, max: value };
   }
-  
+
   return { min: null, max: null };
 };
 
 exports.getRepuestos = async (req, res) => {
   try {
-    const { 
-      search, 
-      categoria, 
-      ubicacion, 
-      stockMin, 
-      stockMax, 
+    const {
+      search,
+      categoria,
+      ubicacion,
+      stockMin,
+      stockMax,
       sinStock,
       disponibilidad,
       precioMin,
       precioMax,
       codigo,
-      page = 1, 
+      page = 1,
       limit = 50,
       sortBy = 'nombre',
-      sortOrder = 'asc'
+      sortOrder = 'asc',
     } = req.query;
 
-  // Construir filtros dinámicamente con AND/OR correctamente agrupados
-  const baseWhere = {};
-  const andConds = [];
-  const orderBy = {};
+    // Construir filtros dinámicamente con AND/OR correctamente agrupados
+    const baseWhere = {};
+    const andConds = [];
+    const orderBy = {};
 
     // Filtro de búsqueda por nombre, código o descripción
     if (search) {
       const searchTerms = Array.isArray(search) ? search : search.split(',');
-      const searchOR = searchTerms.flatMap(term => {
+      const searchOR = searchTerms.flatMap((term) => {
         const t = term.trim();
         if (!t) return [];
         return [
           { nombre: { contains: t, mode: 'insensitive' } },
           { codigo: { contains: t, mode: 'insensitive' } },
-          { descripcion: { contains: t, mode: 'insensitive' } }
+          { descripcion: { contains: t, mode: 'insensitive' } },
         ];
       });
       if (searchOR.length) andConds.push({ OR: searchOR });
@@ -91,9 +91,9 @@ exports.getRepuestos = async (req, res) => {
     if (codigo) {
       const codigoTerms = Array.isArray(codigo) ? codigo : codigo.split(',');
       const codeOR = codigoTerms
-        .map(term => term.trim())
+        .map((term) => term.trim())
         .filter(Boolean)
-        .map(t => ({ codigo: { contains: t, mode: 'insensitive' } }));
+        .map((t) => ({ codigo: { contains: t, mode: 'insensitive' } }));
       if (codeOR.length === 1) {
         baseWhere.codigo = codeOR[0].codigo; // objeto { contains, mode }
       } else if (codeOR.length > 1) {
@@ -103,12 +103,12 @@ exports.getRepuestos = async (req, res) => {
 
     // Filtro por categoría
     if (categoria && categoria !== 'all') {
-  baseWhere.categoria = categoria;
+      baseWhere.categoria = categoria;
     }
 
     // Filtro por ubicación
     if (ubicacion && ubicacion !== 'all') {
-  baseWhere.ubicacion = ubicacion;
+      baseWhere.ubicacion = ubicacion;
     }
 
     // Filtro por stock mínimo
@@ -130,26 +130,31 @@ exports.getRepuestos = async (req, res) => {
     // Filtro por disponibilidad (alineado con Dashboard: 0 | 1 | >=2)
     if (disponibilidad && !applySinStockOnly) {
       // Normalizar valor/es y permitir múltiples separados por coma
-      const normalize = (v) => (v || '')
-        .toString()
-        .trim()
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/\p{Diacritic}/gu, '');
-      const values = Array.isArray(disponibilidad)
-        ? disponibilidad
-        : disponibilidad.split(',');
+      const normalize = (v) =>
+        (v || '')
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/\p{Diacritic}/gu, '');
+      const values = Array.isArray(disponibilidad) ? disponibilidad : disponibilidad.split(',');
       const norms = values.map(normalize);
 
       // Construir condiciones OR según buckets
       const orConds = [];
-      if (norms.some(v => ['sin stock', 'sinstock', '0', 'cero', 'zero'].includes(v))) {
+      if (norms.some((v) => ['sin stock', 'sinstock', '0', 'cero', 'zero'].includes(v))) {
         orConds.push({ stock: { lte: 0 } });
       }
-      if (norms.some(v => ['bajo', '1', 'uno', 'low'].includes(v) || v.startsWith('bajo'))) {
+      if (norms.some((v) => ['bajo', '1', 'uno', 'low'].includes(v) || v.startsWith('bajo'))) {
         orConds.push({ stock: 1 });
       }
-      if (norms.some(v => ['normal', '>=2', '2+', 'dos', 'twoplus', 'two+', 'dosplus'].includes(v) || v.includes('2'))) {
+      if (
+        norms.some(
+          (v) =>
+            ['normal', '>=2', '2+', 'dos', 'twoplus', 'two+', 'dosplus'].includes(v) ||
+            v.includes('2')
+        )
+      ) {
         orConds.push({ stock: { gte: 2 } });
       }
       if (orConds.length > 0) {
@@ -174,7 +179,9 @@ exports.getRepuestos = async (req, res) => {
 
     // Ejecutar consulta con filtros
     const finalWhere = andConds.length
-      ? (Object.keys(baseWhere).length ? { AND: [baseWhere, ...andConds] } : { AND: andConds })
+      ? Object.keys(baseWhere).length
+        ? { AND: [baseWhere, ...andConds] }
+        : { AND: andConds }
       : baseWhere;
 
     const [repuestos, total] = await Promise.all([
@@ -182,9 +189,9 @@ exports.getRepuestos = async (req, res) => {
         where: finalWhere,
         orderBy,
         skip,
-        take
+        take,
       }),
-      prisma.repuesto.count({ where: finalWhere })
+      prisma.repuesto.count({ where: finalWhere }),
     ]);
 
     // Calcular información de paginación
@@ -199,8 +206,8 @@ exports.getRepuestos = async (req, res) => {
         total: totalPages,
         hasNext: hasNextPage,
         hasPrev: hasPrevPage,
-        totalItems: total
-      }
+        totalItems: total,
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -210,15 +217,15 @@ exports.getRepuestos = async (req, res) => {
 exports.createRepuesto = async (req, res) => {
   const { nombre, stock, codigo, descripcion, precio, proveedor, ubicacion, categoria } = req.body;
   try {
-    const data = { 
-      nombre, 
+    const data = {
+      nombre,
       stock: Number(stock),
       codigo: codigo || null,
       descripcion: descripcion || null,
       precio: precio ? Number(precio) : null,
       proveedor: proveedor || null,
       ubicacion: ubicacion || null,
-      categoria: categoria || null
+      categoria: categoria || null,
     };
 
     const repuesto = await prisma.repuesto.create({ data });
@@ -232,20 +239,20 @@ exports.updateRepuesto = async (req, res) => {
   const { id } = req.params;
   const { nombre, stock, codigo, descripcion, precio, proveedor, ubicacion, categoria } = req.body;
   try {
-    const data = { 
-      nombre, 
+    const data = {
+      nombre,
       stock: Number(stock),
       codigo: codigo || null,
       descripcion: descripcion || null,
       precio: precio ? Number(precio) : null,
       proveedor: proveedor || null,
       ubicacion: ubicacion || null,
-      categoria: categoria || null
+      categoria: categoria || null,
     };
 
     const repuesto = await prisma.repuesto.update({
       where: { id: Number(id) },
-      data
+      data,
     });
     res.json(repuesto);
   } catch (err) {
@@ -261,7 +268,7 @@ exports.deleteRepuesto = async (req, res) => {
   const { id } = req.params;
   try {
     await prisma.repuesto.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     });
     res.json({ message: 'Repuesto eliminado' });
   } catch (err) {
@@ -281,40 +288,40 @@ exports.getFilterOptions = async (req, res) => {
       prisma.repuesto.findMany({
         select: { categoria: true },
         where: { categoria: { not: null } },
-        distinct: ['categoria']
+        distinct: ['categoria'],
       }),
       // Obtener ubicaciones únicas
       prisma.repuesto.findMany({
         select: { ubicacion: true },
         where: { ubicacion: { not: null } },
-        distinct: ['ubicacion']
+        distinct: ['ubicacion'],
       }),
       // Obtener estadísticas de stock
       prisma.repuesto.aggregate({
         _min: { stock: true },
         _max: { stock: true },
-        _count: { id: true }
+        _count: { id: true },
       }),
       // Rango de precios
       prisma.repuesto.aggregate({
         _min: { precio: true },
-        _max: { precio: true }
-      })
+        _max: { precio: true },
+      }),
     ]);
 
     res.json({
-      categorias: categorias.map(c => c.categoria).sort(),
-      ubicaciones: ubicaciones.map(u => u.ubicacion).sort(),
+      categorias: categorias.map((c) => c.categoria).sort(),
+      ubicaciones: ubicaciones.map((u) => u.ubicacion).sort(),
       disponibilidades: ['Sin stock', 'Bajo (1)', 'Normal (≥2)'],
       stockRange: {
         min: estadisticas._min.stock || 0,
-        max: estadisticas._max.stock || 0
+        max: estadisticas._max.stock || 0,
       },
       precioRange: {
-        min: (precioStats._min.precio ?? 0),
-        max: (precioStats._max.precio ?? 0)
+        min: precioStats._min.precio ?? 0,
+        max: precioStats._max.precio ?? 0,
       },
-      totalRepuestos: estadisticas._count.id
+      totalRepuestos: estadisticas._count.id,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -330,56 +337,56 @@ exports.getEstadisticas = async (req, res) => {
       stockIgualUno,
       stockNormalDosPlus,
       porCategoria,
-      porUbicacion
+      porUbicacion,
     ] = await Promise.all([
       // Total de repuestos
       prisma.repuesto.count(),
-      
+
       // Repuestos sin stock
       prisma.repuesto.count({
-        where: { stock: { lte: 0 } }
+        where: { stock: { lte: 0 } },
       }),
-      
+
       // Repuestos con stock bajo (exactamente 1)
       prisma.repuesto.count({ where: { stock: 1 } }),
 
       // Repuestos con stock normal (>= 2)
       prisma.repuesto.count({ where: { stock: { gte: 2 } } }),
-      
+
       // Agrupado por categoría
       prisma.repuesto.groupBy({
         by: ['categoria'],
         _count: { id: true },
         _sum: { stock: true },
-        where: { categoria: { not: null } }
+        where: { categoria: { not: null } },
       }),
-      
+
       // Agrupado por ubicación
       prisma.repuesto.groupBy({
         by: ['ubicacion'],
         _count: { id: true },
         _sum: { stock: true },
-        where: { ubicacion: { not: null } }
-      })
+        where: { ubicacion: { not: null } },
+      }),
     ]);
 
     res.json({
       resumen: {
         total: totalRepuestos,
-  sinStock: repuestosSinStock,
-  stockBajo: stockIgualUno,
-  stockDisponible: stockNormalDosPlus
+        sinStock: repuestosSinStock,
+        stockBajo: stockIgualUno,
+        stockDisponible: stockNormalDosPlus,
       },
-      porCategoria: porCategoria.map(item => ({
+      porCategoria: porCategoria.map((item) => ({
         categoria: item.categoria,
         cantidad: item._count.id,
-        stockTotal: item._sum.stock || 0
+        stockTotal: item._sum.stock || 0,
       })),
-      porUbicacion: porUbicacion.map(item => ({
+      porUbicacion: porUbicacion.map((item) => ({
         ubicacion: item.ubicacion,
         cantidad: item._count.id,
-        stockTotal: item._sum.stock || 0
-      }))
+        stockTotal: item._sum.stock || 0,
+      })),
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -390,7 +397,7 @@ exports.getEstadisticas = async (req, res) => {
 exports.busquedaRapida = async (req, res) => {
   try {
     const { q } = req.query;
-    
+
     if (!q || q.length < 2) {
       return res.json([]);
     }
@@ -399,8 +406,8 @@ exports.busquedaRapida = async (req, res) => {
       where: {
         OR: [
           { nombre: { contains: q, mode: 'insensitive' } },
-          { codigo: { contains: q, mode: 'insensitive' } }
-        ]
+          { codigo: { contains: q, mode: 'insensitive' } },
+        ],
       },
       select: {
         id: true,
@@ -408,10 +415,10 @@ exports.busquedaRapida = async (req, res) => {
         codigo: true,
         stock: true,
         categoria: true,
-        ubicacion: true
+        ubicacion: true,
       },
       take: 10,
-      orderBy: { nombre: 'asc' }
+      orderBy: { nombre: 'asc' },
     });
 
     res.json(repuestos);
@@ -424,11 +431,11 @@ exports.busquedaRapida = async (req, res) => {
 exports.getRepuestoById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const repuesto = await prisma.repuesto.findUnique({
-      where: { 
-        id: parseInt(id) 
-      }
+      where: {
+        id: parseInt(id),
+      },
     });
 
     if (!repuesto) {

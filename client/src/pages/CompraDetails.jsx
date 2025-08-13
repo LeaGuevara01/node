@@ -28,9 +28,13 @@ export default function CompraDetails({ token }) {
 
   return (
     <div className="p-4">
-      <button onClick={() => navigate('/compras')} className="mb-4 text-blue-600">← Volver</button>
+      <button onClick={() => navigate('/compras')} className="mb-4 text-blue-600">
+        ← Volver
+      </button>
       <h1 className="text-2xl font-semibold mb-2">Compra #{compra.id}</h1>
-      <div className="mb-4 text-sm text-gray-700">Fecha: {new Date(compra.fecha).toLocaleString()} | Estado: {compra.estado}</div>
+      <div className="mb-4 text-sm text-gray-700">
+        Fecha: {new Date(compra.fecha).toLocaleString()} | Estado: {compra.estado}
+      </div>
       <div className="mb-2">Proveedor: {compra.proveedor?.nombre || compra.proveedorId}</div>
       {compra.notas && <div className="mb-4">Notas: {compra.notas}</div>}
 
@@ -44,7 +48,7 @@ export default function CompraDetails({ token }) {
             </tr>
           </thead>
           <tbody>
-            {compra.detalles?.map(d => (
+            {compra.detalles?.map((d) => (
               <tr key={d.id} className="border-b">
                 <td className="p-2">{d.repuesto?.nombre || d.repuestoId}</td>
                 <td className="p-2">{d.cantidad}</td>

@@ -11,7 +11,7 @@ export const processCSVFile = async (file, validationFn, createFn, token) => {
       header: true,
       complete: async (results) => {
         const validRows = results.data.filter(validationFn);
-        
+
         for (const [index, row] of validRows.entries()) {
           try {
             await createFn(row, token);
@@ -26,7 +26,7 @@ export const processCSVFile = async (file, validationFn, createFn, token) => {
           success: successCount,
           failed: failCount,
           errors: errors.slice(0, 5), // Limit to first 5 errors
-          totalErrors: errors.length
+          totalErrors: errors.length,
         });
       },
       error: (err) => {
@@ -34,9 +34,9 @@ export const processCSVFile = async (file, validationFn, createFn, token) => {
           success: 0,
           failed: 0,
           errors: ['Error al procesar el archivo CSV'],
-          totalErrors: 1
+          totalErrors: 1,
         });
-      }
+      },
     });
   });
 };
@@ -45,7 +45,7 @@ export const createCSVValidators = {
   maquinaria: (row) => row.nombre && row.tipo,
   repuesto: (row) => row.nombre && row.codigo,
   proveedor: (row) => row.nombre && row.email,
-  reparacion: (row) => row.fecha && row.maquinariaId && row.userId
+  reparacion: (row) => row.fecha && row.maquinariaId && row.userId,
 };
 
 export const createCSVMappers = {
@@ -55,9 +55,9 @@ export const createCSVMappers = {
     marca: row.marca || '',
     modelo: row.modelo || '',
     año: row.año ? Number(row.año) : null,
-    numeroSerie: row.numeroSerie || ''
+    numeroSerie: row.numeroSerie || '',
   }),
-  
+
   repuesto: (row) => ({
     nombre: row.nombre,
     codigo: row.codigo,
@@ -65,9 +65,9 @@ export const createCSVMappers = {
     precio: row.precio ? Number(row.precio) : 0,
     stock: row.stock ? Number(row.stock) : 0,
     categoria: row.categoria || '',
-    proveedor: row.proveedor || ''
+    proveedor: row.proveedor || '',
   }),
-  
+
   proveedor: (row) => ({
     nombre: row.nombre,
     cuit: row.cuit || '',
@@ -75,9 +75,9 @@ export const createCSVMappers = {
     email: row.email,
     direccion: row.direccion || '',
     web: row.web || '',
-    productos: row.productos || ''
+    productos: row.productos || '',
   }),
-  
+
   reparacion: (row) => ({
     fecha: row.fecha,
     maquinariaId: Number(row.maquinariaId),
@@ -87,6 +87,6 @@ export const createCSVMappers = {
     prioridad: row.prioridad || 'media',
     costo: row.costo ? Number(row.costo) : 0,
     duracionEstimada: row.duracionEstimada ? Number(row.duracionEstimada) : 0,
-    repuestos: []
-  })
+    repuestos: [],
+  }),
 };

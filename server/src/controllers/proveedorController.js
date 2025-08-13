@@ -11,14 +11,14 @@ const prisma = require('../lib/prisma');
  */
 exports.getProveedores = async (req, res) => {
   try {
-    const { 
-      search, 
+    const {
+      search,
       nombre,
       contacto,
-      page = 1, 
+      page = 1,
       limit = 50,
       sortBy = 'nombre',
-      sortOrder = 'asc'
+      sortOrder = 'asc',
     } = req.query;
 
     // Construir filtros dinámicamente
@@ -26,17 +26,17 @@ exports.getProveedores = async (req, res) => {
     const orderBy = {};
 
     // Filtro de búsqueda general (OR por múltiples campos)
-  if (search) {
+    if (search) {
       const searchTerms = Array.isArray(search) ? search : search.split(',');
-      where.OR = searchTerms.flatMap(term => [
+      where.OR = searchTerms.flatMap((term) => [
         { nombre: { contains: term.trim(), mode: 'insensitive' } },
-    { contacto: { contains: term.trim(), mode: 'insensitive' } },
+        { contacto: { contains: term.trim(), mode: 'insensitive' } },
         { cuit: { contains: term.trim(), mode: 'insensitive' } },
         { email: { contains: term.trim(), mode: 'insensitive' } },
         { telefono: { contains: term.trim(), mode: 'insensitive' } },
-    { direccion: { contains: term.trim(), mode: 'insensitive' } },
-    { ubicacion: { contains: term.trim(), mode: 'insensitive' } },
-    { notas: { contains: term.trim(), mode: 'insensitive' } }
+        { direccion: { contains: term.trim(), mode: 'insensitive' } },
+        { ubicacion: { contains: term.trim(), mode: 'insensitive' } },
+        { notas: { contains: term.trim(), mode: 'insensitive' } },
       ]);
     }
 
@@ -46,20 +46,23 @@ exports.getProveedores = async (req, res) => {
       if (nombreTerms.length === 1) {
         where.nombre = { contains: nombreTerms[0].trim(), mode: 'insensitive' };
       } else {
-        where.OR = [...(where.OR || []), ...nombreTerms.map(term => ({
-          nombre: { contains: term.trim(), mode: 'insensitive' }
-        }))];
+        where.OR = [
+          ...(where.OR || []),
+          ...nombreTerms.map((term) => ({
+            nombre: { contains: term.trim(), mode: 'insensitive' },
+          })),
+        ];
       }
     }
 
     // Filtro por información de contacto (email/teléfono)
     if (contacto) {
       const contactoTerms = Array.isArray(contacto) ? contacto : contacto.split(',');
-      const contactoConditions = contactoTerms.flatMap(term => [
+      const contactoConditions = contactoTerms.flatMap((term) => [
         { email: { contains: term.trim(), mode: 'insensitive' } },
-        { telefono: { contains: term.trim(), mode: 'insensitive' } }
+        { telefono: { contains: term.trim(), mode: 'insensitive' } },
       ]);
-      
+
       if (where.OR) {
         where.OR.push(...contactoConditions);
       } else {
@@ -79,9 +82,9 @@ exports.getProveedores = async (req, res) => {
         where,
         orderBy,
         skip,
-        take
+        take,
       }),
-      prisma.proveedor.count({ where })
+      prisma.proveedor.count({ where }),
     ]);
 
     const totalPages = Math.ceil(total / take);
@@ -95,8 +98,8 @@ exports.getProveedores = async (req, res) => {
         total: totalPages,
         hasNext: hasNextPage,
         hasPrev: hasPrevPage,
-        totalItems: total
-      }
+        totalItems: total,
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -109,24 +112,24 @@ exports.getProveedores = async (req, res) => {
  */
 exports.getFilterOptions = async (req, res) => {
   try {
-  const [estadisticas] = await Promise.all([
+    const [estadisticas] = await Promise.all([
       prisma.proveedor.aggregate({
-        _count: { id: true }
-      })
+        _count: { id: true },
+      }),
     ]);
 
     res.json({
       totalProveedores: estadisticas._count.id,
       campos: {
         nombre: 'Nombre del proveedor',
-  contacto: 'Persona de contacto',
+        contacto: 'Persona de contacto',
         cuit: 'CUIT',
         email: 'Email de contacto',
         telefono: 'Teléfono',
-  direccion: 'Dirección',
-  ubicacion: 'Ubicación',
-  notas: 'Notas'
-      }
+        direccion: 'Dirección',
+        ubicacion: 'Ubicación',
+        notas: 'Notas',
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -140,13 +143,13 @@ exports.getFilterOptions = async (req, res) => {
 exports.getProveedorById = async (req, res) => {
   try {
     const proveedor = await prisma.proveedor.findUnique({
-      where: { id: parseInt(req.params.id) }
+      where: { id: parseInt(req.params.id) },
     });
-    
+
     if (!proveedor) {
       return res.status(404).json({ error: 'Proveedor no encontrado' });
     }
-    
+
     res.json(proveedor);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -159,19 +162,20 @@ exports.getProveedorById = async (req, res) => {
  * 201 si creado, 400 si validación falla.
  */
 exports.createProveedor = async (req, res) => {
-  const { nombre, contacto, cuit, telefono, email, direccion, ubicacion, web, productos, notas } = req.body;
+  const { nombre, contacto, cuit, telefono, email, direccion, ubicacion, web, productos, notas } =
+    req.body;
   try {
-    const data = { 
+    const data = {
       nombre,
-    contacto: contacto || null,
+      contacto: contacto || null,
       cuit: cuit || null,
       telefono: telefono || null,
       email: email || null,
       direccion: direccion || null,
-    ubicacion: ubicacion || null,
+      ubicacion: ubicacion || null,
       web: web || null,
-    productos: productos || [],
-    notas: notas || null
+      productos: productos || [],
+      notas: notas || null,
     };
 
     const proveedor = await prisma.proveedor.create({ data });
@@ -187,9 +191,10 @@ exports.createProveedor = async (req, res) => {
  */
 exports.updateProveedor = async (req, res) => {
   const { id } = req.params;
-  const { nombre, contacto, cuit, telefono, email, direccion, ubicacion, web, productos, notas } = req.body;
+  const { nombre, contacto, cuit, telefono, email, direccion, ubicacion, web, productos, notas } =
+    req.body;
   try {
-    const data = { 
+    const data = {
       nombre,
       contacto: contacto || null,
       cuit: cuit || null,
@@ -199,12 +204,12 @@ exports.updateProveedor = async (req, res) => {
       ubicacion: ubicacion || null,
       web: web || null,
       productos: productos || [],
-      notas: notas || null
+      notas: notas || null,
     };
 
     const proveedor = await prisma.proveedor.update({
       where: { id: Number(id) },
-      data
+      data,
     });
     res.json(proveedor);
   } catch (err) {
@@ -224,7 +229,7 @@ exports.deleteProveedor = async (req, res) => {
   const { id } = req.params;
   try {
     await prisma.proveedor.delete({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
     });
     res.json({ message: 'Proveedor eliminado' });
   } catch (err) {
@@ -242,31 +247,26 @@ exports.deleteProveedor = async (req, res) => {
  */
 exports.getEstadisticas = async (req, res) => {
   try {
-    const [
-      totalProveedores,
-      conEmail,
-      conTelefono,
-      conDireccion
-    ] = await Promise.all([
+    const [totalProveedores, conEmail, conTelefono, conDireccion] = await Promise.all([
       prisma.proveedor.count(),
       prisma.proveedor.count({
-        where: { 
+        where: {
           email: { not: null },
-          email: { not: '' }
-        }
+          email: { not: '' },
+        },
       }),
       prisma.proveedor.count({
-        where: { 
+        where: {
           telefono: { not: null },
-          telefono: { not: '' }
-        }
+          telefono: { not: '' },
+        },
       }),
       prisma.proveedor.count({
-        where: { 
+        where: {
           direccion: { not: null },
-          direccion: { not: '' }
-        }
-      })
+          direccion: { not: '' },
+        },
+      }),
     ]);
 
     res.json({
@@ -275,8 +275,8 @@ exports.getEstadisticas = async (req, res) => {
         conEmail: conEmail,
         conTelefono: conTelefono,
         conDireccion: conDireccion,
-        sinContacto: totalProveedores - Math.max(conEmail, conTelefono)
-      }
+        sinContacto: totalProveedores - Math.max(conEmail, conTelefono),
+      },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -290,7 +290,7 @@ exports.getEstadisticas = async (req, res) => {
 exports.busquedaRapida = async (req, res) => {
   try {
     const { q } = req.query;
-    
+
     if (!q || q.length < 2) {
       return res.json([]);
     }
@@ -301,8 +301,8 @@ exports.busquedaRapida = async (req, res) => {
           { nombre: { contains: q, mode: 'insensitive' } },
           { contacto: { contains: q, mode: 'insensitive' } },
           { cuit: { contains: q, mode: 'insensitive' } },
-          { email: { contains: q, mode: 'insensitive' } }
-        ]
+          { email: { contains: q, mode: 'insensitive' } },
+        ],
       },
       select: {
         id: true,
@@ -312,10 +312,10 @@ exports.busquedaRapida = async (req, res) => {
         email: true,
         telefono: true,
         direccion: true,
-        ubicacion: true
+        ubicacion: true,
       },
       take: 10,
-      orderBy: { nombre: 'asc' }
+      orderBy: { nombre: 'asc' },
     });
 
     res.json(proveedores);
