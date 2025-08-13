@@ -171,7 +171,7 @@ function ReparacionForm({ token, onCreated }) {
       const [usersData, maquinariasData, repuestosData] = await Promise.all([
         getUsers(token),
         getMaquinarias(token, {}, 1, true), // Usar forStats=true para obtener todas las maquinarias
-        getRepuestos(token)
+        getRepuestos(token, {}, 1, true) // Usar forStats=true para obtener todos los repuestos como array
       ]);
       
       setUsers(Array.isArray(usersData) ? usersData : []);

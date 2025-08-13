@@ -268,9 +268,15 @@ export const REPARACION_FILTERS_CONFIG = (opcionesFiltros) => [
     icon: ICONS.fecha,
     minField: 'fechaMin',
     maxField: 'fechaMax',
-    minPlaceholder: 'Fecha desde',
-    maxPlaceholder: 'Fecha hasta',
+    minPlaceholder: 'Desde',
+    maxPlaceholder: 'Hasta',
     inputType: 'date',
+    responsivePlaceholders: {
+      min: { sm: 'Desde', md: 'Fecha desde', lg: 'Fecha desde' },
+      max: { sm: 'Hasta', md: 'Fecha hasta', lg: 'Fecha hasta' }
+    },
+  min: '2000-01-01',
+  max: '2100-12-31',
     span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2'
   }
 ];

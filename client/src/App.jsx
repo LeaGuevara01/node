@@ -23,6 +23,7 @@ import MaquinariaFormulario from './pages/MaquinariaFormulario';
 import RepuestosPage from './pages/RepuestosPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import ReparacionesPage from './pages/ReparacionesPage';
+import ReparacionForm from './pages/ReparacionForm';
 import UsuariosPage from './pages/UsuariosPage';
 import ComprasPage from './pages/ComprasPage';
 import CompraForm from './pages/CompraForm';
