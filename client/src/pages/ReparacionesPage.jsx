@@ -23,6 +23,9 @@ import {
   LIST_STYLES
 } from '../styles/repuestoStyles';
 import AppLayout from '../components/navigation/AppLayout';
+import FormHeaderActions from '../components/navigation/FormHeaderActions';
+import { getUsers } from '../services/users';
+import { getMaquinarias, getRepuestos } from '../services/api';
 
 function ReparacionesPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
@@ -33,6 +36,10 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
+  // Datos para modal de edición
+  const [users, setUsers] = useState([]);
+  const [maquinarias, setMaquinarias] = useState([]);
+  const [repuestos, setRepuestos] = useState([]);
 
   // Hook de paginación
   const { 
@@ -73,6 +80,22 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
     } catch (err) {
       console.error('Error al cargar opciones de filtros:', err);
       return {};
+    }
+  };
+
+  // Cargar datos auxiliares para el modal de edición
+  const fetchModalData = async () => {
+    try {
+      const [usersData, maqsData, repsData] = await Promise.all([
+        getUsers(token),
+        getMaquinarias(token, {}, 1, true),
+        getRepuestos(token, {}, 1, true)
+      ]);
+      setUsers(Array.isArray(usersData) ? usersData : usersData?.usuarios || []);
+      setMaquinarias(Array.isArray(maqsData) ? maqsData : maqsData?.maquinarias || []);
+      setRepuestos(Array.isArray(repsData) ? repsData : repsData?.repuestos || []);
+    } catch (e) {
+      console.warn('No se pudieron cargar datos auxiliares para el modal:', e?.message);
     }
   };
 
@@ -147,6 +170,41 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
   const handleView = (reparacion) => {
     navigate(`/reparaciones/${reparacion.id}`);
   };
+
+  // Acciones de encabezado
+  const handleExport = () => {
+    // Export simple a CSV de campos clave
+    if (!reparaciones || reparaciones.length === 0) return;
+    const rows = reparaciones.map(r => ({
+      id: r.id,
+      fecha: r.fecha,
+      maquinaria: r.maquinaria?.nombre || '',
+      descripcion: r.descripcion || '',
+      estado: r.estado || '',
+      prioridad: r.prioridad || ''
+    }));
+    const header = Object.keys(rows[0] || {}).join(',');
+    const body = rows.map(o => Object.values(o).map(v => typeof v === 'string' && v.includes(',') ? `"${v.replace(/"/g, '""')}"` : v ?? '').join(',')).join('\n');
+    const csv = `${header}\n${body}`;
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'reparaciones.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const pageActions = (
+    <FormHeaderActions
+      onSearchClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+      onExport={handleExport}
+      onNew={() => {
+        // Abrir modal de creación (sin item)
+        setSelectedReparacion({});
+      }}
+    />
+  );
 
   /**
    * Actualiza una reparación
@@ -229,11 +287,12 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
               </span>
             )}
           </div>
-          {/* Acciones en header de detalles; fila clickeable abre detalles */}
+          {/* Sin acciones inline; la fila abre detalles y el edit está en el header de detalles */}
+          <div />
         </div>
 
         {/* Meta compacta visible también en móviles */}
-        <div className="mt-1 text-xs sm:text-sm text-gray-600 flex flex-wrap gap-x-3 gap-y-1">
+  <div className="mt-1 text-sm sm:text-base text-gray-600 flex flex-wrap gap-x-3 gap-y-1">
           {reparacion.maquinaria && (
             <span className="inline-flex items-center gap-1" title="Maquinaria">
               <svg className={ICON_STYLES.xs} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h10M5 7h14"/></svg>
@@ -264,8 +323,8 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
           <div className={`${LIST_STYLES.itemDescription} mt-2`}>{reparacion.notas}</div>
         )}
 
-        <div className={LIST_STYLES.itemTagsRow}>
-          <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
+        <div className={`${LIST_STYLES.itemTagsRow} text-sm sm:text-base`}>
+          <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}> 
             {reparacion.tipo && (
               <span className={`${LIST_STYLES.itemTagCategory} ${getColorFromString(reparacion.tipo, 'tipo')}`} title={reparacion.tipo}>
                 <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,7 +335,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
               </span>
             )}
             {reparacion.prioridad && (
-              <span className={`${LIST_STYLES.itemTag} ${getPrioridadBadge(reparacion.prioridad)}`}>
+              <span className={`${LIST_STYLES.itemTag} ${getPrioridadBadge(reparacion.prioridad)} text-sm sm:text-base px-3 py-1`}> 
                 <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -284,7 +343,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
               </span>
             )}
             {fechaStr && (
-              <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}>
+              <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700 text-sm sm:text-base px-3 py-1`}>
                 <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -292,9 +351,9 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
               </span>
             )}
           </div>
-          <div className={LIST_STYLES.itemTagsRight}>
+      <div className={`${LIST_STYLES.itemTagsRight} text-sm sm:text-base`}>
             {typeof reparacion.costo_estimado === 'number' && (
-              <span className={`${LIST_STYLES.itemTag} bg-brown-100 text-brown-800`}>
+        <span className={`${LIST_STYLES.itemTag} bg-brown-100 text-brown-800 text-sm sm:text-base px-3 py-1`}>
                 ${reparacion.costo_estimado.toFixed(2)}
               </span>
             )}
@@ -308,6 +367,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
   useEffect(() => {
     fetchReparaciones();
     cargarOpcionesFiltros();
+    fetchModalData();
   }, []);
 
   const breadcrumbs = [
@@ -321,6 +381,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
       breadcrumbs={breadcrumbs}
       title="Gestión de Reparaciones"
       subtitle="Administra órdenes de trabajo y mantenimiento"
+      actions={pageActions}
       token={token}
       role={role}
       onLogout={onLogout}
@@ -330,8 +391,9 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
         subtitle="Gestiona y filtra todas las reparaciones del sistema"
         entityName="Reparación"
         entityNamePlural="Reparaciones"
-        createRoute="/reparaciones/formulario"
-  showCsvUpload={false}
+  createRoute={undefined}
+  showNewButton={false}
+        showCsvUpload={false}
         
         items={reparaciones}
         loading={loading}
@@ -350,7 +412,7 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
         handlePaginacion={(pagina) => fetchReparaciones(filtrosConsolidados, pagina)}
         
   onItemClick={(item) => navigate(`/reparaciones/${item.id}`)}
-  onFileUpload={undefined}
+        onFileUpload={undefined}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
@@ -362,11 +424,34 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
       {/* Modal de edición */}
       {selectedReparacion && (
         <ReparacionEditModal
-          reparacion={selectedReparacion}
+          item={Object.keys(selectedReparacion).length ? selectedReparacion : null}
           onClose={closeEditModal}
-          onUpdate={handleUpdateReparacion}
-          onDelete={handleDeleteReparacion}
-          token={token}
+          onSave={async (data) => {
+            if (Object.keys(selectedReparacion).length) {
+              await handleUpdateReparacion(data.id, data);
+            } else {
+              // crear
+              try {
+                await createReparacion({
+                  fecha: data.fecha,
+                  maquinariaId: Number(data.maquinariaId),
+                  descripcion: data.descripcion || null,
+                  userId: Number(data.userId),
+                  repuestos: data.repuestos || []
+                }, token);
+                await fetchReparaciones(filtrosConsolidados, paginacion.current);
+                if (onCreated) onCreated();
+              } catch (e) {
+                setError('Error al crear: ' + (e?.message || ''));
+                throw e;
+              }
+            }
+          }}
+          onDelete={(id) => handleDeleteReparacion(id)}
+          users={users}
+          maquinarias={maquinarias}
+          repuestos={repuestos}
+          isCreate={!Object.keys(selectedReparacion).length}
         />
       )}
   </AppLayout>

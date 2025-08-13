@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getReparacion, updateReparacion, deleteReparacion, getMaquinarias, getRepuestos } from '../services/api';
 import { getUsers } from '../services/users';
+import ReparacionEditModal from '../components/ReparacionEditModal';
 import { 
   formatFecha,
   formatDateForInput,
@@ -27,10 +28,13 @@ import {
   LIST_STYLES,
   POSITION_STYLES
 } from '../styles/repuestoStyles';
+import AppLayout from '../components/navigation/AppLayout';
+import { useNavigation } from '../hooks/useNavigation';
 
 function ReparacionDetails({ token }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { navigateToListPage } = useNavigation();
   const [reparacion, setReparacion] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -42,6 +46,7 @@ function ReparacionDetails({ token }) {
   const [maquinarias, setMaquinarias] = useState([]);
   const [repuestos, setRepuestos] = useState([]);
   const [selectedRepuestos, setSelectedRepuestos] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
   
   // Estado del formulario de edición
   const [editForm, setEditForm] = useState({
@@ -83,14 +88,17 @@ function ReparacionDetails({ token }) {
     try {
       const [usersData, maquinariasData, repuestosData] = await Promise.all([
         getUsers(token),
-        getMaquinarias(token),
-        getRepuestos(token)
+        getMaquinarias(token, {}, 1, true),
+        getRepuestos(token, {}, 1, true)
       ]);
-      setUsers(usersData || []);
-      setMaquinarias(maquinariasData || []);
-      setRepuestos(repuestosData || []);
+      setUsers(Array.isArray(usersData) ? usersData : (usersData?.usuarios || []));
+      setMaquinarias(Array.isArray(maquinariasData) ? maquinariasData : (maquinariasData?.maquinarias || []));
+      setRepuestos(Array.isArray(repuestosData) ? repuestosData : (repuestosData?.repuestos || []));
     } catch (err) {
       console.error('Error al cargar datos del formulario:', err);
+      setUsers([]);
+      setMaquinarias([]);
+      setRepuestos([]);
     }
   };
 
@@ -162,19 +170,30 @@ function ReparacionDetails({ token }) {
     }
   }, [id, token]);
 
+  const breadcrumbs = [
+    { label: 'Inicio', href: '/' },
+    { label: 'Reparaciones', href: '/reparaciones' },
+    { label: `Reparación #${id}` }
+  ];
+
+  const handleEdit = () => setShowEditModal(true);
+  const handleDeleteAction = async () => {
+    await handleDelete();
+  };
+
   if (loading) {
     return (
-      <div className={CONTAINER_STYLES.main}>
+      <AppLayout currentSection="reparaciones" breadcrumbs={breadcrumbs} title="Cargando reparación..." token={token} isDetails={true}>
         <div className="flex justify-center items-center min-h-96">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   if (!reparacion) {
     return (
-      <div className={CONTAINER_STYLES.main}>
+      <AppLayout currentSection="reparaciones" breadcrumbs={breadcrumbs} title="Reparación no encontrada" token={token}>
         <div className={CONTAINER_STYLES.maxWidth}>
           <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
             <div className={ALERT_STYLES.error}>
@@ -182,13 +201,20 @@ function ReparacionDetails({ token }) {
             </div>
           </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className={CONTAINER_STYLES.main}>
-      <div className={CONTAINER_STYLES.maxWidth}>
+    <AppLayout
+      currentSection="reparaciones"
+      breadcrumbs={breadcrumbs}
+      title={`${reparacion?.maquinaria?.nombre || 'Reparación'} - Detalles`}
+      isDetails={true}
+      onEdit={handleEdit}
+      onDelete={handleDeleteAction}
+      token={token}
+    >
         
         {/* Header */}
         <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
@@ -209,54 +235,7 @@ function ReparacionDetails({ token }) {
                 </h1>
               </div>
             </div>
-            <div className="flex gap-2">
-              {!editMode ? (
-                <>
-                  <button
-                    onClick={() => setEditMode(true)}
-                    className={BUTTON_STYLES.edit}
-                    title="Editar reparación"
-                  >
-                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Editar
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className={BUTTON_STYLES.delete}
-                    title="Eliminar reparación"
-                  >
-                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Eliminar
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setEditMode(false);
-                      setError('');
-                      setSuccess('');
-                    }}
-                    className={BUTTON_STYLES.secondary}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    className={BUTTON_STYLES.primary}
-                  >
-                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Guardar
-                  </button>
-                </>
-              )}
-            </div>
+            <div className="flex gap-2"></div>
           </div>
 
           {/* Mensajes de estado */}
@@ -276,7 +255,7 @@ function ReparacionDetails({ token }) {
         <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
           <h2 className={TEXT_STYLES.sectionTitle}>Información General</h2>
           
-          {editMode ? (
+          {false ? (
             <div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
@@ -499,8 +478,26 @@ function ReparacionDetails({ token }) {
             </p>
           </div>
         </div>
-      </div>
-    </div>
+      {showEditModal && (
+        <ReparacionEditModal
+          item={reparacion}
+          onClose={() => setShowEditModal(false)}
+          onSave={async (data) => {
+            await updateReparacion(data.id || id, data, token);
+            setShowEditModal(false);
+            await fetchReparacion();
+          }}
+          onDelete={async (rid) => {
+            await deleteReparacion(rid, token);
+            setShowEditModal(false);
+            navigate('/reparaciones');
+          }}
+          users={users}
+          maquinarias={maquinarias}
+          repuestos={repuestos}
+        />
+      )}
+    </AppLayout>
   );
 }
 

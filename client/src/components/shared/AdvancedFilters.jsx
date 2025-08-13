@@ -151,14 +151,14 @@ const AdvancedFilters = ({
                 }
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const normalized = raw === '' ? '' : Number(raw);
+                  const normalized = raw === '' ? '' : (campo.inputType === 'date' ? raw : Number(raw));
                   handleFiltroChange(campo.minField, normalized);
                 }}
                 placeholder={minPh}
                 className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
                 min={campo.min}
                 max={campo.max}
-                step={campo.step || "1"}
+                step={campo.inputType === 'date' ? undefined : (campo.step || "1")}
                 inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
               />
               <span className="text-gray-300 text-sm">-</span>
@@ -171,14 +171,14 @@ const AdvancedFilters = ({
                 }
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const normalized = raw === '' ? '' : Number(raw);
+                  const normalized = raw === '' ? '' : (campo.inputType === 'date' ? raw : Number(raw));
                   handleFiltroChange(campo.maxField, normalized);
                 }}
                 placeholder={maxPh}
                 className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
                 min={campo.min}
                 max={campo.max}
-                step={campo.step || "1"}
+                step={campo.inputType === 'date' ? undefined : (campo.step || "1")}
                 inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
               />
             </div>

@@ -599,7 +599,7 @@ export async function getUsuarios(token, filtros = {}, pagina = 1, forStats = fa
     }
   });
 
-  const res = await fetch(`${API_URL}/usuarios?${params}`, {
+  const res = await fetch(`${API_URL}/users?${params}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const data = await res.json();
@@ -620,7 +620,7 @@ export async function getUsuarios(token, filtros = {}, pagina = 1, forStats = fa
  * @returns {Promise<Object>} Usuario encontrado
  */
 export async function getUsuarioById(id, token) {
-  const res = await fetch(`${API_URL}/usuarios/${id}`, {
+  const res = await fetch(`${API_URL}/users/${id}`, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   return res.json();
@@ -633,7 +633,7 @@ export async function getUsuarioById(id, token) {
  * @returns {Promise<Object>} Usuario creado
  */
 export async function createUsuario(data, token) {
-  const res = await fetch(`${API_URL}/usuarios`, {
+  const res = await fetch(`${API_URL}/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -658,7 +658,7 @@ export async function createUsuario(data, token) {
  * @returns {Promise<Object>} Usuario actualizado
  */
 export async function updateUsuario(id, data, token) {
-  const res = await fetch(`${API_URL}/usuarios/${id}`, {
+  const res = await fetch(`${API_URL}/users/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -682,7 +682,7 @@ export async function updateUsuario(id, data, token) {
  * @returns {Promise<Object>} Respuesta de confirmación
  */
 export async function deleteUsuario(id, token) {
-  const res = await fetch(`${API_URL}/usuarios/${id}`, {
+  const res = await fetch(`${API_URL}/users/${id}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`

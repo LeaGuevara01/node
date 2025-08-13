@@ -23,6 +23,7 @@ import MaquinariaFormulario from './pages/MaquinariaFormulario';
 import RepuestosPage from './pages/RepuestosPage';
 import ProveedoresPage from './pages/ProveedoresPage';
 import ReparacionesPage from './pages/ReparacionesPage';
+import ReparacionForm from './pages/ReparacionForm';
 import UsuariosPage from './pages/UsuariosPage';
 import ComprasPage from './pages/ComprasPage';
 import CompraForm from './pages/CompraForm';
@@ -115,6 +116,9 @@ function App() {
   <Route path="/repuestos/formulario" element={<RepuestoFormulario token={token} />} />
   <Route path="/repuestos/editar/:id" element={<RepuestoFormulario token={token} />} />
         <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
+  {/* Formularios y detalles de Reparaciones */}
+  <Route path="/reparaciones/formulario" element={<ReparacionForm token={token} />} />
+  <Route path="/reparaciones/editar/:id" element={<ReparacionForm token={token} />} />
         <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
   <Route path="/proveedores/formulario" element={<ProveedorFormulario token={token} />} />
   <Route path="/proveedores/editar/:id" element={<ProveedorFormulario token={token} />} />
