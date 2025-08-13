@@ -58,7 +58,7 @@ const App: React.FC = () => {
   <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token as any} onCreated={() => {}} />} />
         <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token as any} />} />
         <Route path="/repuestos/:id" element={<RepuestoDetails token={token as any} />} />
-        <Route path="/reparaciones/:id" element={<ReparacionDetails token={token as any} />} />
+  <Route path="/reparaciones/:id" element={<ReparacionDetails token={token as any} />} />
         <Route path="/proveedores/:id" element={<ProveedorDetails token={token as any} />} />
         <Route path="/contexto/:tipo/:valor" element={<ContextPlaceholder token={token as any} role={role as any} onLogout={onLogout} />} />
 

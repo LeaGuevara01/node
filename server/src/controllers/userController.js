@@ -5,10 +5,46 @@
 const bcrypt = require('bcryptjs');
 const prisma = require('../lib/prisma');
 
+exports.createUser = async (req, res) => {
+  try {
+    const { username, password, role = 'User' } = req.body || {};
+    if (!username || !password) {
+      return res.status(400).json({ error: 'username y password son obligatorios' });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { username, password: hashed, role },
+      select: { id: true, username: true, role: true }
+    });
+    res.status(201).json(user);
+  } catch (err) {
+    if (err.code === 'P2002') {
+      res.status(400).json({ error: 'El nombre de usuario ya existe' });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
+};
+
 exports.getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({ select: { id: true, username: true, role: true } });
     res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getUserFilters = async (req, res) => {
+  try {
+    const rolesRows = await prisma.user.findMany({
+      distinct: ['role'],
+      select: { role: true }
+    });
+    const roles = rolesRows.map(r => r.role).filter(Boolean);
+    const total = await prisma.user.count();
+    res.json({ roles, totalUsuarios: total });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

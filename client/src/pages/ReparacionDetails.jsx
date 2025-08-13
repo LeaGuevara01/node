@@ -156,10 +156,14 @@ function ReparacionDetails({ token }) {
   };
 
   useEffect(() => {
-    if (id && token) {
-      fetchReparacion();
-      fetchFormData();
+    if (!token) return;
+    // Evitar llamadas si el id no es numérico (p.ej. 'formulario')
+    if (!id || !/^\d+$/.test(String(id))) {
+      setLoading(false);
+      return;
     }
+    fetchReparacion();
+    fetchFormData();
   }, [id, token]);
 
   if (loading) {

@@ -111,6 +111,8 @@ app.use('/api/repuestos', require('./routes/repuestos'));
 app.use('/api/proveedores', require('./routes/proveedores'));
 app.use('/api/reparaciones', require('./routes/reparaciones'));
 app.use('/api/users', require('./routes/users'));
+// Alias en español para compatibilidad con el cliente (/api/usuarios)
+app.use('/api/usuarios', require('./routes/users'));
 app.use('/api/compras', require('./routes/compras'));
 
 // Error handling middleware (respuesta consistente)

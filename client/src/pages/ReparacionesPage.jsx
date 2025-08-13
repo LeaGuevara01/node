@@ -30,6 +30,10 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
   // Estados principales
   const [reparaciones, setReparaciones] = useState([]);
   const [selectedReparacion, setSelectedReparacion] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [maquinarias, setMaquinarias] = useState([]);
+  const [repuestos, setRepuestos] = useState([]);
   const [error, setError] = useState('');
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
@@ -134,11 +138,24 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
     setSelectedReparacion(reparacion);
   };
 
+  const openAddModal = () => {
+    setSelectedReparacion({
+      id: '',
+      fecha: new Date().toISOString(),
+      descripcion: '',
+      maquinariaId: '',
+      userId: '',
+      repuestos: []
+    });
+    setShowAddModal(true);
+  };
+
   /**
    * Cierra modal de edición
    */
   const closeEditModal = () => {
     setSelectedReparacion(null);
+    setShowAddModal(false);
   };
 
   /**
@@ -173,6 +190,19 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
       if (onCreated) onCreated();
     } catch (err) {
       setError('Error al eliminar: ' + err.message);
+    }
+  };
+
+  const handleCreateReparacion = async (reparacionData) => {
+    try {
+      await createReparacion(reparacionData, token);
+      setShowAddModal(false);
+      if (onCreated) onCreated();
+      fetchReparaciones(filtrosConsolidados, 1);
+      cargarOpcionesFiltros();
+      setBulkSuccess('Reparación creada exitosamente');
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -310,6 +340,24 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
     cargarOpcionesFiltros();
   }, []);
 
+  // Cargar datos para los modales (usuarios, maquinarias, repuestos) al montar la página
+  useEffect(() => {
+    (async () => {
+      try {
+        const [usersData, maqs, reps] = await Promise.all([
+          (await import('../services/users')).getUsers(token),
+          (await import('../services/api')).getMaquinarias(token, {}, 1, true),
+          (await import('../services/api')).getRepuestos(token, {}, 1, true)
+        ]);
+        setUsers(Array.isArray(usersData) ? usersData : []);
+        setMaquinarias(Array.isArray(maqs) ? maqs : (maqs?.maquinarias || []));
+        setRepuestos(Array.isArray(reps) ? reps : (reps?.repuestos || []));
+      } catch (e) {
+        // Silent load failures to not block page
+      }
+    })();
+  }, [token]);
+
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
     { label: 'Reparaciones' }
@@ -330,8 +378,18 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
         subtitle="Gestiona y filtra todas las reparaciones del sistema"
         entityName="Reparación"
         entityNamePlural="Reparaciones"
-        createRoute="/reparaciones/formulario"
-  showCsvUpload={false}
+        createRoute={null}
+        showCsvUpload={false}
+        headerActions={
+          <>
+            <button onClick={openAddModal} className={BUTTON_STYLES.newItem}>
+              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Nueva Reparación
+            </button>
+          </>
+        }
         
         items={reparaciones}
         loading={loading}
@@ -359,14 +417,16 @@ function ReparacionesPage({ token, role, onLogout, onCreated }) {
         renderItem={renderReparacion}
       />
 
-      {/* Modal de edición */}
-      {selectedReparacion && (
+      {/* Modal de creación/edición */}
+      {(selectedReparacion || showAddModal) && (
         <ReparacionEditModal
-          reparacion={selectedReparacion}
+          item={selectedReparacion}
           onClose={closeEditModal}
-          onUpdate={handleUpdateReparacion}
-          onDelete={handleDeleteReparacion}
-          token={token}
+          onSave={selectedReparacion?.id ? (data) => handleUpdateReparacion(selectedReparacion.id, data) : handleCreateReparacion}
+          onDelete={(id) => handleDeleteReparacion(id)}
+          users={users}
+          maquinarias={maquinarias}
+          repuestos={repuestos}
         />
       )}
   </AppLayout>

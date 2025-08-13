@@ -108,7 +108,8 @@ export const NavigationProvider = ({ children }) => {
       maquinarias: id ? `/maquinarias/editar/${id}` : '/maquinarias/formulario',
       repuestos: id ? `/repuestos/editar/${id}` : '/repuestos/formulario',
       proveedores: id ? `/proveedores/editar/${id}` : '/proveedores/formulario',
-      reparaciones: id ? `/reparaciones/editar/${id}` : '/reparaciones/formulario',
+  // Reparaciones usa modales en la página de listado
+  reparaciones: '/reparaciones',
   usuarios: id ? `/usuarios/editar/${id}` : '/usuarios/formulario',
   // Para compras aún no hay edición dedicada; ambas rutas apuntan a creación
   compras: '/compras/nueva'

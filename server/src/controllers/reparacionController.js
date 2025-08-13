@@ -98,6 +98,10 @@ exports.getReparaciones = async (req, res) => {
 exports.getReparacion = async (req, res) => {
   const { id } = req.params;
   try {
+    // Validación temprana de ID numérico
+    if (!id || isNaN(Number(id))) {
+      return res.status(400).json({ error: 'ID de reparación inválido' });
+    }
     const reparacion = await prisma.reparacion.findUnique({
       where: { id: Number(id) },
       include: { 

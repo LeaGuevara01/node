@@ -115,7 +115,7 @@ function App() {
   <Route path="/repuestos/formulario" element={<RepuestoFormulario token={token} />} />
   <Route path="/repuestos/editar/:id" element={<RepuestoFormulario token={token} />} />
         <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
-        <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
+  <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
   <Route path="/proveedores/formulario" element={<ProveedorFormulario token={token} />} />
   <Route path="/proveedores/editar/:id" element={<ProveedorFormulario token={token} />} />
         <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
