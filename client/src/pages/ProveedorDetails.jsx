@@ -9,7 +9,7 @@ import {
 } from '../utils/proveedorUtils';
 import TagLink from '../components/TagLink';
 import { handleFileUpload, COMMON_ICONS } from '../utils/detailsUtils.jsx';
-import { DetailsAlert, DetailsLoading, FieldWithIcon, SimpleField, ImageUpload } from '../components/shared/DetailsComponents';
+import { DetailsLoading, FieldWithIcon, SimpleField, ImageUpload } from '../components/shared/DetailsComponents';
 import AppLayout from '../components/navigation/AppLayout';
 import { useNavigation } from '../hooks/useNavigation';
 import { 
@@ -21,6 +21,7 @@ import {
   ALERT_STYLES
 } from '../styles/repuestoStyles';
 import { DETAILS_CONTAINER, DETAILS_SECTION, DETAILS_TAGS } from '../styles/detailsStyles';
+import { getCiudadColorClass } from '../utils/proveedorUtils';
 
 function ProveedorDetails({ token }) {
   const { id } = useParams();
@@ -30,6 +31,9 @@ function ProveedorDetails({ token }) {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState('');
+
+  // Derivar ciudad para mostrar en header/etiquetas
+  const ciudad = proveedor?.ciudad || extractCiudadFromDireccion(proveedor?.direccion || '');
 
   const fetchProveedor = async () => {
     try {
@@ -94,10 +98,8 @@ function ProveedorDetails({ token }) {
   if (error && !proveedor) {
     return (
       <AppLayout currentSection="proveedores" breadcrumbs={breadcrumbs} title="Error" token={token}>
-        <div className={CONTAINER_STYLES.main}>
-          <div className={CONTAINER_STYLES.maxWidth}>
-            <DetailsAlert type="error" message={error} />
-          </div>
+        <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
+          <div className={ALERT_STYLES.error}>{error}</div>
         </div>
       </AppLayout>
     );
@@ -108,13 +110,18 @@ function ProveedorDetails({ token }) {
       currentSection="proveedores"
       breadcrumbs={breadcrumbs}
       title={`Detalles: ${proveedor?.nombre || 'Proveedor'}`}
+      subtitle={ciudad || proveedor?.email || ''}
       isDetails={true}
       onEdit={handleEdit}
       onDelete={handleDelete}
       token={token}
     >
-      {error && <DetailsAlert type="error">{error}</DetailsAlert>}
-      {uploadSuccess && <DetailsAlert type="success">{uploadSuccess}</DetailsAlert>}
+      {error && (
+        <div className={`${ALERT_STYLES.error} mb-4`}>{error}</div>
+      )}
+      {uploadSuccess && (
+        <div className={`${ALERT_STYLES.success} mb-4`}>{uploadSuccess}</div>
+      )}
       {proveedor && (
         <>
             {/* Información principal */}

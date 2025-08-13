@@ -96,10 +96,10 @@ const TopNavBar = ({
         {showSearch && (
                 <button
                   onClick={() => setShowSearchModal(true)}
-          className={`p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors ${hideSearchOnDesktop ? 'md:hidden' : ''}`}
+          className={`inline-flex items-center leading-none p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors ${hideSearchOnDesktop ? 'md:hidden' : ''}`}
                   title="Búsqueda rápida (Ctrl+K)"
                 >
-                  <Search size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Search size={18} className="align-middle w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               )}
 
@@ -109,20 +109,20 @@ const TopNavBar = ({
                   {onEdit && (
                     <button
                       onClick={onEdit}
-          className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="inline-flex items-center leading-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                       title="Editar"
                     >
-          <Edit3 size={18} className="mr-0 sm:mr-2" />
+          <Edit3 size={18} className="align-middle mr-0 sm:mr-2" />
                       <span className="hidden sm:inline">Editar</span>
                     </button>
                   )}
                   {onDelete && (
                     <button
                       onClick={onDelete}
-          className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="inline-flex items-center leading-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Eliminar"
                     >
-          <Trash2 size={18} className="mr-0 sm:mr-2" />
+          <Trash2 size={18} className="align-middle mr-0 sm:mr-2" />
                       <span className="hidden sm:inline">Eliminar</span>
                     </button>
                   )}
@@ -138,10 +138,10 @@ const TopNavBar = ({
 
               {/* Notificaciones - Ocultar en móvil pequeño si hay muchas acciones */}
               <button
-                className={`p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors relative ${collapseUserOnMd ? 'hidden lg:block' : 'hidden sm:block'}`}
+                className={`inline-flex items-center leading-none p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors relative ${collapseUserOnMd ? 'hidden lg:block' : 'hidden sm:block'}`}
                 title="Notificaciones"
               >
-                <Bell size={18} className="sm:w-5 sm:h-5" />
+                <Bell size={18} className="align-middle sm:w-5 sm:h-5" />
                 <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 sm:h-3 sm:w-3 bg-red-500 rounded-full"></span>
               </button>
             </div>

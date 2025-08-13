@@ -8,8 +8,9 @@
 import React from 'react';
 import { Search, FileDown, FileUp, Plus } from 'lucide-react';
 
-const iconBtn = "p-2 sm:px-2 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors";
-const textBtn = "inline-flex items-center px-2 py-2 sm:px-3 sm:py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors";
+// Alinear iconos con el texto: usar inline-flex, items-center y leading-none
+const iconBtn = "inline-flex items-center leading-none p-2 sm:px-2 sm:py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors";
+const textBtn = "inline-flex items-center leading-none px-2 py-2 sm:px-3 sm:py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors";
 
 export default function FormHeaderActions({
   onSearchClick,
@@ -23,10 +24,10 @@ export default function FormHeaderActions({
       {/* Buscar */}
       <button
         onClick={onSearchClick}
-        className={`${iconBtn} md:hidden`}
+  className={`${iconBtn} md:hidden`}
         title="Buscar"
       >
-        <Search size={18} className="mr-0 sm:mr-2" />
+  <Search size={18} className="align-middle mr-0 sm:mr-2" />
         <span className="hidden sm:inline">Buscar</span>
       </button>
 
@@ -36,13 +37,13 @@ export default function FormHeaderActions({
         className={`${textBtn}`}
         title="Exportar"
       >
-        <FileDown size={18} className="mr-0 sm:mr-2" />
+  <FileDown size={18} className="align-middle mr-0 sm:mr-2" />
         <span className="hidden sm:inline">Exportar</span>
       </button>
 
       {/* Importar */}
       <label htmlFor={importInputId} className={`${textBtn} cursor-pointer`} title="Importar">
-        <FileUp size={18} className="mr-0 sm:mr-2" />
+  <FileUp size={18} className="align-middle mr-0 sm:mr-2" />
         <span className="hidden sm:inline">Importar</span>
         <input id={importInputId} type="file" accept=".csv" className="hidden" onChange={onImport} />
       </label>
@@ -53,7 +54,7 @@ export default function FormHeaderActions({
         className={`${textBtn} text-white bg-blue-600 hover:bg-blue-700`}
         title="Nuevo"
       >
-        <Plus size={18} className="mr-0 sm:mr-2" />
+  <Plus size={18} className="align-middle mr-0 sm:mr-2" />
         <span className="hidden sm:inline">Nuevo</span>
       </button>
     </div>
