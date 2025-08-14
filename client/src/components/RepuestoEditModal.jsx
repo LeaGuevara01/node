@@ -6,6 +6,7 @@ import {
   MODAL_STYLES,
   LAYOUT_STYLES,
   ALERT_STYLES,
+  ICON_STYLES,
 } from '../styles/repuestoStyles';
 
 function RepuestoEditModal({ repuesto, onClose, onUpdate, onDelete, token }) {

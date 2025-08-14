@@ -76,12 +76,10 @@ export { default as StatsCard, StatsGrid, useStats } from '../components/shared/
 export {
   PAGE_STYLES,
   PageLayout,
-  PageHeader,
   ContentSection,
   LoadingState,
   EmptyState,
   Alert,
-  ResponsiveGrid,
   usePageState,
   usePageNavigation,
   BREAKPOINTS,

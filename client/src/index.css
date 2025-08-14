@@ -1,3 +1,4 @@
+/* Tailwind base layers (reinserted) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +6,7 @@
 /* Ocultar barra de scroll horizontal para tags */
 .scroll-hidden {
   -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  /* scrollbar-width: none;  Firefox only, removed for compatibility */
 }
 .scroll-hidden::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
@@ -44,7 +45,7 @@
   .tags-container-mobile {
     display: flex;
     overflow: hidden;
-    scrollbar-width: none;
+    /* scrollbar-width: none;  Firefox only, removed for compatibility */
     -ms-overflow-style: none;
     justify-content: flex-start;
     flex-wrap: nowrap;
@@ -52,10 +53,6 @@
     margin: 0 !important;
     padding: 0 !important;
     gap: 0.25rem;
-  }
-
-  .tags-container-mobile::-webkit-scrollbar {
-    display: none;
   }
 
   /* Asegurar que no haya márgenes en los contenedores de tags */
@@ -92,12 +89,9 @@
 
   .tags-container-mobile > * {
     flex: 0 1 auto;
-    min-width: fit-content;
+    min-width: -webkit-fill-available;
+    /* min-width: fit-content; replaced for Samsung Internet compatibility */
   }
-}
-
-/* Ajustes para pantallas grandes */
-@media (min-width: 1025px) {
   .tag-truncate {
     max-width: 200px;
   }

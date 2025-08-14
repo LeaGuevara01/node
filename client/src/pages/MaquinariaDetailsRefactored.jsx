@@ -23,7 +23,7 @@ import {
   Wrench,
   Edit,
 } from 'lucide-react';
-import { getMaquinariaById, updateMaquinaria } from '../services/api';
+import { getMaquinariaById, updateMaquinaria, deleteMaquinaria } from '../services/api';
 import AppLayout from '../components/navigation/AppLayout';
 import { BackButton, EditButton, DeleteButton } from '../components/navigation/NavigationButtons';
 import { useNavigation } from '../hooks/useNavigation';
@@ -75,7 +75,8 @@ function MaquinariaDetailsRefactored({ token }) {
 
     try {
       setUpdating(true);
-      await updateMaquinaria(id, { ...maquinaria, estado: newStatus }, token);
+  // La función updateMaquinaria espera un objeto de datos (con id) como primer parámetro
+  await updateMaquinaria({ ...maquinaria, estado: newStatus, id }, token);
       setMaquinaria({ ...maquinaria, estado: newStatus });
     } catch (err) {
       console.error('Error updating status:', err);
@@ -95,18 +96,11 @@ function MaquinariaDetailsRefactored({ token }) {
 
     try {
       setUpdating(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/maquinarias/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        // Regresar a la lista después de eliminar
-        navigateToListPage('maquinarias');
+  const result = await deleteMaquinaria(id, token);
+      if (result && result.error) {
+        setError(result.error || 'Error al eliminar la maquinaria');
       } else {
-        setError('Error al eliminar la maquinaria');
+        navigateToListPage('maquinarias');
       }
     } catch (err) {
       setError('Error al eliminar la maquinaria');
