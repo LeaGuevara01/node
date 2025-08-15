@@ -14,7 +14,7 @@ services:
       - key: PORT
         value: 4000
       - key: CORS_ORIGIN
-        value: https://sistemagestionagricola.onrender.com
+        value: https://sistemagestionagricola.onrender.com,https://sistemagestionagricola-frontend.onrender.com
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
@@ -40,6 +40,9 @@ services:
       - path: /assets/*
         name: Cache-Control
         value: max-age=31536000
+      - path: /site.webmanifest
+        name: Content-Type
+        value: application/manifest+json; charset=utf-8
     redirects:
       - source: /favicon.ico
         destination: /favicon-elorza.ico
