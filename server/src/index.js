@@ -161,7 +161,3 @@ app.listen(PORT, () => {
     console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
   }
 });
-ame + '/docs/openapi.yaml')) {
-    console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
-  }
-});
