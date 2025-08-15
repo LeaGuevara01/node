@@ -7,7 +7,7 @@ services:
     rootDir: ./server
     buildCommand: npm install && npx prisma generate && npx prisma db push --accept-data-loss
     startCommand: npx prisma migrate deploy && npm start
-      healthCheckPath: /api/health
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
