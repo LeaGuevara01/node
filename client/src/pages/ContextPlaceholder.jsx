@@ -7,13 +7,13 @@ function ContextPlaceholder({ token, role, onLogout }) {
   const decoded = valor ? decodeURIComponent(valor) : '';
   const titleMap = {
     categoria: 'Contexto de Categoría',
-    ubicacion: 'Contexto de Ubicación'
+    ubicacion: 'Contexto de Ubicación',
   };
 
   const breadcrumbs = [
     { label: 'Inicio', href: '/' },
     { label: 'Contexto' },
-    { label: titleMap[tipo] || tipo }
+    { label: titleMap[tipo] || tipo },
   ];
 
   return (
@@ -28,8 +28,8 @@ function ContextPlaceholder({ token, role, onLogout }) {
     >
       <div className="bg-white rounded-lg shadow p-6">
         <p className="text-gray-700">
-          Esta es una página placeholder para futuras implementaciones de contexto
-          (estadísticas de stock, mapa operativo, esquema categórico, repuestos y reparaciones asociadas, etc.).
+          Esta es una página placeholder para futuras implementaciones de contexto (estadísticas de
+          stock, mapa operativo, esquema categórico, repuestos y reparaciones asociadas, etc.).
         </p>
       </div>
     </AppLayout>

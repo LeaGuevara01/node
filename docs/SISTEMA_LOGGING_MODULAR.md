@@ -61,10 +61,10 @@ examples/
 ### 1. Import y Creación de Logger
 
 ```javascript
-import { createLogger } from "../utils/logger";
+import { createLogger } from '../utils/logger';
 
 // Logger específico para componente
-const logger = createLogger("MiComponente");
+const logger = createLogger('MiComponente');
 ```
 
 ### 2. Logging Básico
@@ -90,19 +90,19 @@ logger.success('Operación completada', { recordsProcessed: 10 });
 
 ```javascript
 // API calls
-logger.api("Llamada a backend", { endpoint: "/maquinarias" });
+logger.api('Llamada a backend', { endpoint: '/maquinarias' });
 
 // Acciones del usuario
-logger.user("Botón clickeado", { button: "save" });
+logger.user('Botón clickeado', { button: 'save' });
 
 // Navegación
-logger.navigation("Cambio de ruta", { from: "/", to: "/maquinarias" });
+logger.navigation('Cambio de ruta', { from: '/', to: '/maquinarias' });
 
 // Filtros
-logger.filter("Filtros aplicados", { categoria: "Tractores" });
+logger.filter('Filtros aplicados', { categoria: 'Tractores' });
 
 // Datos
-logger.data("Registros cargados", { count: 20 });
+logger.data('Registros cargados', { count: 20 });
 ```
 
 ## 🌐 Logging de APIs
@@ -110,11 +110,11 @@ logger.data("Registros cargados", { count: 20 });
 ### Uso Manual
 
 ```javascript
-import { logApiRequest, logApiSuccess, logApiError } from "../utils/apiLogger";
+import { logApiRequest, logApiSuccess, logApiError } from '../utils/apiLogger';
 
 async function getMaquinarias(token, filtros) {
-  const url = "http://localhost:4000/api/maquinaria";
-  const startTime = logApiRequest(url, "GET", filtros);
+  const url = 'http://localhost:4000/api/maquinaria';
+  const startTime = logApiRequest(url, 'GET', filtros);
 
   try {
     const response = await fetch(url, {
@@ -122,12 +122,12 @@ async function getMaquinarias(token, filtros) {
     });
     const data = await response.json();
 
-    logApiSuccess(url, "GET", data, startTime, {
-      expectedField: "maquinarias",
+    logApiSuccess(url, 'GET', data, startTime, {
+      expectedField: 'maquinarias',
     });
     return data;
   } catch (error) {
-    logApiError(url, "GET", error, startTime);
+    logApiError(url, 'GET', error, startTime);
     throw error;
   }
 }
@@ -136,16 +136,16 @@ async function getMaquinarias(token, filtros) {
 ### Uso con Wrapper Automático
 
 ```javascript
-import { withApiLogging } from "../utils/apiLogger";
+import { withApiLogging } from '../utils/apiLogger';
 
 const getMaquinarias = withApiLogging(
   async function (token, filtros) {
-    const response = await fetch("http://localhost:4000/api/maquinaria");
+    const response = await fetch('http://localhost:4000/api/maquinaria');
     return response.json();
   },
   {
-    name: "getMaquinarias",
-    extractUrl: () => "http://localhost:4000/api/maquinaria",
+    name: 'getMaquinarias',
+    extractUrl: () => 'http://localhost:4000/api/maquinaria',
     extractFilters: (args) => args[1] || {},
   }
 );
@@ -164,25 +164,25 @@ El sistema automáticamente detecta y previene requests API duplicados:
 ### CRUD Operations
 
 ```javascript
-import { logCrudOperation } from "../utils/apiLogger";
+import { logCrudOperation } from '../utils/apiLogger';
 
 // Crear
-logCrudOperation("CREATE", "maquinaria", null, formData);
+logCrudOperation('CREATE', 'maquinaria', null, formData);
 
 // Actualizar
-logCrudOperation("UPDATE", "maquinaria", id, updateData);
+logCrudOperation('UPDATE', 'maquinaria', id, updateData);
 
 // Eliminar
-logCrudOperation("DELETE", "maquinaria", id);
+logCrudOperation('DELETE', 'maquinaria', id);
 
 // Leer
-logCrudOperation("READ", "maquinaria", id);
+logCrudOperation('READ', 'maquinaria', id);
 ```
 
 ### Filtros y Paginación
 
 ```javascript
-import { logFilterApplication, logPaginationChange } from "../utils/apiLogger";
+import { logFilterApplication, logPaginationChange } from '../utils/apiLogger';
 
 // Aplicación de filtros
 logFilterApplication(filtros, tokensActivos);
@@ -194,13 +194,13 @@ logPaginationChange(page, totalPages, totalItems);
 ### Operaciones Masivas
 
 ```javascript
-import { logBulkOperation } from "../utils/apiLogger";
+import { logBulkOperation } from '../utils/apiLogger';
 
 // Importación masiva
-logBulkOperation("IMPORT", "maquinarias", recordCount, result);
+logBulkOperation('IMPORT', 'maquinarias', recordCount, result);
 
 // Exportación
-logBulkOperation("EXPORT", "maquinarias", recordCount);
+logBulkOperation('EXPORT', 'maquinarias', recordCount);
 ```
 
 ## ⚛️ Uso en Componentes React
@@ -209,11 +209,11 @@ logBulkOperation("EXPORT", "maquinarias", recordCount);
 
 ```javascript
 function useMaquinarias() {
-  const logger = createLogger("useMaquinarias");
+  const logger = createLogger('useMaquinarias');
 
   React.useEffect(() => {
-    logger.info("Hook inicializado");
-    return () => logger.debug("Hook desmontado");
+    logger.info('Hook inicializado');
+    return () => logger.debug('Hook desmontado');
   }, []);
 
   // ... lógica del hook
@@ -224,18 +224,18 @@ function useMaquinarias() {
 
 ```javascript
 function MiComponente() {
-  const logger = createLogger("MiComponente");
+  const logger = createLogger('MiComponente');
 
   React.useEffect(() => {
-    logger.info("🚀 Componente montado");
+    logger.info('🚀 Componente montado');
 
     return () => {
-      logger.debug("🧹 Componente desmontado");
+      logger.debug('🧹 Componente desmontado');
     };
   }, []);
 
   React.useEffect(() => {
-    logger.debug("🔄 Props cambiaron", { newProps });
+    logger.debug('🔄 Props cambiaron', { newProps });
   }, [props]);
 }
 ```
@@ -244,16 +244,16 @@ function MiComponente() {
 
 ```javascript
 function handleSubmit(formData) {
-  logger.user("Formulario enviado", {
-    form: "maquinaria-create",
+  logger.user('Formulario enviado', {
+    form: 'maquinaria-create',
     fields: Object.keys(formData),
   });
 
   try {
     // ... lógica de submit
-    logger.success("Formulario procesado correctamente");
+    logger.success('Formulario procesado correctamente');
   } catch (error) {
-    logger.error("Error en formulario", { error: error.message });
+    logger.error('Error en formulario', { error: error.message });
   }
 }
 ```
@@ -285,7 +285,7 @@ const ENVIRONMENT_CONFIGS = {
 
 ```javascript
 // main.jsx o App.jsx
-import { initializeLogging } from "./config/loggingConfig";
+import { initializeLogging } from './config/loggingConfig';
 
 // Inicializar al arrancar la app
 initializeLogging();
@@ -299,28 +299,28 @@ El sistema detecta automáticamente el uso de componentes deprecados:
 
 ```javascript
 // ANTES (deprecado)
-console.log("Fetching maquinarias with filters:", filtros);
-console.warn("StyledPageWrapper está DEPRECADO");
+console.log('Fetching maquinarias with filters:', filtros);
+console.warn('StyledPageWrapper está DEPRECADO');
 
 // DESPUÉS (nuevo sistema)
-const logger = createLogger("MaquinariasPage");
-logger.api("Cargando maquinarias", { filtros });
+const logger = createLogger('MaquinariasPage');
+logger.api('Cargando maquinarias', { filtros });
 
-deprecationLogger.warn("StyledPageWrapper está DEPRECADO", {
-  component: "StyledPageWrapper",
-  replacement: "AppLayout + PageContainer",
-  migrationGuide: "/docs/MIGRATION_STYLED_COMPONENTS.md",
+deprecationLogger.warn('StyledPageWrapper está DEPRECADO', {
+  component: 'StyledPageWrapper',
+  replacement: 'AppLayout + PageContainer',
+  migrationGuide: '/docs/MIGRATION_STYLED_COMPONENTS.md',
 });
 ```
 
 ### Script de Migración
 
 ```javascript
-import { runFullMigration } from "../scripts/migrateStyledComponentsLogging";
+import { runFullMigration } from '../scripts/migrateStyledComponentsLogging';
 
 // Ejecutar migración completa
 const result = runFullMigration();
-console.log("Migración completada:", result);
+console.log('Migración completada:', result);
 ```
 
 ## 📈 Performance y Métricas
@@ -328,29 +328,29 @@ console.log("Migración completada:", result);
 ### Medición de Tiempos
 
 ```javascript
-const logger = createLogger("Performance");
+const logger = createLogger('Performance');
 
 // Iniciar timer
-const startTime = logger.time("heavy-operation");
+const startTime = logger.time('heavy-operation');
 
 // ... operación pesada
 
 // Finalizar y loggear
-const duration = logger.timeEnd("heavy-operation", startTime);
+const duration = logger.timeEnd('heavy-operation', startTime);
 
 if (duration > 1000) {
-  logger.warn("Operación lenta detectada", { duration });
+  logger.warn('Operación lenta detectada', { duration });
 }
 ```
 
 ### Métricas de API
 
 ```javascript
-import { getApiMetrics, resetApiMetrics } from "../utils/apiLogger";
+import { getApiMetrics, resetApiMetrics } from '../utils/apiLogger';
 
 // Obtener métricas actuales
 const metrics = getApiMetrics();
-logger.data("Métricas de API", metrics);
+logger.data('Métricas de API', metrics);
 
 // Resetear métricas
 resetApiMetrics();
@@ -370,13 +370,13 @@ El sistema automáticamente monitorea el uso de memoria:
 
 ```javascript
 // Solo en desarrollo
-if (process.env.NODE_ENV === "development") {
-  logger.debug("Información detallada de debugging", { state, props });
+if (process.env.NODE_ENV === 'development') {
+  logger.debug('Información detallada de debugging', { state, props });
 }
 
 // Logging condicional
 if (logger.level <= LOG_LEVELS.DEBUG) {
-  logger.debug("Debug detallado");
+  logger.debug('Debug detallado');
 }
 ```
 
@@ -384,8 +384,8 @@ if (logger.level <= LOG_LEVELS.DEBUG) {
 
 ```javascript
 // Errores globales automáticamente capturados
-window.addEventListener("error", (event) => {
-  logger.error("Error global", {
+window.addEventListener('error', (event) => {
+  logger.error('Error global', {
     message: event.message,
     filename: event.filename,
     lineno: event.lineno,
@@ -393,8 +393,8 @@ window.addEventListener("error", (event) => {
 });
 
 // Promesas rechazadas
-window.addEventListener("unhandledrejection", (event) => {
-  logger.error("Promise no manejada", { reason: event.reason });
+window.addEventListener('unhandledrejection', (event) => {
+  logger.error('Promise no manejada', { reason: event.reason });
 });
 ```
 

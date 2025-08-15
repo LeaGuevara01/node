@@ -1,6 +1,6 @@
 /**
  * Ejemplo de implementación del sistema de cartas clickeables
- * 
+ *
  * Este archivo demuestra cómo usar tanto el StatsCard original mejorado
  * como el nuevo StatsCard del sistema de design tokens.
  */
@@ -15,7 +15,7 @@ const mockStats = {
   maquinarias: 25,
   repuestos: 150,
   proveedores: 12,
-  reparaciones: 8
+  reparaciones: 8,
 };
 
 function StatsCardDemo() {
@@ -33,7 +33,6 @@ function StatsCardDemo() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto space-y-8">
-        
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -53,27 +52,27 @@ function StatsCardDemo() {
                 StatsCard Original (Mejorado)
               </h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <StatsCard 
-                  type="maquinarias" 
-                  title="Maquinarias" 
+                <StatsCard
+                  type="maquinarias"
+                  title="Maquinarias"
                   value={mockStats.maquinarias}
                   onClick={handleCardClick}
                 />
-                <StatsCard 
-                  type="repuestos" 
-                  title="Repuestos" 
+                <StatsCard
+                  type="repuestos"
+                  title="Repuestos"
                   value={mockStats.repuestos}
                   onClick={handleCardClick}
                 />
-                <StatsCard 
-                  type="proveedores" 
-                  title="Proveedores" 
+                <StatsCard
+                  type="proveedores"
+                  title="Proveedores"
                   value={mockStats.proveedores}
                   onClick={handleCardClick}
                 />
-                <StatsCard 
-                  type="reparaciones" 
-                  title="Reparaciones" 
+                <StatsCard
+                  type="reparaciones"
+                  title="Reparaciones"
                   value={mockStats.reparaciones}
                   onClick={handleCardClick}
                 />
@@ -86,36 +85,36 @@ function StatsCardDemo() {
                 <Palette className="w-6 h-6 text-purple-600" />
                 StatsCard Nuevo (Design Tokens)
               </h2>
-              
+
               {/* Variante Default */}
               <h3 className="text-lg font-medium text-gray-700 mb-3">Variante Default</h3>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <NewStatsCard 
-                  type="maquinarias" 
-                  title="Maquinarias" 
+                <NewStatsCard
+                  type="maquinarias"
+                  title="Maquinarias"
                   value={mockStats.maquinarias}
                   onClick={handleCardClick}
                   variant="default"
                 />
-                <NewStatsCard 
-                  type="repuestos" 
-                  title="Repuestos" 
+                <NewStatsCard
+                  type="repuestos"
+                  title="Repuestos"
                   value={mockStats.repuestos}
                   onClick={handleCardClick}
                   variant="default"
                   subtitle="En stock"
                 />
-                <NewStatsCard 
-                  type="proveedores" 
-                  title="Proveedores" 
+                <NewStatsCard
+                  type="proveedores"
+                  title="Proveedores"
                   value={mockStats.proveedores}
                   onClick={handleCardClick}
                   variant="default"
                   trend="up"
                 />
-                <NewStatsCard 
-                  type="reparaciones" 
-                  title="Reparaciones" 
+                <NewStatsCard
+                  type="reparaciones"
+                  title="Reparaciones"
                   value={mockStats.reparaciones}
                   onClick={handleCardClick}
                   variant="default"
@@ -127,32 +126,32 @@ function StatsCardDemo() {
               {/* Variante Agricultural */}
               <h3 className="text-lg font-medium text-gray-700 mb-3">Variante Agricultural</h3>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <NewStatsCard 
-                  type="maquinarias" 
-                  title="Maquinarias" 
+                <NewStatsCard
+                  type="maquinarias"
+                  title="Maquinarias"
                   value={mockStats.maquinarias}
                   onClick={handleCardClick}
                   variant="agricultural"
                 />
-                <NewStatsCard 
-                  type="repuestos" 
-                  title="Repuestos" 
+                <NewStatsCard
+                  type="repuestos"
+                  title="Repuestos"
                   value={mockStats.repuestos}
                   onClick={handleCardClick}
                   variant="agricultural"
                   subtitle="En inventario"
                 />
-                <NewStatsCard 
-                  type="proveedores" 
-                  title="Proveedores" 
+                <NewStatsCard
+                  type="proveedores"
+                  title="Proveedores"
                   value={mockStats.proveedores}
                   onClick={handleCardClick}
                   variant="agricultural"
                   trend="stable"
                 />
-                <NewStatsCard 
-                  type="reparaciones" 
-                  title="Reparaciones" 
+                <NewStatsCard
+                  type="reparaciones"
+                  title="Reparaciones"
                   value={mockStats.reparaciones}
                   onClick={handleCardClick}
                   variant="agricultural"
@@ -162,11 +161,7 @@ function StatsCardDemo() {
 
               {/* StatsGrid Component */}
               <h3 className="text-lg font-medium text-gray-700 mb-3">StatsGrid Component</h3>
-              <StatsGrid 
-                stats={mockStats}
-                onCardClick={handleCardClick}
-                variant="agricultural"
-              />
+              <StatsGrid stats={mockStats} onCardClick={handleCardClick} variant="agricultural" />
             </section>
 
             {/* Instrucciones */}
@@ -176,17 +171,24 @@ function StatsCardDemo() {
                 Cómo usar en tu Dashboard
               </h3>
               <div className="text-sm text-blue-700 space-y-2">
-                <p><strong>1. Importa el componente:</strong></p>
+                <p>
+                  <strong>1. Importa el componente:</strong>
+                </p>
                 <code className="block bg-blue-100 p-2 rounded text-xs">
                   import StatsCard from '../components/StatsCard';
                 </code>
-                
-                <p><strong>2. Usa en tu componente:</strong></p>
+
+                <p>
+                  <strong>2. Usa en tu componente:</strong>
+                </p>
                 <code className="block bg-blue-100 p-2 rounded text-xs">
-                  &lt;StatsCard type="maquinarias" title="Maquinarias" value={25} onClick={handleClick} /&gt;
+                  &lt;StatsCard type="maquinarias" title="Maquinarias" value={25} onClick=
+                  {handleClick} /&gt;
                 </code>
-                
-                <p><strong>3. Maneja la navegación:</strong></p>
+
+                <p>
+                  <strong>3. Maneja la navegación:</strong>
+                </p>
                 <code className="block bg-blue-100 p-2 rounded text-xs">
                   const handleClick = (type) =&gt; setActiveSection(type);
                 </code>
@@ -208,16 +210,14 @@ function StatsCardDemo() {
                   <h2 className="text-2xl font-semibold text-gray-800 capitalize">
                     {activeSection}
                   </h2>
-                  <p className="text-gray-600">
-                    Sección de gestión de {activeSection}
-                  </p>
+                  <p className="text-gray-600">Sección de gestión de {activeSection}</p>
                 </div>
               </div>
               <div className="text-lg font-semibold text-gray-700">
                 Total: {mockStats[activeSection]}
               </div>
             </div>
-            
+
             <div className="bg-gray-50 p-6 rounded-lg text-center">
               <p className="text-gray-600 mb-4 flex items-center justify-center gap-2">
                 <Target className="w-5 h-5 text-green-600" />
@@ -229,7 +229,6 @@ function StatsCardDemo() {
             </div>
           </div>
         )}
-        
       </div>
     </div>
   );

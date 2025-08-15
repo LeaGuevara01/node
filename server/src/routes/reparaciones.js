@@ -6,31 +6,57 @@ const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 const auth = require('../middleware/auth');
-const { getReparaciones, getReparacion, createReparacion, updateReparacion, deleteReparacion, getReparacionFilters } = require('../controllers/reparacionController');
+const {
+  getReparaciones,
+  getReparacion,
+  createReparacion,
+  updateReparacion,
+  deleteReparacion,
+  getReparacionFilters,
+} = require('../controllers/reparacionController');
 
 router.get('/', auth, getReparaciones);
 router.get('/filtros', auth, getReparacionFilters);
 router.get('/:id', auth, getReparacion);
 
-router.post('/', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden crear reparaciones' });
-  next();
-}, createReparacion);
+router.post(
+  '/',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden crear reparaciones' });
+    next();
+  },
+  createReparacion
+);
 
-router.put('/:id', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden editar reparaciones' });
-  next();
-}, updateReparacion);
+router.put(
+  '/:id',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden editar reparaciones' });
+    next();
+  },
+  updateReparacion
+);
 
-router.delete('/:id', auth, (req, res, next) => {
-  if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden eliminar reparaciones' });
-  next();
-}, deleteReparacion);
+router.delete(
+  '/:id',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden eliminar reparaciones' });
+    next();
+  },
+  deleteReparacion
+);
 
 // Importación masiva (bulk) de reparaciones
 router.post('/bulk', auth, upload.single('file'), async (req, res) => {
   try {
-    if (!req.isAdmin) return res.status(403).json({ error: 'Solo administradores pueden importar reparaciones' });
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden importar reparaciones' });
     if (!req.file) return res.status(400).json({ error: 'Archivo no proporcionado' });
 
     // TODO: Parsear CSV/XLSX del buffer req.file.buffer y crear registros

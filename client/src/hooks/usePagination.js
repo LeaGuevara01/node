@@ -10,8 +10,8 @@ export const usePagination = (initialPagination = {}, fetchDataFunction) => {
     current: 1,
     total: 1,
     totalItems: 0,
-  limit: 10,
-    ...initialPagination
+    limit: 10,
+    ...initialPagination,
   });
 
   const [loading, setLoading] = useState(false);
@@ -19,19 +19,22 @@ export const usePagination = (initialPagination = {}, fetchDataFunction) => {
   /**
    * Maneja el cambio de página
    */
-  const handlePaginacion = useCallback((nuevaPagina) => {
-    if (fetchDataFunction) {
-      fetchDataFunction(undefined, nuevaPagina);
-    }
-  }, [fetchDataFunction]);
+  const handlePaginacion = useCallback(
+    (nuevaPagina) => {
+      if (fetchDataFunction) {
+        fetchDataFunction(undefined, nuevaPagina);
+      }
+    },
+    [fetchDataFunction]
+  );
 
   /**
    * Actualiza los datos de paginación
    */
   const actualizarPaginacion = useCallback((nuevaPaginacion) => {
-    setPaginacion(prev => ({
+    setPaginacion((prev) => ({
       ...prev,
-      ...nuevaPaginacion
+      ...nuevaPaginacion,
     }));
   }, []);
 
@@ -39,9 +42,9 @@ export const usePagination = (initialPagination = {}, fetchDataFunction) => {
    * Resetea la paginación a la primera página
    */
   const resetearPaginacion = useCallback(() => {
-    setPaginacion(prev => ({
+    setPaginacion((prev) => ({
       ...prev,
-      current: 1
+      current: 1,
     }));
   }, []);
 
@@ -49,7 +52,7 @@ export const usePagination = (initialPagination = {}, fetchDataFunction) => {
    * Calcula el rango de elementos mostrados
    */
   const calcularRango = useCallback(() => {
-    const inicio = ((paginacion.current - 1) * paginacion.limit) + 1;
+    const inicio = (paginacion.current - 1) * paginacion.limit + 1;
     const fin = Math.min(paginacion.current * paginacion.limit, paginacion.totalItems);
     return { inicio, fin };
   }, [paginacion]);
@@ -61,7 +64,7 @@ export const usePagination = (initialPagination = {}, fetchDataFunction) => {
     handlePaginacion,
     actualizarPaginacion,
     resetearPaginacion,
-    calcularRango
+    calcularRango,
   };
 };
 

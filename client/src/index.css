@@ -1,14 +1,15 @@
+/* Tailwind base layers (reinserted) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Ocultar barra de scroll horizontal para tags */
 .scroll-hidden {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  /* scrollbar-width: none;  Firefox only, removed for compatibility */
 }
 .scroll-hidden::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }
 
 /* Truncar texto largo en tags */
@@ -39,12 +40,12 @@
   .tag-truncate {
     max-width: 80px;
   }
-  
+
   /* Ajustes específicos para contenedores de tags */
   .tags-container-mobile {
     display: flex;
     overflow: hidden;
-    scrollbar-width: none;
+    /* scrollbar-width: none;  Firefox only, removed for compatibility */
     -ms-overflow-style: none;
     justify-content: flex-start;
     flex-wrap: nowrap;
@@ -53,11 +54,7 @@
     padding: 0 !important;
     gap: 0.25rem;
   }
-  
-  .tags-container-mobile::-webkit-scrollbar {
-    display: none;
-  }
-  
+
   /* Asegurar que no haya márgenes en los contenedores de tags */
   .tags-container-mobile > * {
     margin: 0 !important;
@@ -70,7 +67,7 @@
   .tag-truncate {
     max-width: 120px;
   }
-  
+
   .tags-container-mobile {
     justify-content: space-between;
     flex-wrap: wrap;
@@ -83,25 +80,22 @@
   .tag-truncate {
     max-width: 150px;
   }
-  
+
   .tags-container-mobile {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .tags-container-mobile > * {
     flex: 0 1 auto;
-    min-width: fit-content;
+    min-width: -webkit-fill-available;
+    /* min-width: fit-content; replaced for Samsung Internet compatibility */
   }
-}
-
-/* Ajustes para pantallas grandes */
-@media (min-width: 1025px) {
   .tag-truncate {
     max-width: 200px;
   }
-  
+
   .tags-container-mobile {
     justify-content: space-between;
     flex-wrap: wrap;
@@ -131,18 +125,19 @@
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .tags-justified > * {
     flex: 0 1 auto;
   }
-  
+
   /* Hacer que las etiquetas de stock/estado tengan prioridad visual */
   .tags-justified > *:nth-child(4), /* Stock en repuestos */
-  .tags-justified > *:nth-child(3) { /* Estado en maquinarias */
+  .tags-justified > *:nth-child(3) {
+    /* Estado en maquinarias */
     flex: 0 0 auto;
     margin-left: auto;
   }
-  
+
   /* Distribuir el resto de las etiquetas */
   .tags-justified > *:not(:nth-child(4)):not(:nth-child(3)) {
     flex: 1 1 auto;

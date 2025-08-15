@@ -9,18 +9,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { processCSVFile, createCSVMappers } from '../utils/csvUtils';
-import { 
-  createReparacion, 
-  updateReparacion, 
-  getReparaciones, 
-  deleteReparacion, 
-  getMaquinarias, 
-  getRepuestos 
+import {
+  createReparacion,
+  updateReparacion,
+  getReparaciones,
+  deleteReparacion,
+  getMaquinarias,
+  getRepuestos,
 } from '../services/api';
 import { getUsers } from '../services/users';
 import ReparacionEditModal from '../components/ReparacionEditModal';
 import { getColorFromString } from '../utils/colorUtils';
-import { 
+import {
   sortReparacionesByDate,
   buildReparacionQueryParams,
   clearReparacionFilters,
@@ -30,12 +30,12 @@ import {
   diasDesdeReparacion,
   formatRepuestosUsados,
   isValidDate,
-  generateResumenReparacion
+  generateResumenReparacion,
 } from '../utils/reparacionUtils';
-import { 
-  CONTAINER_STYLES, 
-  INPUT_STYLES, 
-  BUTTON_STYLES, 
+import {
+  CONTAINER_STYLES,
+  INPUT_STYLES,
+  BUTTON_STYLES,
   LAYOUT_STYLES,
   ICON_STYLES,
   TEXT_STYLES,
@@ -43,7 +43,7 @@ import {
   MODAL_STYLES,
   LIST_STYLES,
   POSITION_STYLES,
-  RANGE_STYLES
+  RANGE_STYLES,
 } from '../styles/repuestoStyles';
 
 function ReparacionForm({ token, onCreated }) {
@@ -52,7 +52,7 @@ function ReparacionForm({ token, onCreated }) {
     fecha: formatDateForInput(new Date()),
     maquinariaId: '',
     descripcion: '',
-    userId: ''
+    userId: '',
   });
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
@@ -60,12 +60,12 @@ function ReparacionForm({ token, onCreated }) {
   const [selectedReparacion, setSelectedReparacion] = useState(null);
   const [reparaciones, setReparaciones] = useState([]);
   const [selectedRepuestos, setSelectedRepuestos] = useState([]);
-  
+
   // Datos para formularios
   const [users, setUsers] = useState([]);
   const [maquinarias, setMaquinarias] = useState([]);
   const [repuestos, setRepuestos] = useState([]);
-  
+
   // Estados para filtros
   const [filtros, setFiltros] = useState({
     search: '',
@@ -73,16 +73,16 @@ function ReparacionForm({ token, onCreated }) {
     userId: '',
     repuestoId: '',
     fechaInicio: '',
-    fechaFin: ''
+    fechaFin: '',
   });
   const [opcionesFiltros, setOpcionesFiltros] = useState({
     maquinarias: [],
-    usuarios: []
+    usuarios: [],
   });
   const [paginacion, setPaginacion] = useState({
     current: 1,
     total: 1,
-    totalItems: 0
+    totalItems: 0,
   });
   const [loading, setLoading] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState(null);
@@ -93,13 +93,13 @@ function ReparacionForm({ token, onCreated }) {
     search: '',
     categoria: '',
     ubicacion: '',
-    estado: ''
+    estado: '',
   });
   const [repuestoFilter, setRepuestoFilter] = useState({
     search: '',
     categoria: '',
     ubicacion: '',
-    minStock: ''
+    minStock: '',
   });
   const [showMaquinariaFilter, setShowMaquinariaFilter] = useState(false);
   const [showRepuestoFilter, setShowRepuestoFilter] = useState(false);
@@ -113,13 +113,16 @@ function ReparacionForm({ token, onCreated }) {
 
       console.log('Fetching with params:', params.toString());
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/reparaciones?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/reparaciones?${params}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       const data = await res.json();
       console.log('API Response:', data);
-      
+
       if (data.data) {
         // Nueva estructura de respuesta con paginación
         const reparacionesOrdenadas = sortReparacionesByDate(data.data);
@@ -153,12 +156,12 @@ function ReparacionForm({ token, onCreated }) {
       // Since the filtros endpoint doesn't exist, we'll populate from the main data
       const reparacionesData = await getReparaciones(token);
       if (reparacionesData && reparacionesData.length > 0) {
-        const maquinarias = [...new Set(reparacionesData.map(r => r.maquinaria).filter(Boolean))];
-        const usuarios = [...new Set(reparacionesData.map(r => r.user).filter(Boolean))];
-        setOpcionesFiltros(prev => ({
+        const maquinarias = [...new Set(reparacionesData.map((r) => r.maquinaria).filter(Boolean))];
+        const usuarios = [...new Set(reparacionesData.map((r) => r.user).filter(Boolean))];
+        setOpcionesFiltros((prev) => ({
           ...prev,
           maquinarias,
-          usuarios
+          usuarios,
         }));
       }
     } catch (err) {
@@ -171,9 +174,9 @@ function ReparacionForm({ token, onCreated }) {
       const [usersData, maquinariasData, repuestosData] = await Promise.all([
         getUsers(token),
         getMaquinarias(token, {}, 1, true), // Usar forStats=true para obtener todas las maquinarias
-        getRepuestos(token, {}, 1, true) // Usar forStats=true para obtener todos los repuestos como array
+        getRepuestos(token, {}, 1, true), // Usar forStats=true para obtener todos los repuestos como array
       ]);
-      
+
       setUsers(Array.isArray(usersData) ? usersData : []);
       setMaquinarias(Array.isArray(maquinariasData) ? maquinariasData : []);
       setRepuestos(Array.isArray(repuestosData) ? repuestosData : []);
@@ -193,65 +196,67 @@ function ReparacionForm({ token, onCreated }) {
   // Función para filtrar maquinarias
   const filterMaquinarias = (filter) => {
     let filtered = [...maquinarias];
-    
+
     if (filter.search) {
-      filtered = filtered.filter(m => 
-        m.nombre?.toLowerCase().includes(filter.search.toLowerCase()) ||
-        m.modelo?.toLowerCase().includes(filter.search.toLowerCase())
+      filtered = filtered.filter(
+        (m) =>
+          m.nombre?.toLowerCase().includes(filter.search.toLowerCase()) ||
+          m.modelo?.toLowerCase().includes(filter.search.toLowerCase())
       );
     }
-    
+
     if (filter.categoria) {
-      filtered = filtered.filter(m => 
+      filtered = filtered.filter((m) =>
         m.categoria?.toLowerCase().includes(filter.categoria.toLowerCase())
       );
     }
-    
+
     if (filter.ubicacion) {
-      filtered = filtered.filter(m => 
+      filtered = filtered.filter((m) =>
         m.ubicacion?.toLowerCase().includes(filter.ubicacion.toLowerCase())
       );
     }
-    
+
     if (filter.estado) {
-      filtered = filtered.filter(m => 
+      filtered = filtered.filter((m) =>
         m.estado?.toLowerCase().includes(filter.estado.toLowerCase())
       );
     }
-    
+
     setFilteredMaquinarias(filtered);
   };
 
   // Función para filtrar repuestos
   const filterRepuestos = (filter) => {
     let filtered = [...repuestos];
-    
+
     if (filter.search) {
-      filtered = filtered.filter(r => 
-        r.nombre?.toLowerCase().includes(filter.search.toLowerCase()) ||
-        r.codigo?.toLowerCase().includes(filter.search.toLowerCase())
+      filtered = filtered.filter(
+        (r) =>
+          r.nombre?.toLowerCase().includes(filter.search.toLowerCase()) ||
+          r.codigo?.toLowerCase().includes(filter.search.toLowerCase())
       );
     }
-    
+
     if (filter.categoria) {
-      filtered = filtered.filter(r => 
+      filtered = filtered.filter((r) =>
         r.categoria?.toLowerCase().includes(filter.categoria.toLowerCase())
       );
     }
-    
+
     if (filter.ubicacion) {
-      filtered = filtered.filter(r => 
+      filtered = filtered.filter((r) =>
         r.ubicacion?.toLowerCase().includes(filter.ubicacion.toLowerCase())
       );
     }
-    
+
     if (filter.minStock) {
       const minStock = parseInt(filter.minStock);
       if (!isNaN(minStock)) {
-        filtered = filtered.filter(r => r.stock >= minStock);
+        filtered = filtered.filter((r) => r.stock >= minStock);
       }
     }
-    
+
     setFilteredRepuestos(filtered);
   };
 
@@ -273,9 +278,11 @@ function ReparacionForm({ token, onCreated }) {
 
     if (campo === 'search') {
       if (searchTimeout) clearTimeout(searchTimeout);
-      setSearchTimeout(setTimeout(() => {
-        fetchReparaciones(nuevosFiltros, 1);
-      }, 300));
+      setSearchTimeout(
+        setTimeout(() => {
+          fetchReparaciones(nuevosFiltros, 1);
+        }, 300)
+      );
     } else {
       fetchReparaciones(nuevosFiltros, 1);
     }
@@ -292,50 +299,52 @@ function ReparacionForm({ token, onCreated }) {
   };
 
   const handleRepuestoSelect = (repuestoId, cantidad = 1) => {
-    const repuestoExists = selectedRepuestos.find(r => r.repuestoId === parseInt(repuestoId));
+    const repuestoExists = selectedRepuestos.find((r) => r.repuestoId === parseInt(repuestoId));
     if (repuestoExists) {
-      setSelectedRepuestos(selectedRepuestos.map(r => 
-        r.repuestoId === parseInt(repuestoId) ? { ...r, cantidad } : r
-      ));
+      setSelectedRepuestos(
+        selectedRepuestos.map((r) =>
+          r.repuestoId === parseInt(repuestoId) ? { ...r, cantidad } : r
+        )
+      );
     } else {
       setSelectedRepuestos([...selectedRepuestos, { repuestoId: parseInt(repuestoId), cantidad }]);
     }
   };
 
   const handleRemoveRepuesto = (repuestoId) => {
-    setSelectedRepuestos(selectedRepuestos.filter(r => r.repuestoId !== parseInt(repuestoId)));
+    setSelectedRepuestos(selectedRepuestos.filter((r) => r.repuestoId !== parseInt(repuestoId)));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     // Validaciones
     if (!form.fecha || !form.maquinariaId || !form.userId) {
       setError('Fecha, maquinaria y responsable son obligatorios');
       return;
     }
-    
+
     if (!isValidDate(form.fecha)) {
       setError('La fecha no es válida');
       return;
     }
-    
+
     try {
       const reparacionData = {
         fecha: form.fecha,
         maquinariaId: Number(form.maquinariaId),
         descripcion: form.descripcion || null,
         userId: Number(form.userId),
-        repuestos: selectedRepuestos
+        repuestos: selectedRepuestos,
       };
-      
+
       await createReparacion(reparacionData, token);
       setForm({
         fecha: formatDateForInput(new Date()),
         maquinariaId: '',
         descripcion: '',
-        userId: ''
+        userId: '',
       });
       setSelectedRepuestos([]);
       setShowAddModal(false);
@@ -382,7 +391,7 @@ function ReparacionForm({ token, onCreated }) {
     if (!token) {
       return;
     }
-    
+
     fetchReparaciones();
     fetchOpcionesFiltros();
     fetchFormData();
@@ -405,7 +414,6 @@ function ReparacionForm({ token, onCreated }) {
   return (
     <div className={CONTAINER_STYLES.main}>
       <div className={CONTAINER_STYLES.maxWidth}>
-        
         {/* Header con botones de acción */}
         <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
           <div className={LAYOUT_STYLES.flexBetween}>
@@ -428,10 +436,16 @@ function ReparacionForm({ token, onCreated }) {
                       const form = new FormData();
                       form.append('file', file);
                       const url = `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/reparaciones/bulk`;
-                      const res = await fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+                      const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { Authorization: `Bearer ${token}` },
+                        body: form,
+                      });
                       const data = await res.json();
                       if (!res.ok) throw new Error(data?.error || 'Error en importación');
-                      setBulkSuccess(`Importación recibida (${data.filename || file.name}). Registros procesados: ${data.count}`);
+                      setBulkSuccess(
+                        `Importación recibida (${data.filename || file.name}). Registros procesados: ${data.count}`
+                      );
                       if (onCreated) onCreated();
                     } catch (err) {
                       setBulkError(err.message || 'Error al importar reparaciones');
@@ -443,48 +457,67 @@ function ReparacionForm({ token, onCreated }) {
                   id="csv-upload"
                 />
                 <div className={BUTTON_STYLES.csv}>
-                  <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg
+                    className={ICON_STYLES.small}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                   Cargar CSV
                 </div>
               </label>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className={BUTTON_STYLES.newItem}
-              >
-                <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <button onClick={() => setShowAddModal(true)} className={BUTTON_STYLES.newItem}>
+                <svg
+                  className={ICON_STYLES.small}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
                 Nueva Reparación
               </button>
             </div>
           </div>
-          
+
           {/* Mensajes de estado para carga masiva */}
-          {bulkSuccess && (
-            <div className={ALERT_STYLES.success}>
-              {bulkSuccess}
-            </div>
-          )}
-          {bulkError && (
-            <div className={ALERT_STYLES.error}>
-              {bulkError}
-            </div>
-          )}
+          {bulkSuccess && <div className={ALERT_STYLES.success}>{bulkSuccess}</div>}
+          {bulkError && <div className={ALERT_STYLES.error}>{bulkError}</div>}
         </div>
 
         {/* Filtros compactos */}
         <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
           <h2 className={TEXT_STYLES.sectionTitle}>Filtros</h2>
-          
+
           <div className={LAYOUT_STYLES.gridFilters}>
             {/* Búsqueda */}
             <div className={LAYOUT_STYLES.searchSpan}>
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                 </div>
                 <input
@@ -501,13 +534,33 @@ function ReparacionForm({ token, onCreated }) {
             <div className={LAYOUT_STYLES.filterSpan}>
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                 </div>
                 <div className={POSITION_STYLES.iconLeft}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                    />
                   </svg>
                 </div>
                 <select
@@ -515,9 +568,11 @@ function ReparacionForm({ token, onCreated }) {
                   onChange={(e) => handleFiltroChange('maquinariaId', e.target.value)}
                   className={INPUT_STYLES.select}
                 >
-                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Maquinarias</option>
+                  <option value="" className={INPUT_STYLES.selectPlaceholder}>
+                    Maquinarias
+                  </option>
                   {Array.isArray(maquinarias) && maquinarias.length > 0 ? (
-                    maquinarias.map(maquinaria => (
+                    maquinarias.map((maquinaria) => (
                       <option key={maquinaria.id} value={maquinaria.id}>
                         {maquinaria.nombre} - {maquinaria.modelo || 'Sin modelo'}
                       </option>
@@ -527,8 +582,18 @@ function ReparacionForm({ token, onCreated }) {
                   )}
                 </select>
                 <div className={POSITION_STYLES.iconRight}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -538,8 +603,18 @@ function ReparacionForm({ token, onCreated }) {
             <div className={LAYOUT_STYLES.filterSpan}>
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </div>
                 <select
@@ -547,14 +622,29 @@ function ReparacionForm({ token, onCreated }) {
                   onChange={(e) => handleFiltroChange('userId', e.target.value)}
                   className={INPUT_STYLES.select}
                 >
-                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Responsables</option>
-                  {Array.isArray(users) && users.map(user => (
-                    <option key={user.id} value={user.id}>{user.username}</option>
-                  ))}
+                  <option value="" className={INPUT_STYLES.selectPlaceholder}>
+                    Responsables
+                  </option>
+                  {Array.isArray(users) &&
+                    users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.username}
+                      </option>
+                    ))}
                 </select>
                 <div className={POSITION_STYLES.iconRight}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -564,8 +654,18 @@ function ReparacionForm({ token, onCreated }) {
             <div className={LAYOUT_STYLES.filterSpan}>
               <div className={POSITION_STYLES.relative}>
                 <div className={POSITION_STYLES.iconLeft}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
                   </svg>
                 </div>
                 <select
@@ -573,11 +673,14 @@ function ReparacionForm({ token, onCreated }) {
                   onChange={(e) => handleFiltroChange('repuestoId', e.target.value)}
                   className={INPUT_STYLES.select}
                 >
-                  <option value="" className={INPUT_STYLES.selectPlaceholder}>Componentes</option>
+                  <option value="" className={INPUT_STYLES.selectPlaceholder}>
+                    Componentes
+                  </option>
                   {Array.isArray(repuestos) && repuestos.length > 0 ? (
-                    repuestos.map(repuesto => (
+                    repuestos.map((repuesto) => (
                       <option key={repuesto.id} value={repuesto.id}>
-                        {repuesto.nombre}{repuesto.codigo ? ` - ${repuesto.codigo}` : ''}
+                        {repuesto.nombre}
+                        {repuesto.codigo ? ` - ${repuesto.codigo}` : ''}
                       </option>
                     ))
                   ) : (
@@ -585,8 +688,18 @@ function ReparacionForm({ token, onCreated }) {
                   )}
                 </select>
                 <div className={POSITION_STYLES.iconRight}>
-                  <svg className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -597,8 +710,18 @@ function ReparacionForm({ token, onCreated }) {
               <div className={RANGE_STYLES.container}>
                 <div className={RANGE_STYLES.wrapper}>
                   <div className={RANGE_STYLES.labelSection}>
-                    <svg className={RANGE_STYLES.icon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                      className={RANGE_STYLES.icon}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                     <span className={RANGE_STYLES.labelText}>Rango de Fechas</span>
                   </div>
@@ -633,8 +756,18 @@ function ReparacionForm({ token, onCreated }) {
               onClick={limpiarFiltros}
               className={`${BUTTON_STYLES.filter.clear} w-full`}
             >
-              <svg className={ICON_STYLES.medium} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg
+                className={ICON_STYLES.medium}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
               </svg>
               Limpiar filtros
             </button>
@@ -651,9 +784,24 @@ function ReparacionForm({ token, onCreated }) {
               </div>
               {loading && (
                 <div className={TEXT_STYLES.loading}>
-                  <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                  <svg
+                    className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      className="opacity-25"
+                    ></circle>
+                    <path
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      className="opacity-75"
+                    ></path>
                   </svg>
                   Cargando...
                 </div>
@@ -682,9 +830,24 @@ function ReparacionForm({ token, onCreated }) {
                             className={`${BUTTON_STYLES.edit} bg-gray-50 hover:bg-gray-100 text-gray-700 mr-2`}
                             title="Ver detalles"
                           >
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            <svg
+                              className={ICON_STYLES.small}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
                             </svg>
                           </button>
                           <button
@@ -692,49 +855,114 @@ function ReparacionForm({ token, onCreated }) {
                             className={BUTTON_STYLES.edit}
                             title="Editar reparación"
                           >
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            <svg
+                              className={ICON_STYLES.small}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                              />
                             </svg>
                           </button>
                         </div>
                       </div>
                       {reparacion.descripcion && (
-                        <div className={LIST_STYLES.itemDescription}>
-                          {reparacion.descripcion}
-                        </div>
+                        <div className={LIST_STYLES.itemDescription}>{reparacion.descripcion}</div>
                       )}
                       <div className={LIST_STYLES.itemTagsRow}>
                         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
-                          <span className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`} title={formatFecha(reparacion.fecha)}>
-                            <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          <span
+                            className={`${LIST_STYLES.itemTag} bg-gray-100 text-gray-700`}
+                            title={formatFecha(reparacion.fecha)}
+                          >
+                            <svg
+                              className={ICON_STYLES.small}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
                             </svg>
-                            <span className="tag-truncate hidden sm:inline">{formatFecha(reparacion.fecha)}</span>
-                            <span className="tag-truncate sm:hidden">{formatFechaCorta(reparacion.fecha)}</span>
+                            <span className="tag-truncate hidden sm:inline">
+                              {formatFecha(reparacion.fecha)}
+                            </span>
+                            <span className="tag-truncate sm:hidden">
+                              {formatFechaCorta(reparacion.fecha)}
+                            </span>
                           </span>
 
                           {reparacion.usuario && (
-                            <span className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-700`} title={reparacion.usuario.username}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <span
+                              className={`${LIST_STYLES.itemTag} bg-blue-100 text-blue-700`}
+                              title={reparacion.usuario.username}
+                            >
+                              <svg
+                                className={ICON_STYLES.small}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                />
                               </svg>
                               <span className="tag-truncate">{reparacion.usuario.username}</span>
                             </span>
                           )}
 
                           {reparacion.repuestos && reparacion.repuestos.length > 0 && (
-                            <span className={`${LIST_STYLES.itemTag} bg-orange-100 text-orange-700`} title={formatRepuestosUsados(reparacion.repuestos)}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            <span
+                              className={`${LIST_STYLES.itemTag} bg-orange-100 text-orange-700`}
+                              title={formatRepuestosUsados(reparacion.repuestos)}
+                            >
+                              <svg
+                                className={ICON_STYLES.small}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                                />
                               </svg>
-                              <span className="tag-truncate">{reparacion.repuestos.length} repuestos</span>
+                              <span className="tag-truncate">
+                                {reparacion.repuestos.length} repuestos
+                              </span>
                             </span>
                           )}
 
                           {diasDesdeReparacion(reparacion.fecha) <= 7 && (
-                            <span className={`${LIST_STYLES.itemTag} bg-red-100 text-red-700 hidden sm:flex`}>
-                              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <span
+                              className={`${LIST_STYLES.itemTag} bg-red-100 text-red-700 hidden sm:flex`}
+                            >
+                              <svg
+                                className={ICON_STYLES.small}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
                               </svg>
                               Hace {diasDesdeReparacion(reparacion.fecha)} días
                             </span>
@@ -757,33 +985,53 @@ function ReparacionForm({ token, onCreated }) {
                     onClick={() => handlePaginacion(paginacion.current - 1)}
                     disabled={paginacion.current <= 1}
                     className={`${BUTTON_STYLES.pagination.base} ${
-                      paginacion.current <= 1 
-                        ? BUTTON_STYLES.pagination.disabled 
+                      paginacion.current <= 1
+                        ? BUTTON_STYLES.pagination.disabled
                         : BUTTON_STYLES.pagination.enabled
                     }`}
                   >
-                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg
+                      className={ICON_STYLES.small}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
-                  
+
                   <div className="px-3 py-1 bg-white border border-gray-200 rounded-md">
                     <span className="text-xs font-medium text-gray-700">
                       {paginacion.current}/{paginacion.total}
                     </span>
                   </div>
-                  
+
                   <button
                     onClick={() => handlePaginacion(paginacion.current + 1)}
                     disabled={paginacion.current >= paginacion.total}
                     className={`${BUTTON_STYLES.pagination.base} ${
-                      paginacion.current >= paginacion.total 
-                        ? BUTTON_STYLES.pagination.disabled 
+                      paginacion.current >= paginacion.total
+                        ? BUTTON_STYLES.pagination.disabled
                         : BUTTON_STYLES.pagination.enabled
                     }`}
                   >
-                    <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg
+                      className={ICON_STYLES.small}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -814,12 +1062,12 @@ function ReparacionForm({ token, onCreated }) {
                       <input
                         type="date"
                         value={form.fecha}
-                        onChange={(e) => setForm({...form, fecha: e.target.value})}
+                        onChange={(e) => setForm({ ...form, fecha: e.target.value })}
                         className={INPUT_STYLES.base}
                         required
                       />
                     </div>
-                    
+
                     <div>
                       <label className={INPUT_STYLES.label}>Maquinaria *</label>
                       <div className="space-y-2">
@@ -829,12 +1077,24 @@ function ReparacionForm({ token, onCreated }) {
                           onClick={() => setShowMaquinariaFilter(!showMaquinariaFilter)}
                           className="w-full flex items-center justify-between px-3 py-2 text-sm bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100"
                         >
-                          <span>Filtrar maquinarias ({filteredMaquinarias.length} disponibles)</span>
-                          <svg className={`w-4 h-4 transform ${showMaquinariaFilter ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          <span>
+                            Filtrar maquinarias ({filteredMaquinarias.length} disponibles)
+                          </span>
+                          <svg
+                            className={`w-4 h-4 transform ${showMaquinariaFilter ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
                           </svg>
                         </button>
-                        
+
                         {/* Panel de filtros */}
                         {showMaquinariaFilter && (
                           <div className="p-3 bg-gray-50 border border-gray-200 rounded-md space-y-2">
@@ -842,7 +1102,9 @@ function ReparacionForm({ token, onCreated }) {
                               type="text"
                               placeholder="Buscar por nombre o modelo..."
                               value={maquinariaFilter.search}
-                              onChange={(e) => handleMaquinariaFilterChange('search', e.target.value)}
+                              onChange={(e) =>
+                                handleMaquinariaFilterChange('search', e.target.value)
+                              }
                               className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
                             />
                             <div className="grid grid-cols-3 gap-2">
@@ -850,66 +1112,73 @@ function ReparacionForm({ token, onCreated }) {
                                 type="text"
                                 placeholder="Categoría"
                                 value={maquinariaFilter.categoria}
-                                onChange={(e) => handleMaquinariaFilterChange('categoria', e.target.value)}
+                                onChange={(e) =>
+                                  handleMaquinariaFilterChange('categoria', e.target.value)
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 rounded"
                               />
                               <input
                                 type="text"
                                 placeholder="Ubicación"
                                 value={maquinariaFilter.ubicacion}
-                                onChange={(e) => handleMaquinariaFilterChange('ubicacion', e.target.value)}
+                                onChange={(e) =>
+                                  handleMaquinariaFilterChange('ubicacion', e.target.value)
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 rounded"
                               />
                               <input
                                 type="text"
                                 placeholder="Estado"
                                 value={maquinariaFilter.estado}
-                                onChange={(e) => handleMaquinariaFilterChange('estado', e.target.value)}
+                                onChange={(e) =>
+                                  handleMaquinariaFilterChange('estado', e.target.value)
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 rounded"
                               />
                             </div>
                           </div>
                         )}
-                        
+
                         <select
                           value={form.maquinariaId}
-                          onChange={(e) => setForm({...form, maquinariaId: e.target.value})}
+                          onChange={(e) => setForm({ ...form, maquinariaId: e.target.value })}
                           className={INPUT_STYLES.base}
                           required
                         >
                           <option value="">Seleccionar maquinaria</option>
-                          {filteredMaquinarias.map(maquinaria => (
+                          {filteredMaquinarias.map((maquinaria) => (
                             <option key={maquinaria.id} value={maquinaria.id}>
-                              {maquinaria.nombre} - {maquinaria.modelo || 'Sin modelo'} 
+                              {maquinaria.nombre} - {maquinaria.modelo || 'Sin modelo'}
                               {maquinaria.categoria && ` (${maquinaria.categoria})`}
                             </option>
                           ))}
                         </select>
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className={INPUT_STYLES.label}>Responsable *</label>
                       <select
                         value={form.userId}
-                        onChange={(e) => setForm({...form, userId: e.target.value})}
+                        onChange={(e) => setForm({ ...form, userId: e.target.value })}
                         className={INPUT_STYLES.base}
                         required
                       >
                         <option value="">Seleccionar responsable</option>
-                        {Array.isArray(users) && users.map(user => (
-                          <option key={user.id} value={user.id}>
-                            {user.username}
-                          </option>
-                        ))}
+                        {Array.isArray(users) &&
+                          users.map((user) => (
+                            <option key={user.id} value={user.id}>
+                              {user.username}
+                            </option>
+                          ))}
                       </select>
                     </div>
-                    
+
                     <div className="sm:col-span-2">
                       <label className={INPUT_STYLES.label}>Descripción</label>
                       <textarea
                         value={form.descripcion}
-                        onChange={(e) => setForm({...form, descripcion: e.target.value})}
+                        onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
                         className={INPUT_STYLES.base}
                         rows={3}
                         placeholder="Describe el problema o trabajo a realizar..."
@@ -927,11 +1196,21 @@ function ReparacionForm({ token, onCreated }) {
                           className="w-full flex items-center justify-between px-3 py-2 text-sm bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100"
                         >
                           <span>Filtrar repuestos ({filteredRepuestos.length} disponibles)</span>
-                          <svg className={`w-4 h-4 transform ${showRepuestoFilter ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          <svg
+                            className={`w-4 h-4 transform ${showRepuestoFilter ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
                           </svg>
                         </button>
-                        
+
                         {/* Panel de filtros de repuestos */}
                         {showRepuestoFilter && (
                           <div className="p-3 bg-gray-50 border border-gray-200 rounded-md space-y-2">
@@ -947,27 +1226,38 @@ function ReparacionForm({ token, onCreated }) {
                                 type="text"
                                 placeholder="Categoría"
                                 value={repuestoFilter.categoria}
-                                onChange={(e) => handleRepuestoFilterChange('categoria', e.target.value)}
+                                onChange={(e) =>
+                                  handleRepuestoFilterChange('categoria', e.target.value)
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 rounded"
                               />
                               <input
                                 type="text"
                                 placeholder="Ubicación"
                                 value={repuestoFilter.ubicacion}
-                                onChange={(e) => handleRepuestoFilterChange('ubicacion', e.target.value)}
+                                onChange={(e) =>
+                                  handleRepuestoFilterChange('ubicacion', e.target.value)
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 rounded"
                               />
                               <input
                                 type="number"
                                 placeholder="Stock mínimo"
                                 value={repuestoFilter.minStock}
-                                onChange={(e) => handleRepuestoFilterChange('minStock', e.target.value)}
+                                onChange={(e) =>
+                                  handleRepuestoFilterChange('minStock', e.target.value)
+                                }
                                 className="px-2 py-1 text-sm border border-gray-300 rounded"
                               />
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setRepuestoFilter({ search: '', categoria: '', ubicacion: '', minStock: '' });
+                                  setRepuestoFilter({
+                                    search: '',
+                                    categoria: '',
+                                    ubicacion: '',
+                                    minStock: '',
+                                  });
                                   setFilteredRepuestos(repuestos);
                                 }}
                                 className="px-2 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded"
@@ -977,7 +1267,7 @@ function ReparacionForm({ token, onCreated }) {
                             </div>
                           </div>
                         )}
-                        
+
                         <select
                           onChange={(e) => {
                             if (e.target.value) {
@@ -988,30 +1278,40 @@ function ReparacionForm({ token, onCreated }) {
                           className={INPUT_STYLES.base}
                         >
                           <option value="">Agregar repuesto...</option>
-                          {filteredRepuestos.map(repuesto => (
+                          {filteredRepuestos.map((repuesto) => (
                             <option key={repuesto.id} value={repuesto.id}>
-                              {repuesto.nombre} 
+                              {repuesto.nombre}
                               {repuesto.codigo && ` (${repuesto.codigo})`}
-                              {repuesto.categoria && ` - ${repuesto.categoria}`}
-                              - Stock: {repuesto.stock}
+                              {repuesto.categoria && ` - ${repuesto.categoria}`}- Stock:{' '}
+                              {repuesto.stock}
                               {repuesto.ubicacion && ` - ${repuesto.ubicacion}`}
                             </option>
                           ))}
                         </select>
-                        
+
                         {selectedRepuestos.length > 0 && (
                           <div className="space-y-2 mt-2 p-3 bg-gray-50 rounded-md">
-                            <h4 className="font-medium text-sm text-gray-700">Repuestos seleccionados:</h4>
+                            <h4 className="font-medium text-sm text-gray-700">
+                              Repuestos seleccionados:
+                            </h4>
                             {selectedRepuestos.map((selected) => {
-                              const repuesto = repuestos.find(r => r.id === selected.repuestoId);
+                              const repuesto = repuestos.find((r) => r.id === selected.repuestoId);
                               return (
-                                <div key={selected.repuestoId} className="flex items-center justify-between bg-white p-2 rounded border">
+                                <div
+                                  key={selected.repuestoId}
+                                  className="flex items-center justify-between bg-white p-2 rounded border"
+                                >
                                   <span className="text-sm">{repuesto?.nombre}</span>
                                   <div className="flex items-center space-x-2">
                                     <input
                                       type="number"
                                       value={selected.cantidad}
-                                      onChange={(e) => handleRepuestoSelect(selected.repuestoId, parseInt(e.target.value) || 1)}
+                                      onChange={(e) =>
+                                        handleRepuestoSelect(
+                                          selected.repuestoId,
+                                          parseInt(e.target.value) || 1
+                                        )
+                                      }
                                       className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
                                       min="1"
                                     />
@@ -1020,8 +1320,18 @@ function ReparacionForm({ token, onCreated }) {
                                       onClick={() => handleRemoveRepuesto(selected.repuestoId)}
                                       className="text-red-600 hover:text-red-800"
                                     >
-                                      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                      <svg
+                                        className={ICON_STYLES.small}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"
+                                        />
                                       </svg>
                                     </button>
                                   </div>
@@ -1034,11 +1344,7 @@ function ReparacionForm({ token, onCreated }) {
                     </div>
                   </div>
 
-                  {error && (
-                    <div className={ALERT_STYLES.errorModal}>
-                      {error}
-                    </div>
-                  )}
+                  {error && <div className={ALERT_STYLES.errorModal}>{error}</div>}
 
                   <div className={MODAL_STYLES.buttonGroup}>
                     <button
@@ -1048,10 +1354,7 @@ function ReparacionForm({ token, onCreated }) {
                     >
                       Cancelar
                     </button>
-                    <button
-                      type="submit"
-                      className={BUTTON_STYLES.primary}
-                    >
+                    <button type="submit" className={BUTTON_STYLES.primary}>
                       Crear Reparación
                     </button>
                   </div>

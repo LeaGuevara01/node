@@ -2,10 +2,10 @@
 
 /**
  * Script de Verificación: Eliminación de Contadores
- * 
+ *
  * Verifica que todos los contadores visuales han sido eliminados
  * de las tarjetas y listados según la solicitud del usuario.
- * 
+ *
  * Ejecutar: node verificarEliminacionContadores.js
  */
 
@@ -51,10 +51,10 @@ const elementosConservados = [
   '• Validaciones de longitud de arrays (funcionamiento)',
   '• Breadcrumbs y navegación automática',
   '• Funcionalidad de filtros y búsqueda',
-  '• Estados de carga y error'
+  '• Estados de carga y error',
 ];
 
-elementosConservados.forEach(elemento => console.log(elemento));
+elementosConservados.forEach((elemento) => console.log(elemento));
 
 console.log('\n🚫 ELEMENTOS ELIMINADOS:\n');
 
@@ -64,10 +64,10 @@ const elementosEliminados = [
   '• Valores estadísticos en StatsCard',
   '• Subtítulos con formato "X de Y elementos"',
   '• Props count= en componentes de tarjetas',
-  '• Display de cantidades en la interfaz principal'
+  '• Display de cantidades en la interfaz principal',
 ];
 
-elementosEliminados.forEach(elemento => console.log(elemento));
+elementosEliminados.forEach((elemento) => console.log(elemento));
 
 console.log('\n📊 IMPACTO EN LA INTERFAZ:\n');
 
@@ -77,10 +77,10 @@ const impactos = [
   '✓ Tarjetas más simples y minimalistas',
   '✓ Navegación basada en propósito, no en cantidad',
   '✓ Mejor UX para usuarios que no requieren conteos',
-  '✓ Interfaz más enfocada en tareas'
+  '✓ Interfaz más enfocada en tareas',
 ];
 
-impactos.forEach(impacto => console.log(impacto));
+impactos.forEach((impacto) => console.log(impacto));
 
 console.log('\n🔧 FUNCIONALIDAD MANTENIDA:\n');
 
@@ -92,10 +92,10 @@ const funcionalidadMantenida = [
   '• Acciones rápidas en dashboard',
   '• Persistencia de filtros',
   '• Validación de formularios',
-  '• Manejo de errores y carga'
+  '• Manejo de errores y carga',
 ];
 
-funcionalidadMantenida.forEach(func => console.log(func));
+funcionalidadMantenida.forEach((func) => console.log(func));
 
 console.log('\n🎨 ANTES vs DESPUÉS:\n');
 

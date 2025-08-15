@@ -64,11 +64,7 @@ Se ha implementado la funcionalidad de navegación clickeable en las cartas de e
 **Uso:**
 
 ```jsx
-<StatsGrid
-  stats={stats}
-  onCardClick={handleStatsCardClick}
-  variant="agricultural"
-/>
+<StatsGrid stats={stats} onCardClick={handleStatsCardClick} variant="agricultural" />
 ```
 
 ### 4. **Dashboard Mejorado** (`/pages/Dashboard.jsx`)
@@ -130,21 +126,17 @@ Se ha implementado la funcionalidad de navegación clickeable en las cartas de e
 
 ```jsx
 // Importar del nuevo sistema
-import { StatsGrid } from "../styles";
+import { StatsGrid } from '../styles';
 
 // Reemplazar grid manual con componente
-<StatsGrid
-  stats={stats}
-  onCardClick={handleStatsCardClick}
-  variant="agricultural"
-/>;
+<StatsGrid stats={stats} onCardClick={handleStatsCardClick} variant="agricultural" />;
 ```
 
 ### Opción 3: Dashboard Completo Nuevo
 
 ```jsx
 // Usar DashboardModern.jsx como reemplazo completo
-import DashboardModern from "./DashboardModern";
+import DashboardModern from './DashboardModern';
 
 // En App.jsx o router
 <DashboardModern token={token} role={role} onLogout={onLogout} />;
@@ -217,11 +209,7 @@ tabIndex={clickable && onClick ? 0 : undefined}
 // Vista principal con estadísticas clickeables
 {
   !activeSection && (
-    <StatsGrid
-      stats={stats}
-      onCardClick={handleStatsCardClick}
-      variant="agricultural"
-    />
+    <StatsGrid stats={stats} onCardClick={handleStatsCardClick} variant="agricultural" />
   );
 }
 ```
@@ -231,9 +219,7 @@ tabIndex={clickable && onClick ? 0 : undefined}
 ```jsx
 // Vista de sección con botón de regreso
 {
-  activeSection === "maquinarias" && (
-    <MaquinariaForm token={token} onCreated={fetchData} />
-  );
+  activeSection === 'maquinarias' && <MaquinariaForm token={token} onCreated={fetchData} />;
 }
 ```
 
@@ -282,8 +268,8 @@ const mockStats = { maquinarias: 25, repuestos: 150 };
 const mockClick = jest.fn();
 
 render(<StatsCard type="maquinarias" onClick={mockClick} />);
-fireEvent.click(screen.getByRole("button"));
-expect(mockClick).toHaveBeenCalledWith("maquinarias");
+fireEvent.click(screen.getByRole('button'));
+expect(mockClick).toHaveBeenCalledWith('maquinarias');
 ```
 
 ---

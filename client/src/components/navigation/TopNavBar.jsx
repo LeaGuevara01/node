@@ -1,12 +1,12 @@
 /**
  * TopNavBar - Barra superior de navegación
- * 
+ *
  * Componente de barra superior que proporciona:
  * - Información contextual de la página actual
  * - Acciones rápidas y botones de la página
  * - Información del usuario y logout
  * - Búsqueda global (opcional)
- * 
+ *
  * @param {string} title - Título de la página actual
  * @param {string} subtitle - Subtítulo de la página
  * @param {React.Node} actions - Botones/acciones adicionales
@@ -21,9 +21,9 @@ import { useNavigate } from 'react-router-dom';
 import { Search, User, LogOut, Bell, Settings as SettingsIcon, Edit3, Trash2 } from 'lucide-react';
 import BusquedaRapida from '../BusquedaRapida';
 
-const TopNavBar = ({ 
-  title = '', 
-  subtitle = '', 
+const TopNavBar = ({
+  title = '',
+  subtitle = '',
   actions = null,
   token,
   role,
@@ -36,7 +36,7 @@ const TopNavBar = ({
   onEdit = null,
   onDelete = null,
   // Nuevo: colapsar notificaciones y usuario en pantallas medianas
-  collapseUserOnMd = false
+  collapseUserOnMd = false,
 }) => {
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -61,7 +61,6 @@ const TopNavBar = ({
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
         <div className="px-3 sm:px-4 lg:px-6 xl:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
-            
             {/* Información de la página actual - Responsive */}
             <div className="flex-1 min-w-0 pr-4">
               {title && (
@@ -70,9 +69,7 @@ const TopNavBar = ({
                     {title}
                   </h1>
                   {subtitle && (
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">
-                      {subtitle}
-                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{subtitle}</p>
                   )}
                   {/* Meta de detalles: visible en pantallas grandes (lg+) */}
                   {isDetails && detailsInfo && (
@@ -93,10 +90,10 @@ const TopNavBar = ({
             {/* Área central - Búsqueda y acciones - Responsive */}
             <div className="flex items-center space-x-1 sm:space-x-3">
               {/* Búsqueda rápida - Ocultar en móvil si hay acciones */}
-        {showSearch && (
+              {showSearch && (
                 <button
                   onClick={() => setShowSearchModal(true)}
-          className={`inline-flex items-center leading-none p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors ${hideSearchOnDesktop ? 'md:hidden' : ''}`}
+                  className={`inline-flex items-center leading-none p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors ${hideSearchOnDesktop ? 'md:hidden' : ''}`}
                   title="Búsqueda rápida (Ctrl+K)"
                 >
                   <Search size={18} className="align-middle w-4 h-4 sm:w-5 sm:h-5" />
@@ -105,24 +102,24 @@ const TopNavBar = ({
 
               {/* Acciones de edición/eliminación específicas de detalles */}
               {(onEdit || onDelete) && (
-        <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="flex items-center space-x-1 sm:space-x-2">
                   {onEdit && (
                     <button
                       onClick={onEdit}
-          className="inline-flex items-center leading-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="inline-flex items-center leading-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                       title="Editar"
                     >
-          <Edit3 size={18} className="align-middle mr-0 sm:mr-2" />
+                      <Edit3 size={18} className="align-middle mr-0 sm:mr-2" />
                       <span className="hidden sm:inline">Editar</span>
                     </button>
                   )}
                   {onDelete && (
                     <button
                       onClick={onDelete}
-          className="inline-flex items-center leading-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="inline-flex items-center leading-none px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Eliminar"
                     >
-          <Trash2 size={18} className="align-middle mr-0 sm:mr-2" />
+                      <Trash2 size={18} className="align-middle mr-0 sm:mr-2" />
                       <span className="hidden sm:inline">Eliminar</span>
                     </button>
                   )}
@@ -130,11 +127,7 @@ const TopNavBar = ({
               )}
 
               {/* Acciones personalizadas de la página (fallback/extra) */}
-              {actions && (
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  {actions}
-                </div>
-              )}
+              {actions && <div className="flex items-center space-x-1 sm:space-x-2">{actions}</div>}
 
               {/* Notificaciones - Ocultar en móvil pequeño si hay muchas acciones */}
               <button
@@ -166,7 +159,7 @@ const TopNavBar = ({
                   <div className="px-3 py-2 border-b border-gray-100">
                     <div className="text-sm font-medium text-gray-900">Usuario: {role}</div>
                   </div>
-                  
+
                   <button
                     onClick={() => {
                       setShowUserMenu(false);
@@ -177,7 +170,7 @@ const TopNavBar = ({
                     <SettingsIcon size={16} className="mr-2" />
                     Configuración
                   </button>
-                  
+
                   {onLogout && (
                     <button
                       onClick={() => {
@@ -219,10 +212,7 @@ const TopNavBar = ({
 
       {/* Overlay para cerrar menú de usuario */}
       {showUserMenu && (
-        <div 
-          className="fixed inset-0 z-40" 
-          onClick={() => setShowUserMenu(false)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
       )}
     </>
   );

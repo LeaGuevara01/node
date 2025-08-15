@@ -4,12 +4,12 @@
 // client/src/pages/ProveedoresPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  getProveedores, 
-  getProveedorFilters, 
-  createProveedor, 
-  updateProveedor, 
-  deleteProveedor 
+import {
+  getProveedores,
+  getProveedorFilters,
+  createProveedor,
+  updateProveedor,
+  deleteProveedor,
 } from '../services/api';
 import TagLink from '../components/TagLink';
 import ProveedorEditModal from '../components/ProveedorEditModal';
@@ -18,14 +18,14 @@ import { useAdvancedFilters } from '../hooks/useAdvancedFilters.jsx';
 import { usePagination } from '../hooks/usePagination';
 import { PROVEEDOR_FILTERS_CONFIG } from '../config/filtersConfig';
 import { getColorFromString } from '../utils/colorUtils';
-import { 
-  BUTTON_STYLES, 
+import {
+  BUTTON_STYLES,
   ICON_STYLES,
   LIST_STYLES,
   MODAL_STYLES,
   INPUT_STYLES,
   LAYOUT_STYLES,
-  ALERT_STYLES
+  ALERT_STYLES,
 } from '../styles/repuestoStyles';
 import AppLayout from '../components/navigation/AppLayout';
 import FormHeaderActions from '../components/navigation/FormHeaderActions';
@@ -33,7 +33,7 @@ import Papa from 'papaparse';
 
 function ProveedoresPage({ token, role, onLogout, onCreated }) {
   const navigate = useNavigate();
-  
+
   // Estados principales
   const [proveedores, setProveedores] = useState([]);
   const [selectedProveedor, setSelectedProveedor] = useState(null);
@@ -41,20 +41,22 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  
+
   // Estado del formulario
   const [form, setForm] = useState({
-    nombre: '', contacto: '', telefono: '', email: '', direccion: '', ubicacion: '', notas: ''
+    nombre: '',
+    contacto: '',
+    telefono: '',
+    email: '',
+    direccion: '',
+    ubicacion: '',
+    notas: '',
   });
 
   // Hook de paginación
-  const { 
-    paginacion, 
-    loading, 
-    setLoading, 
-    handlePaginacion, 
-    actualizarPaginacion 
-  } = usePagination({ limit: 10 });
+  const { paginacion, loading, setLoading, handlePaginacion, actualizarPaginacion } = usePagination(
+    { limit: 10 }
+  );
 
   /**
    * Carga los proveedores con filtros aplicados
@@ -63,13 +65,13 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     setLoading(true);
     try {
       const data = await getProveedores(token, filtrosActuales, pagina);
-      
+
       if (data.proveedores) {
         setProveedores(data.proveedores);
-  actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
+        actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         setProveedores(data || []);
-  actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
+        actualizarPaginacion({ current: 1, total: 1, totalItems: data.length, limit: 10 });
       }
       setError('');
     } catch (err) {
@@ -104,37 +106,41 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     aplicarFiltrosActuales,
     removerToken,
     limpiarTodosFiltros,
-    cargarOpcionesFiltros
+    cargarOpcionesFiltros,
   } = useAdvancedFilters({}, fetchProveedores, fetchOpcionesFiltros);
 
   /**
    * Maneja la carga masiva de CSV
    */
   const handleFileUpload = async (csvData) => {
-    const validRows = csvData.filter(row => row.nombre);
-    let successCount = 0, failCount = 0;
-    
+    const validRows = csvData.filter((row) => row.nombre);
+    let successCount = 0,
+      failCount = 0;
+
     for (const row of validRows) {
       try {
-        await createProveedor({
-          nombre: row.nombre || '',
-          contacto: row.contacto || '',
-          telefono: row.telefono || '',
-          email: row.email || '',
-          direccion: row.direccion || '',
-          ubicacion: row.ubicacion || '',
-          notas: row.notas || ''
-        }, token);
+        await createProveedor(
+          {
+            nombre: row.nombre || '',
+            contacto: row.contacto || '',
+            telefono: row.telefono || '',
+            email: row.email || '',
+            direccion: row.direccion || '',
+            ubicacion: row.ubicacion || '',
+            notas: row.notas || '',
+          },
+          token
+        );
         successCount++;
       } catch (err) {
         console.error('Error creating proveedor:', err);
         failCount++;
       }
     }
-    
+
     setBulkSuccess(`Creados: ${successCount}`);
     setBulkError(failCount ? `Fallidas: ${failCount}` : '');
-    
+
     if (successCount > 0) {
       if (onCreated) onCreated();
       fetchProveedores(filtrosConsolidados, 1);
@@ -200,7 +206,15 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     try {
       const proveedorData = { ...form };
       await createProveedor(proveedorData, token);
-      setForm({ nombre: '', contacto: '', telefono: '', email: '', direccion: '', ubicacion: '', notas: '' });
+      setForm({
+        nombre: '',
+        contacto: '',
+        telefono: '',
+        email: '',
+        direccion: '',
+        ubicacion: '',
+        notas: '',
+      });
       setShowAddModal(false);
       if (onCreated) onCreated();
       fetchProveedores(filtrosConsolidados, 1);
@@ -222,16 +236,27 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
         </div>
       </div>
       {proveedor.direccion && (
-        <div className={LIST_STYLES.itemDescription}>
-          {proveedor.direccion}
-        </div>
+        <div className={LIST_STYLES.itemDescription}>{proveedor.direccion}</div>
       )}
       <div className={LIST_STYLES.itemTagsRow}>
         <div className={`${LIST_STYLES.itemTagsLeft} tags-container-mobile`}>
           {proveedor.contacto && (
-            <span className={`${LIST_STYLES.itemTagCode} bg-blue-100 text-blue-700`} title={proveedor.contacto}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <span
+              className={`${LIST_STYLES.itemTagCode} bg-blue-100 text-blue-700`}
+              title={proveedor.contacto}
+            >
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
               <span className="tag-truncate">{proveedor.contacto}</span>
             </span>
@@ -244,18 +269,49 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
             />
           )}
           {proveedor.email && (
-            <span className={`${LIST_STYLES.itemTag} bg-purple-100 text-purple-700`} title={proveedor.email}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <span
+              className={`${LIST_STYLES.itemTag} bg-purple-100 text-purple-700`}
+              title={proveedor.email}
+            >
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
               </svg>
               <span className="tag-truncate">{proveedor.email}</span>
             </span>
           )}
           {proveedor.ubicacion && (
-            <span className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(proveedor.ubicacion, 'ubicacion')}`} title={proveedor.ubicacion}>
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            <span
+              className={`${LIST_STYLES.itemTagLocation} ${getColorFromString(proveedor.ubicacion, 'ubicacion')}`}
+              title={proveedor.ubicacion}
+            >
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
               <span className="tag-truncate">{proveedor.ubicacion}</span>
             </span>
@@ -271,24 +327,23 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     cargarOpcionesFiltros();
   }, []);
 
-  const breadcrumbs = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Proveedores' }
-  ];
+  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Proveedores' }];
 
   // Exportar a CSV (campos principales de proveedores)
   const handleExport = () => {
     if (!proveedores || proveedores.length === 0) return;
-    const csv = Papa.unparse(proveedores.map(p => ({
-      id: p.id,
-      nombre: p.nombre,
-      contacto: p.contacto,
-      telefono: p.telefono,
-      email: p.email,
-      direccion: p.direccion,
-      ubicacion: p.ubicacion,
-      notas: p.notas
-    })));
+    const csv = Papa.unparse(
+      proveedores.map((p) => ({
+        id: p.id,
+        nombre: p.nombre,
+        contacto: p.contacto,
+        telefono: p.telefono,
+        email: p.email,
+        direccion: p.direccion,
+        ubicacion: p.ubicacion,
+        notas: p.notas,
+      }))
+    );
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -307,19 +362,23 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
     Papa.parse(file, {
       header: true,
       complete: async (results) => {
-        const validRows = results.data.filter(row => row.nombre);
-        let successCount = 0, failCount = 0;
+        const validRows = results.data.filter((row) => row.nombre);
+        let successCount = 0,
+          failCount = 0;
         for (const row of validRows) {
           try {
-            await createProveedor({
-              nombre: row.nombre || '',
-              contacto: row.contacto || '',
-              telefono: row.telefono || '',
-              email: row.email || '',
-              direccion: row.direccion || '',
-              ubicacion: row.ubicacion || '',
-              notas: row.notas || ''
-            }, token);
+            await createProveedor(
+              {
+                nombre: row.nombre || '',
+                contacto: row.contacto || '',
+                telefono: row.telefono || '',
+                email: row.email || '',
+                direccion: row.direccion || '',
+                ubicacion: row.ubicacion || '',
+                notas: row.notas || '',
+              },
+              token
+            );
             successCount++;
           } catch (err) {
             failCount++;
@@ -358,8 +417,8 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
       token={token}
       role={role}
       onLogout={onLogout}
-  hideSearchOnDesktop={true}
-  collapseUserOnMd={true}
+      hideSearchOnDesktop={true}
+      collapseUserOnMd={true}
     >
       <BaseListPage
         title="Listado de Proveedores"
@@ -367,12 +426,10 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
         entityName="Proveedor"
         entityNamePlural="Proveedores"
         showNewButton={false}
-  showCsvUpload={false}
-        
+        showCsvUpload={false}
         items={proveedores}
         loading={loading}
         error={error}
-        
         filtrosTemporales={filtrosTemporales}
         handleFiltroChange={handleFiltroChange}
         aplicarFiltrosActuales={aplicarFiltrosActuales}
@@ -381,17 +438,14 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
         removerToken={removerToken}
         opcionesFiltros={opcionesFiltros}
         camposFiltros={PROVEEDOR_FILTERS_CONFIG(opcionesFiltros)}
-        
         paginacion={paginacion}
         handlePaginacion={(pagina) => fetchProveedores(filtrosConsolidados, pagina)}
-        
-  onItemClick={(item) => navigate(`/proveedores/${item.id}`)}
-  onFileUpload={undefined}
+        onItemClick={(item) => navigate(`/proveedores/${item.id}`)}
+        onFileUpload={undefined}
         bulkError={bulkError}
         setBulkError={setBulkError}
         bulkSuccess={bulkSuccess}
         setBulkSuccess={setBulkSuccess}
-        
         renderItem={renderProveedor}
       />
 
@@ -402,10 +456,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
             <div className={MODAL_STYLES.content}>
               <div className={MODAL_STYLES.header}>
                 <h2 className={MODAL_STYLES.title}>Nuevo Proveedor</h2>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className={MODAL_STYLES.closeButton}
-                >
+                <button onClick={() => setShowAddModal(false)} className={MODAL_STYLES.closeButton}>
                   ×
                 </button>
               </div>
@@ -417,7 +468,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.nombre}
-                      onChange={(e) => setForm({...form, nombre: e.target.value})}
+                      onChange={(e) => setForm({ ...form, nombre: e.target.value })}
                       className={INPUT_STYLES.base}
                       required
                     />
@@ -427,7 +478,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="text"
                       value={form.contacto}
-                      onChange={(e) => setForm({...form, contacto: e.target.value})}
+                      onChange={(e) => setForm({ ...form, contacto: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
@@ -436,7 +487,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="tel"
                       value={form.telefono}
-                      onChange={(e) => setForm({...form, telefono: e.target.value})}
+                      onChange={(e) => setForm({ ...form, telefono: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
@@ -445,25 +496,29 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
                     <input
                       type="email"
                       value={form.email}
-                      onChange={(e) => setForm({...form, email: e.target.value})}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ubicación
+                    </label>
                     <input
                       type="text"
                       value={form.ubicacion}
-                      onChange={(e) => setForm({...form, ubicacion: e.target.value})}
+                      onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Dirección
+                    </label>
                     <input
                       type="text"
                       value={form.direccion}
-                      onChange={(e) => setForm({...form, direccion: e.target.value})}
+                      onChange={(e) => setForm({ ...form, direccion: e.target.value })}
                       className={INPUT_STYLES.base}
                     />
                   </div>
@@ -471,18 +526,14 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
                     <textarea
                       value={form.notas}
-                      onChange={(e) => setForm({...form, notas: e.target.value})}
+                      onChange={(e) => setForm({ ...form, notas: e.target.value })}
                       className={INPUT_STYLES.base}
                       rows={3}
                     />
                   </div>
                 </div>
 
-                {error && (
-                  <div className={ALERT_STYLES.errorModal}>
-                    {error}
-                  </div>
-                )}
+                {error && <div className={ALERT_STYLES.errorModal}>{error}</div>}
 
                 <div className={MODAL_STYLES.buttonGroup}>
                   <button
@@ -492,10 +543,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
                   >
                     Cancelar
                   </button>
-                  <button
-                    type="submit"
-                    className={BUTTON_STYLES.primary}
-                  >
+                  <button type="submit" className={BUTTON_STYLES.primary}>
                     Crear Proveedor
                   </button>
                 </div>
@@ -515,7 +563,7 @@ function ProveedoresPage({ token, role, onLogout, onCreated }) {
           token={token}
         />
       )}
-  </AppLayout>
+    </AppLayout>
   );
 }
 

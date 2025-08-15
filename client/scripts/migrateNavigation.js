@@ -1,6 +1,6 @@
 /**
  * Script de migración para refactorizar páginas al nuevo sistema de navegación
- * 
+ *
  * Este script ayuda a migrar páginas existentes para usar:
  * - AppLayout en lugar de layouts manuales
  * - NavigationButtons en lugar de botones personalizados
@@ -19,32 +19,33 @@ const REPLACEMENTS = [
   // Importaciones
   {
     pattern: /import \{ useNavigate \} from 'react-router-dom';/g,
-    replacement: "import { useNavigation } from '../hooks/useNavigation';"
+    replacement: "import { useNavigation } from '../hooks/useNavigation';",
   },
-  
+
   // Hook usage
   {
     pattern: /const navigate = useNavigate\(\);/g,
-    replacement: "const { navigateToListPage, navigateToDetailPage, navigateToFormPage, goBack } = useNavigation();"
+    replacement:
+      'const { navigateToListPage, navigateToDetailPage, navigateToFormPage, goBack } = useNavigation();',
   },
-  
+
   // Navegación a listas
   {
     pattern: /navigate\(['"`]\/(\w+)['"`]\)/g,
-    replacement: "navigateToListPage('$1')"
+    replacement: "navigateToListPage('$1')",
   },
-  
+
   // Navegación a detalles
   {
     pattern: /navigate\(['"`]\/(\w+)\/\$\{([^}]+)\}['"`]\)/g,
-    replacement: "navigateToDetailPage('$1', $2)"
+    replacement: "navigateToDetailPage('$1', $2)",
   },
-  
+
   // Botones de volver
   {
     pattern: /navigate\(-1\)/g,
-    replacement: "goBack()"
-  }
+    replacement: 'goBack()',
+  },
 ];
 
 // Plantilla base para páginas migradas
@@ -112,10 +113,10 @@ function createBackup(filePath) {
   if (!fs.existsSync(BACKUP_DIR)) {
     fs.mkdirSync(BACKUP_DIR, { recursive: true });
   }
-  
+
   const fileName = path.basename(filePath);
   const backupPath = path.join(BACKUP_DIR, `${fileName}.backup`);
-  
+
   fs.copyFileSync(filePath, backupPath);
   console.log(`✅ Backup created: ${backupPath}`);
 }
@@ -125,11 +126,11 @@ function createBackup(filePath) {
  */
 function applyReplacements(content) {
   let modifiedContent = content;
-  
+
   REPLACEMENTS.forEach(({ pattern, replacement }) => {
     modifiedContent = modifiedContent.replace(pattern, replacement);
   });
-  
+
   return modifiedContent;
 }
 
@@ -142,30 +143,30 @@ function analyzeFile(content, fileName) {
     hasUseNavigate: false,
     hasManualLayout: false,
     hasCustomButtons: false,
-    suggestions: []
+    suggestions: [],
   };
-  
+
   // Detectar uso de useNavigate
   if (content.includes('useNavigate')) {
     analysis.hasUseNavigate = true;
     analysis.needsMigration = true;
     analysis.suggestions.push('Reemplazar useNavigate con useNavigation context');
   }
-  
+
   // Detectar layouts manuales
   if (content.includes('min-h-screen') || content.includes('sidebar')) {
     analysis.hasManualLayout = true;
     analysis.needsMigration = true;
     analysis.suggestions.push('Usar AppLayout en lugar de layout manual');
   }
-  
+
   // Detectar botones personalizados
   if (content.includes('onClick={() => navigate(') || content.includes('navigate(-1)')) {
     analysis.hasCustomButtons = true;
     analysis.needsMigration = true;
     analysis.suggestions.push('Usar NavigationButtons en lugar de botones personalizados');
   }
-  
+
   return analysis;
 }
 
@@ -175,43 +176,42 @@ function analyzeFile(content, fileName) {
 function migrateFile(filePath) {
   try {
     console.log(`\n🔄 Migrando: ${filePath}`);
-    
+
     // Leer contenido actual
     const content = fs.readFileSync(filePath, 'utf8');
-    
+
     // Analizar archivo
     const analysis = analyzeFile(content, path.basename(filePath));
-    
+
     if (!analysis.needsMigration) {
       console.log('ℹ️  Archivo no requiere migración');
       return;
     }
-    
+
     console.log('📋 Análisis:', analysis);
-    
+
     // Crear backup
     createBackup(filePath);
-    
+
     // Aplicar reemplazos automáticos
     let migratedContent = applyReplacements(content);
-    
+
     // Agregar comentario de migración
     const migrationComment = `/**
  * MIGRADO AL NUEVO SISTEMA DE NAVEGACIÓN
  * Fecha: ${new Date().toISOString()}
  * 
  * Cambios aplicados:
-${analysis.suggestions.map(s => ` * - ${s}`).join('\n')}
+${analysis.suggestions.map((s) => ` * - ${s}`).join('\n')}
  */\n\n`;
-    
+
     migratedContent = migrationComment + migratedContent;
-    
+
     // Guardar archivo migrado
     fs.writeFileSync(filePath, migratedContent);
-    
+
     console.log('✅ Migración completada');
     console.log('⚠️  NOTA: Revisar manualmente y completar la migración a AppLayout');
-    
   } catch (error) {
     console.error(`❌ Error migrando ${filePath}:`, error.message);
   }
@@ -222,23 +222,24 @@ ${analysis.suggestions.map(s => ` * - ${s}`).join('\n')}
  */
 function migrateAllPages() {
   console.log('🚀 Iniciando migración de navegación...\n');
-  
+
   if (!fs.existsSync(PAGES_DIR)) {
     console.error(`❌ Directorio de páginas no encontrado: ${PAGES_DIR}`);
     return;
   }
-  
+
   // Obtener todos los archivos .jsx del directorio de páginas
-  const pageFiles = fs.readdirSync(PAGES_DIR)
-    .filter(file => file.endsWith('.jsx') || file.endsWith('.js'))
-    .filter(file => !file.includes('Refactored')) // Skip ya refactorizados
-    .map(file => path.join(PAGES_DIR, file));
-  
+  const pageFiles = fs
+    .readdirSync(PAGES_DIR)
+    .filter((file) => file.endsWith('.jsx') || file.endsWith('.js'))
+    .filter((file) => !file.includes('Refactored')) // Skip ya refactorizados
+    .map((file) => path.join(PAGES_DIR, file));
+
   console.log(`📁 Encontrados ${pageFiles.length} archivos para migrar`);
-  
+
   // Migrar cada archivo
   pageFiles.forEach(migrateFile);
-  
+
   console.log('\n🎉 Migración completada!');
   console.log('\n📝 Pasos siguientes:');
   console.log('1. Revisar archivos migrados manualmente');
@@ -375,7 +376,7 @@ Ver archivos de ejemplo:
 // Ejecutar migración si se llama directamente
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--guide')) {
     generateMigrationGuide();
   } else if (args.includes('--analyze')) {
@@ -390,5 +391,5 @@ module.exports = {
   migrateFile,
   migrateAllPages,
   analyzeFile,
-  generateMigrationGuide
+  generateMigrationGuide,
 };

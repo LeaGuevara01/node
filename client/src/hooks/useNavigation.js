@@ -6,7 +6,7 @@ import { useNavigationContext } from '../contexts/NavigationContext';
 
 export const useNavigation = () => {
   const context = useNavigationContext();
-  
+
   // Si no hay contexto disponible, devolver funciones básicas
   if (!context) {
     console.warn('useNavigation usado fuera de NavigationProvider, funciones limitadas');
@@ -17,7 +17,7 @@ export const useNavigation = () => {
       navigateToDashboard: () => console.warn('NavigationProvider no disponible'),
       goBack: () => console.warn('NavigationProvider no disponible'),
       currentPageInfo: null,
-      navigationHistory: []
+      navigationHistory: [],
     };
   }
 

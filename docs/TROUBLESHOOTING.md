@@ -184,10 +184,10 @@ echo "/*    /index.html   200" > client/public/_redirects
 
 ```javascript
 // Verificar JWT_SECRET en backend
-console.log("JWT_SECRET configured:", !!process.env.JWT_SECRET);
+console.log('JWT_SECRET configured:', !!process.env.JWT_SECRET);
 
 // Regenerar token
-localStorage.removeItem("token");
+localStorage.removeItem('token');
 // Login nuevamente
 ```
 
@@ -298,7 +298,7 @@ curl http://localhost:4000/api/health
 
 ```javascript
 // Verificar que servidor esté ejecutándose
-console.log("Server running on port:", process.env.PORT);
+console.log('Server running on port:', process.env.PORT);
 
 // Verificar rutas registradas
 app._router.stack.forEach((r) => {
@@ -324,7 +324,7 @@ const repuestos = await prisma.repuesto.findMany({
 
 // Implementar cache simple
 const cache = new Map();
-app.get("/api/heavy-endpoint", (req, res) => {
+app.get('/api/heavy-endpoint', (req, res) => {
   const cacheKey = req.url;
   if (cache.has(cacheKey)) {
     return res.json(cache.get(cacheKey));
@@ -403,12 +403,12 @@ npx prettier --write "src/**/*.{js,jsx,ts,tsx}"
 
 ```javascript
 // Debug con logs
-console.log("Component props:", props);
-console.log("Component state:", state);
+console.log('Component props:', props);
+console.log('Component state:', state);
 
 // Verificar importaciones
-import { ComponentName } from "./path"; // Named import
-import ComponentName from "./path"; // Default import
+import { ComponentName } from './path'; // Named import
+import ComponentName from './path'; // Default import
 ```
 
 ### 2. **Estado no se Actualiza**
@@ -525,7 +525,6 @@ echo "✅ Health check completado"
 ### 1. **Problemas No Resueltos**
 
 1. Crear issue en GitHub con:
-
    - Descripción detallada del problema
    - Pasos para reproducir
    - Logs relevantes

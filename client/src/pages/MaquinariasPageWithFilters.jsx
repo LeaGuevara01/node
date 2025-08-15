@@ -1,6 +1,6 @@
 /**
  * MaquinariasPageWithFilters - Página de maquinarias con filtros integrados
- * 
+ *
  * Ejemplo de página de sección que incluye:
  * - Filtros desplegables personalizables
  * - Navegación responsive
@@ -14,14 +14,19 @@ import { getMaquinarias } from '../services/api';
 import AppLayout from '../components/navigation/AppLayout';
 import FilterDropdownV2 from '../components/FilterDropdownV2'; // ← Cambiar a V2
 import QuickActionCard from '../components/QuickActionCard';
-import { CreateButton, EditButton, ViewButton, DeleteButton } from '../components/navigation/NavigationButtons';
+import {
+  CreateButton,
+  EditButton,
+  ViewButton,
+  DeleteButton,
+} from '../components/navigation/NavigationButtons';
 import { useNavigation } from '../hooks/useNavigation';
 import StatsCard from '../components/StatsCard';
 import RoleGuard from '../components/RoleGuard';
 
 function MaquinariasPageWithFilters({ token, role, onLogout }) {
   const { getSectionFilters, updateSectionFilters } = useNavigation();
-  
+
   // Estados
   const [maquinarias, setMaquinarias] = useState([]);
   const [filteredMaquinarias, setFilteredMaquinarias] = useState([]);
@@ -61,37 +66,38 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
     // Filtro de búsqueda general
     if (currentFilters.search) {
       const searchTerm = currentFilters.search.toLowerCase();
-      filtered = filtered.filter(maq => 
-        maq.marca?.toLowerCase().includes(searchTerm) ||
-        maq.modelo?.toLowerCase().includes(searchTerm) ||
-        maq.tipo?.toLowerCase().includes(searchTerm) ||
-        maq.numeroSerie?.toLowerCase().includes(searchTerm)
+      filtered = filtered.filter(
+        (maq) =>
+          maq.marca?.toLowerCase().includes(searchTerm) ||
+          maq.modelo?.toLowerCase().includes(searchTerm) ||
+          maq.tipo?.toLowerCase().includes(searchTerm) ||
+          maq.numeroSerie?.toLowerCase().includes(searchTerm)
       );
     }
 
     // Filtro por tipo
     if (currentFilters.tipo) {
-      filtered = filtered.filter(maq => maq.tipo === currentFilters.tipo);
+      filtered = filtered.filter((maq) => maq.tipo === currentFilters.tipo);
     }
 
     // Filtro por estado
     if (currentFilters.estado) {
-      filtered = filtered.filter(maq => maq.estado === currentFilters.estado);
+      filtered = filtered.filter((maq) => maq.estado === currentFilters.estado);
     }
 
     // Filtro por marca
     if (currentFilters.marca) {
-      filtered = filtered.filter(maq => 
+      filtered = filtered.filter((maq) =>
         maq.marca?.toLowerCase().includes(currentFilters.marca.toLowerCase())
       );
     }
 
     // Filtro por rango de año
     if (currentFilters.año?.min) {
-      filtered = filtered.filter(maq => parseInt(maq.año) >= parseInt(currentFilters.año.min));
+      filtered = filtered.filter((maq) => parseInt(maq.año) >= parseInt(currentFilters.año.min));
     }
     if (currentFilters.año?.max) {
-      filtered = filtered.filter(maq => parseInt(maq.año) <= parseInt(currentFilters.año.max));
+      filtered = filtered.filter((maq) => parseInt(maq.año) <= parseInt(currentFilters.año.max));
     }
 
     setFilteredMaquinarias(filtered);
@@ -117,10 +123,10 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
   // Calcular estadísticas
   const stats = {
     total: maquinarias.length,
-    operativas: maquinarias.filter(m => m.estado === 'Operativa').length,
-    enMantenimiento: maquinarias.filter(m => m.estado === 'En mantenimiento').length,
-    averiadas: maquinarias.filter(m => m.estado === 'Averiada').length,
-    filtered: filteredMaquinarias.length
+    operativas: maquinarias.filter((m) => m.estado === 'Operativa').length,
+    enMantenimiento: maquinarias.filter((m) => m.estado === 'En mantenimiento').length,
+    averiadas: maquinarias.filter((m) => m.estado === 'Averiada').length,
+    filtered: filteredMaquinarias.length,
   };
 
   // Acciones del header
@@ -134,13 +140,13 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
         onToggle={setIsFilterOpen}
         data={maquinarias} // ← Datos para generar sugerencias automáticas
       />
-      
+
       <div className="flex items-center space-x-1">
         <button
           onClick={() => setViewMode('grid')}
           className={`p-2 rounded-lg transition-colors ${
-            viewMode === 'grid' 
-              ? 'bg-blue-100 text-blue-600' 
+            viewMode === 'grid'
+              ? 'bg-blue-100 text-blue-600'
               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
           }`}
           title="Vista en cuadrícula"
@@ -152,12 +158,12 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
             <div className="bg-current rounded-sm"></div>
           </div>
         </button>
-        
+
         <button
           onClick={() => setViewMode('list')}
           className={`p-2 rounded-lg transition-colors ${
-            viewMode === 'list' 
-              ? 'bg-blue-100 text-blue-600' 
+            viewMode === 'list'
+              ? 'bg-blue-100 text-blue-600'
               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
           }`}
           title="Vista en lista"
@@ -169,8 +175,8 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
           </div>
         </button>
       </div>
-      
-      <RoleGuard role={role} allowed={["Admin", "User"]}>
+
+      <RoleGuard role={role} allowed={['Admin', 'User']}>
         <CreateButton entity="maquinarias" />
       </RoleGuard>
     </div>
@@ -228,8 +234,8 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
       token={token}
       role={role}
       onLogout={onLogout}
-  hideSearchOnDesktop={true}
-  collapseUserOnMd={true}
+      hideSearchOnDesktop={true}
+      collapseUserOnMd={true}
     >
       <div className="space-y-6">
         {/* Estadísticas rápidas */}
@@ -259,25 +265,29 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
               <Tractor size={64} className="text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {maquinarias.length === 0 ? 'No hay maquinarias registradas' : 'No se encontraron maquinarias'}
+              {maquinarias.length === 0
+                ? 'No hay maquinarias registradas'
+                : 'No se encontraron maquinarias'}
             </h3>
             <p className="text-gray-600 mb-6">
-              {maquinarias.length === 0 
+              {maquinarias.length === 0
                 ? 'Comienza agregando tu primera maquinaria al sistema'
-                : 'Intenta ajustar los filtros para ver más resultados'
-              }
+                : 'Intenta ajustar los filtros para ver más resultados'}
             </p>
-            <RoleGuard role={role} allowed={["Admin", "User"]}>
+            <RoleGuard role={role} allowed={['Admin', 'User']}>
               <CreateButton entity="maquinarias" label="Agregar Primera Maquinaria" />
             </RoleGuard>
           </div>
         ) : (
-          <div className={`
-            ${viewMode === 'grid' 
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' 
-              : 'space-y-4'
+          <div
+            className={`
+            ${
+              viewMode === 'grid'
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+                : 'space-y-4'
             }
-          `}>
+          `}
+          >
             {filteredMaquinarias.map((maquinaria) => (
               <MaquinariaCard
                 key={maquinaria.id}
@@ -297,10 +307,10 @@ function MaquinariasPageWithFilters({ token, role, onLogout }) {
 // Componente para mostrar cada maquinaria
 const MaquinariaCard = ({ maquinaria, viewMode, role, onDelete }) => {
   const estadoColors = {
-    'Operativa': 'bg-green-100 text-green-800',
+    Operativa: 'bg-green-100 text-green-800',
     'En mantenimiento': 'bg-yellow-100 text-yellow-800',
-    'Averiada': 'bg-red-100 text-red-800',
-    'Fuera de servicio': 'bg-gray-100 text-gray-800'
+    Averiada: 'bg-red-100 text-red-800',
+    'Fuera de servicio': 'bg-gray-100 text-gray-800',
   };
 
   if (viewMode === 'list') {
@@ -321,18 +331,20 @@ const MaquinariaCard = ({ maquinaria, viewMode, role, onDelete }) => {
               <span className="font-medium">Año:</span> {maquinaria.año}
             </div>
             <div>
-              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${estadoColors[maquinaria.estado]}`}>
+              <span
+                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${estadoColors[maquinaria.estado]}`}
+              >
                 {maquinaria.estado}
               </span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2 ml-4">
             <ViewButton entity="maquinarias" id={maquinaria.id} size="small" />
-            <RoleGuard role={role} allowed={["Admin", "User"]}>
+            <RoleGuard role={role} allowed={['Admin', 'User']}>
               <EditButton entity="maquinarias" id={maquinaria.id} size="small" />
             </RoleGuard>
-            <RoleGuard role={role} allowed={["Admin"]}>
+            <RoleGuard role={role} allowed={['Admin']}>
               <DeleteButton onClick={onDelete} size="small" />
             </RoleGuard>
           </div>
@@ -348,25 +360,33 @@ const MaquinariaCard = ({ maquinaria, viewMode, role, onDelete }) => {
           <h3 className="font-semibold text-gray-900 truncate">
             {maquinaria.marca} {maquinaria.modelo}
           </h3>
-          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${estadoColors[maquinaria.estado]}`}>
+          <span
+            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${estadoColors[maquinaria.estado]}`}
+          >
             {maquinaria.estado}
           </span>
         </div>
-        
+
         <div className="space-y-2 text-sm text-gray-600 mb-4">
-          <div><span className="font-medium">Tipo:</span> {maquinaria.tipo}</div>
-          <div><span className="font-medium">Serie:</span> {maquinaria.numeroSerie}</div>
-          <div><span className="font-medium">Año:</span> {maquinaria.año}</div>
+          <div>
+            <span className="font-medium">Tipo:</span> {maquinaria.tipo}
+          </div>
+          <div>
+            <span className="font-medium">Serie:</span> {maquinaria.numeroSerie}
+          </div>
+          <div>
+            <span className="font-medium">Año:</span> {maquinaria.año}
+          </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <ViewButton entity="maquinarias" id={maquinaria.id} size="small" />
-          
+
           <div className="flex space-x-1">
-            <RoleGuard role={role} allowed={["Admin", "User"]}>
+            <RoleGuard role={role} allowed={['Admin', 'User']}>
               <EditButton entity="maquinarias" id={maquinaria.id} size="small" />
             </RoleGuard>
-            <RoleGuard role={role} allowed={["Admin"]}>
+            <RoleGuard role={role} allowed={['Admin']}>
               <DeleteButton onClick={onDelete} size="small" />
             </RoleGuard>
           </div>

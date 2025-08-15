@@ -76,7 +76,7 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -89,10 +89,10 @@ app.use(express.json());
 
 // Health check endpoint para uptime y monitoreo
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
+  res.status(200).json({
+    status: 'healthy',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
@@ -108,10 +108,10 @@ app.get('/api/health/db', async (req, res) => {
 
 // Root endpoint
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Agroservicios API', 
+  res.json({
+    message: 'Agroservicios API',
     version: '1.0.0',
-    docs: '/api/docs'
+    docs: '/api/docs',
   });
 });
 
@@ -130,6 +130,8 @@ app.use('/api/repuestos', require('./routes/repuestos'));
 app.use('/api/proveedores', require('./routes/proveedores'));
 app.use('/api/reparaciones', require('./routes/reparaciones'));
 app.use('/api/users', require('./routes/users'));
+// Alias en español para compatibilidad con el cliente (/api/usuarios)
+app.use('/api/usuarios', require('./routes/users'));
 app.use('/api/compras', require('./routes/compras'));
 
 // Error handling middleware (respuesta consistente)
@@ -147,7 +149,7 @@ const PORT = config.PORT;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto ${PORT}`);
   console.log(`📝 Environment: ${config.NODE_ENV}`);
-  
+
   const corsOrigins = getCorsOrigins();
   console.log('🌐 CORS habilitado para:');
   corsOrigins.forEach(o => console.log('   •', o));
@@ -156,6 +158,10 @@ app.listen(PORT, () => {
   }
   
   if (fs.existsSync(__dirname + '/docs/openapi.yaml')) {
+    console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
+  }
+});
+ame + '/docs/openapi.yaml')) {
     console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
   }
 });

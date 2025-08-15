@@ -1,13 +1,13 @@
 /**
  * Utilidades de Logging para APIs
- * 
+ *
  * Este módulo proporciona funciones especializadas para logging de operaciones API:
  * - Logging de requests y responses
  * - Medición de tiempos de respuesta
  * - Formateo consistente de filtros y parámetros
  * - Detección y logging de duplicados
  * - Métricas de performance
- * 
+ *
  * Utilidad: apiLogger
  * Rol: logging centralizado para requests/responses y métricas de latencia
  */
@@ -46,14 +46,14 @@ function isDuplicateRequest(url, method = 'GET', body = null) {
   cleanRequestCache();
   const key = generateRequestKey(url, method, body);
   const now = Date.now();
-  
+
   if (requestCache.has(key)) {
     const lastRequestTime = requestCache.get(key);
     if (now - lastRequestTime < REQUEST_CACHE_TTL) {
       return true;
     }
   }
-  
+
   requestCache.set(key, now);
   return false;
 }
@@ -68,11 +68,13 @@ export function formatFiltersForLog(filtros) {
 
   const activeFilters = Object.entries(filtros)
     .filter(([key, value]) => {
-      return value !== '' && 
-             value !== false && 
-             value !== null && 
-             value !== undefined &&
-             !(Array.isArray(value) && value.length === 0);
+      return (
+        value !== '' &&
+        value !== false &&
+        value !== null &&
+        value !== undefined &&
+        !(Array.isArray(value) && value.length === 0)
+      );
     })
     .reduce((acc, [key, value]) => {
       if (Array.isArray(value)) {
@@ -91,19 +93,19 @@ export function formatFiltersForLog(filtros) {
  */
 export function logApiRequest(url, method = 'GET', filtros = {}, options = {}) {
   const { skipDuplicateCheck = false } = options;
-  
+
   if (!skipDuplicateCheck && isDuplicateRequest(url, method, filtros)) {
     apiLogger.warn('🔄 Request duplicado detectado', { url, method, filtros });
     return null; // Retornar null indica que es duplicado
   }
 
   const startTime = Date.now();
-  
+
   apiLogger.api('📡 Request iniciado', {
     url: url.replace(/^.*\/api\//, '/api/'), // Limpiar URL para logging
     method,
     filters: formatFiltersForLog(filtros),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   return startTime;
@@ -115,27 +117,25 @@ export function logApiRequest(url, method = 'GET', filtros = {}, options = {}) {
 export function logApiSuccess(url, method = 'GET', data, startTime, options = {}) {
   const { logData = false, expectedField = null } = options;
   const duration = startTime ? Date.now() - startTime : 0;
-  
+
   const logPayload = {
     url: url.replace(/^.*\/api\//, '/api/'),
     method,
     duration: `${duration}ms`,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   // Agregar información específica de la respuesta
   if (data) {
     if (expectedField && data[expectedField]) {
-      logPayload.itemCount = Array.isArray(data[expectedField]) 
-        ? data[expectedField].length 
-        : 1;
+      logPayload.itemCount = Array.isArray(data[expectedField]) ? data[expectedField].length : 1;
     }
-    
+
     if (data.pagination) {
       logPayload.pagination = {
         page: data.pagination.paginaActual || data.pagination.page,
         total: data.pagination.totalElementos || data.pagination.total,
-        pages: data.pagination.totalPaginas || data.pagination.pages
+        pages: data.pagination.totalPaginas || data.pagination.pages,
       };
     }
 
@@ -145,7 +145,7 @@ export function logApiSuccess(url, method = 'GET', data, startTime, options = {}
   }
 
   apiLogger.success('✅ Request completado', logPayload);
-  
+
   // Log de performance si es lento
   if (duration > 2000) {
     apiLogger.warn('🐌 Request lento detectado', { url, duration: `${duration}ms` });
@@ -157,13 +157,13 @@ export function logApiSuccess(url, method = 'GET', data, startTime, options = {}
  */
 export function logApiError(url, method = 'GET', error, startTime, options = {}) {
   const duration = startTime ? Date.now() - startTime : 0;
-  
+
   apiLogger.error('❌ Request fallido', {
     url: url.replace(/^.*\/api\//, '/api/'),
     method,
     duration: `${duration}ms`,
     error: error.message || error,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -172,12 +172,12 @@ export function logApiError(url, method = 'GET', error, startTime, options = {})
  */
 export function withApiLogging(apiFunction, options = {}) {
   return async function loggedApiCall(...args) {
-    const { 
+    const {
       name = apiFunction.name || 'API Call',
       extractUrl = (args) => args[0],
       extractMethod = () => 'GET',
       extractFilters = (args) => args[1] || {},
-      logResponse = false
+      logResponse = false,
     } = options;
 
     let url, method, filters;
@@ -189,21 +189,20 @@ export function withApiLogging(apiFunction, options = {}) {
       filters = extractFilters(args);
 
       startTime = logApiRequest(url, method, filters);
-      
+
       if (startTime === null) {
         // Request duplicado, pero aún ejecutar la función
         apiLogger.debug('Ejecutando request duplicado');
       }
 
       const result = await apiFunction.apply(this, args);
-      
+
       logApiSuccess(url, method, result, startTime, {
         logData: logResponse,
-        expectedField: getExpectedField(name)
+        expectedField: getExpectedField(name),
       });
 
       return result;
-
     } catch (error) {
       logApiError(url, method, error, startTime);
       throw error; // Re-lanzar el error
@@ -216,10 +215,10 @@ export function withApiLogging(apiFunction, options = {}) {
  */
 function getExpectedField(functionName) {
   const fieldMap = {
-    'getMaquinarias': 'maquinarias',
-    'getRepuestos': 'repuestos',
-    'getTareas': 'tareas',
-    'getMantenimientos': 'mantenimientos'
+    getMaquinarias: 'maquinarias',
+    getRepuestos: 'repuestos',
+    getTareas: 'tareas',
+    getMantenimientos: 'mantenimientos',
   };
   return fieldMap[functionName] || null;
 }
@@ -228,19 +227,21 @@ function getExpectedField(functionName) {
  * Log de filtros aplicados
  */
 export function logFilterApplication(filtros, tokensActivos = []) {
-  const activeFiltersCount = Object.keys(filtros).filter(key => {
+  const activeFiltersCount = Object.keys(filtros).filter((key) => {
     const value = filtros[key];
-    return value !== '' && 
-           value !== false && 
-           value !== null && 
-           value !== undefined &&
-           !(Array.isArray(value) && value.length === 0);
+    return (
+      value !== '' &&
+      value !== false &&
+      value !== null &&
+      value !== undefined &&
+      !(Array.isArray(value) && value.length === 0)
+    );
   }).length;
 
   apiLogger.filter('🔍 Filtros aplicados', {
     activeFilters: activeFiltersCount,
     totalTokens: tokensActivos.length,
-    filters: formatFiltersForLog(filtros)
+    filters: formatFiltersForLog(filtros),
   });
 }
 
@@ -252,7 +253,7 @@ export function logPaginationChange(page, totalPages, totalItems) {
     page,
     totalPages,
     totalItems,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -262,9 +263,9 @@ export function logPaginationChange(page, totalPages, totalItems) {
 export function logCrudOperation(operation, entity, id = null, data = null) {
   const operations = {
     CREATE: '➕ Creando',
-    UPDATE: '✏️ Actualizando', 
+    UPDATE: '✏️ Actualizando',
     DELETE: '🗑️ Eliminando',
-    READ: '👁️ Leyendo'
+    READ: '👁️ Leyendo',
   };
 
   apiLogger.data(`${operations[operation]} ${entity}`, {
@@ -272,7 +273,7 @@ export function logCrudOperation(operation, entity, id = null, data = null) {
     entity,
     id,
     hasData: !!data,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -285,7 +286,7 @@ export function logBulkOperation(operation, entity, count, result = null) {
     count,
     success: !result ? null : result.success,
     errors: !result ? null : result.errors,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -296,20 +297,21 @@ const performanceMetrics = {
   requests: 0,
   totalTime: 0,
   errors: 0,
-  slowRequests: 0
+  slowRequests: 0,
 };
 
 export function getApiMetrics() {
   return {
     ...performanceMetrics,
-    averageTime: performanceMetrics.requests > 0 
-      ? Math.round(performanceMetrics.totalTime / performanceMetrics.requests)
-      : 0
+    averageTime:
+      performanceMetrics.requests > 0
+        ? Math.round(performanceMetrics.totalTime / performanceMetrics.requests)
+        : 0,
   };
 }
 
 export function resetApiMetrics() {
-  Object.keys(performanceMetrics).forEach(key => {
+  Object.keys(performanceMetrics).forEach((key) => {
     performanceMetrics[key] = 0;
   });
 }
@@ -328,5 +330,5 @@ export default {
   withApiLogging,
   formatFiltersForLog,
   getApiMetrics,
-  resetApiMetrics
+  resetApiMetrics,
 };

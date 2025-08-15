@@ -91,27 +91,19 @@ client/src/
 ### Importar Utilidades de Color
 
 ```javascript
-import { getColorFromString, getStockColorClass } from "../utils/colorUtils";
+import { getColorFromString, getStockColorClass } from '../utils/colorUtils';
 ```
 
 ### Importar Utilidades de Datos
 
 ```javascript
-import {
-  sortRepuestosByStock,
-  buildQueryParams,
-  clearAllFilters,
-} from "../utils/dataUtils";
+import { sortRepuestosByStock, buildQueryParams, clearAllFilters } from '../utils/dataUtils';
 ```
 
 ### Importar Estilos
 
 ```javascript
-import {
-  CONTAINER_STYLES,
-  BUTTON_STYLES,
-  INPUT_STYLES,
-} from "../styles/repuestoStyles";
+import { CONTAINER_STYLES, BUTTON_STYLES, INPUT_STYLES } from '../styles/repuestoStyles';
 ```
 
 La optimización mantiene toda la funcionalidad existente mientras mejora significativamente la organización y mantenibilidad del código.

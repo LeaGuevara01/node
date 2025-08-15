@@ -32,11 +32,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ token, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ token, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

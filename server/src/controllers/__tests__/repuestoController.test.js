@@ -16,8 +16,7 @@ describe('Repuestos Endpoints', () => {
   });
 
   it('should get all repuestos', async () => {
-    const res = await request(app)
-      .get('/api/repuestos');
+    const res = await request(app).get('/api/repuestos');
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body)).toBe(true);
   });

@@ -13,30 +13,29 @@ export const useAdvancedFilters = (
 ) => {
   // Compatibilidad: permitir firma antigua (initialFilters, fetchDataFn, fetchOptionsFn)
   // y nueva firma basada en objeto de opciones { endpoint, token, defaultFilters, fetchDataFunction, fetchOptionsFunction }
-  const isOptionsObject = (
-    initialFiltersOrOptions && typeof initialFiltersOrOptions === 'object' && (
-      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'endpoint') ||
+  const isOptionsObject =
+    initialFiltersOrOptions &&
+    typeof initialFiltersOrOptions === 'object' &&
+    (Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'endpoint') ||
       Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'defaultFilters') ||
       Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'fetchDataFunction') ||
-      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'fetchOptionsFunction')
-    )
-  );
+      Object.prototype.hasOwnProperty.call(initialFiltersOrOptions, 'fetchOptionsFunction'));
 
   const defaultFilters = isOptionsObject
-    ? (initialFiltersOrOptions.defaultFilters || {})
-    : (initialFiltersOrOptions || {});
+    ? initialFiltersOrOptions.defaultFilters || {}
+    : initialFiltersOrOptions || {};
 
   const tokenFromOptions = isOptionsObject ? initialFiltersOrOptions.token : undefined;
   const endpointFromOptions = isOptionsObject ? initialFiltersOrOptions.endpoint : undefined;
 
   const fetchDataFunction = isOptionsObject
-    ? (initialFiltersOrOptions.fetchDataFunction || fetchDataFunctionArg)
+    ? initialFiltersOrOptions.fetchDataFunction || fetchDataFunctionArg
     : fetchDataFunctionArg;
 
   const fetchOptionsFunction = isOptionsObject
-    ? (initialFiltersOrOptions.fetchOptionsFunction || fetchOptionsFunctionArg || (endpointFromOptions
-        ? (() => endpointFromOptions(tokenFromOptions))
-        : undefined))
+    ? initialFiltersOrOptions.fetchOptionsFunction ||
+      fetchOptionsFunctionArg ||
+      (endpointFromOptions ? () => endpointFromOptions(tokenFromOptions) : undefined)
     : fetchOptionsFunctionArg;
   // Estados para filtros con sistema de tokens
   const [filtrosTemporales, setFiltrosTemporales] = useState({
@@ -46,22 +45,22 @@ export const useAdvancedFilters = (
     estado: '',
     anioMin: '',
     anioMax: '',
-  // Rango de precio (para repuestos)
-  precioMin: '',
-  precioMax: '',
-  // Rango de fechas (para reparaciones)
-  fechaMin: '',
-  fechaMax: '',
-    ...defaultFilters
+    // Rango de precio (para repuestos)
+    precioMin: '',
+    precioMax: '',
+    // Rango de fechas (para reparaciones)
+    fechaMin: '',
+    fechaMax: '',
+    ...defaultFilters,
   });
-  
+
   const [tokensActivos, setTokensActivos] = useState([]);
   const [filtrosConsolidados, setFiltrosConsolidados] = useState({});
   const [opcionesFiltros, setOpcionesFiltros] = useState({
     categorias: [],
     ubicaciones: [],
     estados: [],
-    anioRange: { min: 1900, max: new Date().getFullYear() }
+    anioRange: { min: 1900, max: new Date().getFullYear() },
   });
 
   /**
@@ -78,74 +77,149 @@ export const useAdvancedFilters = (
     const iconos = {
       search: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
       ),
       categoria: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+          />
         </svg>
       ),
       ubicacion: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          />
         </svg>
       ),
       estado: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
       ),
       anio: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
         </svg>
       ),
       // Iconos específicos para repuestos
       codigo: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+          />
         </svg>
       ),
       disponibilidad: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          />
         </svg>
       ),
       precio: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+          />
         </svg>
       ),
       // Iconos específicos para proveedores
       nombre: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
         </svg>
       ),
       contacto: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+          />
         </svg>
       ),
       // Iconos específicos para reparaciones
       fecha: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
         </svg>
       ),
       tipo: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
         </svg>
       ),
       prioridad: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
         </svg>
-      )
+      ),
     };
     return iconos[tipo] || iconos.search;
   }, []);
@@ -171,7 +245,7 @@ export const useAdvancedFilters = (
       // Labels específicos para reparaciones
       fecha: `Fecha: ${valor}`,
       tipo: `Tipo: ${valor}`,
-      prioridad: `Prioridad: ${valor}`
+      prioridad: `Prioridad: ${valor}`,
     };
     return labels[tipo] || `${tipo}: ${valor}`;
   }, []);
@@ -181,9 +255,14 @@ export const useAdvancedFilters = (
    */
   const consolidarFiltrosDeTokens = useCallback((tokens) => {
     const consolidados = {};
-    
-    tokens.forEach(token => {
-      if (token.tipo === 'search' || token.tipo === 'codigo' || token.tipo === 'nombre' || token.tipo === 'contacto') {
+
+    tokens.forEach((token) => {
+      if (
+        token.tipo === 'search' ||
+        token.tipo === 'codigo' ||
+        token.tipo === 'nombre' ||
+        token.tipo === 'contacto'
+      ) {
         // Para campos de búsqueda de texto, crear array para múltiples términos
         if (!consolidados[token.tipo]) {
           consolidados[token.tipo] = [];
@@ -232,7 +311,7 @@ export const useAdvancedFilters = (
    * Maneja cambios en los filtros temporales
    */
   const handleFiltroChange = useCallback((campo, valor) => {
-    setFiltrosTemporales(prev => ({ ...prev, [campo]: valor }));
+    setFiltrosTemporales((prev) => ({ ...prev, [campo]: valor }));
   }, []);
 
   /**
@@ -241,20 +320,17 @@ export const useAdvancedFilters = (
   const aplicarFiltrosActuales = useCallback(() => {
     const nuevosTokens = [...tokensActivos];
     let cambiosRealizados = false;
-    
+
     // Manejar rango de años como un solo token si hay valores
     {
       const { anioMin, anioMax } = filtrosTemporales;
       const hasMin = anioMin !== '' && anioMin !== null && anioMin !== undefined;
       const hasMax = anioMax !== '' && anioMax !== null && anioMax !== undefined;
       if (hasMin || hasMax) {
-      
-        const rangoExiste = nuevosTokens.some(t => 
-          t.tipo === 'anio' && 
-          t.valor.anioMin === anioMin && 
-          t.valor.anioMax === anioMax
+        const rangoExiste = nuevosTokens.some(
+          (t) => t.tipo === 'anio' && t.valor.anioMin === anioMin && t.valor.anioMax === anioMax
         );
-      
+
         if (!rangoExiste) {
           let valor = '';
           let label = '';
@@ -273,28 +349,28 @@ export const useAdvancedFilters = (
             tipo: 'anio',
             valor: { anioMin, anioMax },
             label,
-            icon: obtenerIconoFiltro('anio')
+            icon: obtenerIconoFiltro('anio'),
           };
           nuevosTokens.push(nuevoToken);
           cambiosRealizados = true;
         }
       }
     }
-    
+
     // Manejar rango de precios como un solo token si hay valores
     {
       const { precioMin, precioMax } = filtrosTemporales;
       const hasMin = precioMin !== '' && precioMin !== null && precioMin !== undefined;
       const hasMax = precioMax !== '' && precioMax !== null && precioMax !== undefined;
       if (hasMin || hasMax) {
-      
-        const rangoExiste = nuevosTokens.some(t => 
-          t.tipo === 'precio' && 
-          typeof t.valor === 'object' &&
-          t.valor.precioMin === precioMin && 
-          t.valor.precioMax === precioMax
+        const rangoExiste = nuevosTokens.some(
+          (t) =>
+            t.tipo === 'precio' &&
+            typeof t.valor === 'object' &&
+            t.valor.precioMin === precioMin &&
+            t.valor.precioMax === precioMax
         );
-      
+
         if (!rangoExiste) {
           let valor = '';
           let label = '';
@@ -313,28 +389,28 @@ export const useAdvancedFilters = (
             tipo: 'precio',
             valor: { precioMin, precioMax },
             label,
-            icon: obtenerIconoFiltro('precio')
+            icon: obtenerIconoFiltro('precio'),
           };
           nuevosTokens.push(nuevoToken);
           cambiosRealizados = true;
         }
       }
     }
-    
+
     // Manejar rango de fechas como un solo token si hay valores
     {
       const { fechaMin, fechaMax } = filtrosTemporales;
       const hasMin = !!fechaMin;
       const hasMax = !!fechaMax;
       if (hasMin || hasMax) {
-      
-        const rangoExiste = nuevosTokens.some(t => 
-          t.tipo === 'fecha' && 
-          typeof t.valor === 'object' &&
-          t.valor.fechaMin === fechaMin && 
-          t.valor.fechaMax === fechaMax
+        const rangoExiste = nuevosTokens.some(
+          (t) =>
+            t.tipo === 'fecha' &&
+            typeof t.valor === 'object' &&
+            t.valor.fechaMin === fechaMin &&
+            t.valor.fechaMax === fechaMax
         );
-      
+
         if (!rangoExiste) {
           let valor = '';
           let label = '';
@@ -353,51 +429,53 @@ export const useAdvancedFilters = (
             tipo: 'fecha',
             valor: { fechaMin, fechaMax },
             label,
-            icon: obtenerIconoFiltro('fecha')
+            icon: obtenerIconoFiltro('fecha'),
           };
           nuevosTokens.push(nuevoToken);
           cambiosRealizados = true;
         }
       }
     }
-    
+
     // Procesar otros filtros temporales no vacíos
-  Object.keys(filtrosTemporales).forEach(campo => {
+    Object.keys(filtrosTemporales).forEach((campo) => {
       // Skip campos de rango ya que los manejamos arriba
-      if (['anioMin', 'anioMax', 'precioMin', 'precioMax', 'fechaMin', 'fechaMax'].includes(campo)) return;
-      
+      if (['anioMin', 'anioMax', 'precioMin', 'precioMax', 'fechaMin', 'fechaMax'].includes(campo))
+        return;
+
       const valor = filtrosTemporales[campo];
       // Validar valor no vacío y de tipo string/number/boolean seguro
       const isNonEmpty = (v) => {
         if (v === null || v === undefined) return false;
         if (typeof v === 'string') return v.trim() !== '';
-    if (typeof v === 'number') return !Number.isNaN(v);
+        if (typeof v === 'number') return !Number.isNaN(v);
         if (typeof v === 'boolean') return v === true;
         return false; // ignorar objetos/funciones
       };
 
       if (isNonEmpty(valor)) {
-        // Para campos que permiten múltiples valores (search, codigo, nombre, contacto), 
+        // Para campos que permiten múltiples valores (search, codigo, nombre, contacto),
         // solo verificar que no existe el mismo valor exacto
         let tokenExistente;
         if (['search', 'codigo', 'nombre', 'contacto'].includes(campo)) {
-          tokenExistente = nuevosTokens.find(t => t.tipo === campo && t.valor === valor);
+          tokenExistente = nuevosTokens.find((t) => t.tipo === campo && t.valor === valor);
         } else {
           // Para otros campos categóricos, verificar que no existe el mismo tipo y valor
-          tokenExistente = nuevosTokens.find(t => t.tipo === campo && t.valor === valor);
+          tokenExistente = nuevosTokens.find((t) => t.tipo === campo && t.valor === valor);
         }
-        
+
         if (!tokenExistente) {
           // Normalizar valor a primitivo
-          const normalizedValue = typeof valor === 'string' || typeof valor === 'number' || typeof valor === 'boolean'
-            ? valor
-            : String(valor);
+          const normalizedValue =
+            typeof valor === 'string' || typeof valor === 'number' || typeof valor === 'boolean'
+              ? valor
+              : String(valor);
           const nuevoToken = {
             id: generarTokenId(campo, normalizedValue),
             tipo: campo,
             valor: normalizedValue,
             label: generarLabelToken(campo, normalizedValue),
-            icon: obtenerIconoFiltro(campo)
+            icon: obtenerIconoFiltro(campo),
           };
           nuevosTokens.push(nuevoToken);
           cambiosRealizados = true;
@@ -420,42 +498,57 @@ export const useAdvancedFilters = (
     }
 
     // Resetear filtros temporales después de aplicar
-    setFiltrosTemporales(prev => {
+    setFiltrosTemporales((prev) => {
       const reset = {};
-      Object.keys(prev).forEach(key => {
+      Object.keys(prev).forEach((key) => {
         reset[key] = '';
       });
       return reset;
     });
-  }, [filtrosTemporales, tokensActivos, generarTokenId, obtenerIconoFiltro, generarLabelToken, consolidarFiltrosDeTokens, fetchDataFunction]);
+  }, [
+    filtrosTemporales,
+    tokensActivos,
+    generarTokenId,
+    obtenerIconoFiltro,
+    generarLabelToken,
+    consolidarFiltrosDeTokens,
+    fetchDataFunction,
+  ]);
 
   /**
    * Remueve un token específico
    */
-  const removerToken = useCallback((tokenId) => {
-    const nuevosTokens = tokensActivos.filter(token => token.id !== tokenId);
-    setTokensActivos(nuevosTokens);
-    
-    const nuevosConsolidados = consolidarFiltrosDeTokens(nuevosTokens);
-    setFiltrosConsolidados(nuevosConsolidados);
-    
-    if (fetchDataFunction) {
-      fetchDataFunction(nuevosConsolidados, 1);
-    }
-  }, [tokensActivos, consolidarFiltrosDeTokens, fetchDataFunction]);
+  const removerToken = useCallback(
+    (tokenId) => {
+      const nuevosTokens = tokensActivos.filter((token) => token.id !== tokenId);
+      setTokensActivos(nuevosTokens);
+
+      const nuevosConsolidados = consolidarFiltrosDeTokens(nuevosTokens);
+      setFiltrosConsolidados(nuevosConsolidados);
+
+      if (fetchDataFunction) {
+        fetchDataFunction(nuevosConsolidados, 1);
+      }
+    },
+    [tokensActivos, consolidarFiltrosDeTokens, fetchDataFunction]
+  );
 
   /**
    * Limpia todos los filtros y tokens
    */
   const limpiarTodosFiltros = useCallback(() => {
     // No hacer nada si ya está limpio
-    const allEmpty = Object.values(filtrosTemporales).every(v => v === '' || v === null || v === undefined);
+    const allEmpty = Object.values(filtrosTemporales).every(
+      (v) => v === '' || v === null || v === undefined
+    );
     if (tokensActivos.length === 0 && allEmpty) return;
 
     // Resetear filtros temporales
-    setFiltrosTemporales(prev => {
+    setFiltrosTemporales((prev) => {
       const reset = {};
-      Object.keys(prev).forEach(key => { reset[key] = ''; });
+      Object.keys(prev).forEach((key) => {
+        reset[key] = '';
+      });
       return reset;
     });
 
@@ -481,10 +574,12 @@ export const useAdvancedFilters = (
         categorias: data?.categorias || data?.category || data?.categories || [],
         ubicaciones: data?.ubicaciones || data?.locations || [],
         estados: data?.estados || data?.status || [],
-        anioRange: data?.anioRange || data?.anio || data?.yearsRange || { min: 1900, max: new Date().getFullYear() }
+        anioRange: data?.anioRange ||
+          data?.anio ||
+          data?.yearsRange || { min: 1900, max: new Date().getFullYear() },
       };
-  // Mezclar también cualquier otro campo específico de la entidad (p.ej. disponibilidades, precioRange)
-  setOpcionesFiltros(prev => ({ ...prev, ...normalizado, ...data }));
+      // Mezclar también cualquier otro campo específico de la entidad (p.ej. disponibilidades, precioRange)
+      setOpcionesFiltros((prev) => ({ ...prev, ...normalizado, ...data }));
     } catch (err) {
       console.error('Error al cargar opciones de filtros:', err);
     }
@@ -496,7 +591,7 @@ export const useAdvancedFilters = (
     tokensActivos,
     filtrosConsolidados,
     opcionesFiltros,
-    
+
     // Funciones
     handleFiltroChange,
     aplicarFiltrosActuales,
@@ -505,12 +600,12 @@ export const useAdvancedFilters = (
     cargarOpcionesFiltros,
     obtenerIconoFiltro,
     generarLabelToken,
-    
+
     // Setters para casos especiales
     setFiltrosTemporales,
     setTokensActivos,
     setFiltrosConsolidados,
-    setOpcionesFiltros
+    setOpcionesFiltros,
   };
 };
 

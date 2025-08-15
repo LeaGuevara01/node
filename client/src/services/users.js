@@ -2,11 +2,7 @@
 // Objetivo: mantener nombres originales (getUsers/updateUser/deleteUser)
 // delegando en la API unificada de `services/api.js` (rutas /usuarios).
 
-import {
-  getUsuarios,
-  updateUsuario,
-  deleteUsuario
-} from './api';
+import { getUsuarios, updateUsuario, deleteUsuario } from './api';
 
 /** Obtener usuarios (solo campos públicos) */
 export async function getUsers(token) {

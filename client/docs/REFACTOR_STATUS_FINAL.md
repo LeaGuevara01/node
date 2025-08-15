@@ -127,13 +127,13 @@ Una vez que tengas las páginas refactorizadas, actualiza las importaciones en A
 
 ```jsx
 // Reemplazar estas importaciones:
-import RepuestosPage from "./pages/RepuestosPage";
-import ProveedoresPage from "./pages/ProveedoresPage";
+import RepuestosPage from './pages/RepuestosPage';
+import ProveedoresPage from './pages/ProveedoresPage';
 // etc...
 
 // Por estas:
-import RepuestosPage from "./pages/RepuestosPageRefactored";
-import ProveedoresPage from "./pages/ProveedoresPageRefactored";
+import RepuestosPage from './pages/RepuestosPageRefactored';
+import ProveedoresPage from './pages/ProveedoresPageRefactored';
 // etc...
 ```
 
@@ -158,7 +158,7 @@ npm run dev
 ```jsx
 <AppLayout
   currentSection="maquinarias" // Sección activa del sidebar
-  breadcrumbs={[{ label: "Inicio", href: "/" }]} // Navegación de ruta
+  breadcrumbs={[{ label: 'Inicio', href: '/' }]} // Navegación de ruta
   title="Título de la Página" // Título principal
   subtitle="Subtítulo opcional" // Descripción
   actions={<CreateButton entity="maquinarias" />} // Botones de acción
@@ -208,10 +208,10 @@ const {
 } = useNavigation();
 
 // Ejemplos de uso:
-navigateToListPage("maquinarias");
-navigateToDetailPage("maquinarias", 123);
-navigateToFormPage("maquinarias"); // Crear nuevo
-navigateToFormPage("maquinarias", 123); // Editar existente
+navigateToListPage('maquinarias');
+navigateToDetailPage('maquinarias', 123);
+navigateToFormPage('maquinarias'); // Crear nuevo
+navigateToFormPage('maquinarias', 123); // Editar existente
 ```
 
 ## 📁 Estructura de Archivos Creados

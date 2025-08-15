@@ -17,8 +17,7 @@ describe('Maquinaria Endpoints', () => {
   });
 
   it('should get all maquinarias', async () => {
-    const res = await request(app)
-      .get('/api/maquinaria');
+    const res = await request(app).get('/api/maquinaria');
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body)).toBe(true);
   });

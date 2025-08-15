@@ -3,16 +3,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createMaquinaria, updateMaquinaria, getMaquinariaById, getMaquinariaFilters, deleteMaquinaria } from '../services/api';
-import { 
-  CONTAINER_STYLES, 
-  INPUT_STYLES, 
-  BUTTON_STYLES, 
+import {
+  createMaquinaria,
+  updateMaquinaria,
+  getMaquinariaById,
+  getMaquinariaFilters,
+  deleteMaquinaria,
+} from '../services/api';
+import {
+  CONTAINER_STYLES,
+  INPUT_STYLES,
+  BUTTON_STYLES,
   LAYOUT_STYLES,
   ICON_STYLES,
   TEXT_STYLES,
   ALERT_STYLES,
-  MODAL_STYLES
+  MODAL_STYLES,
 } from '../styles/repuestoStyles';
 
 function MaquinariaFormulario({ token, onCreated }) {
@@ -30,20 +36,20 @@ function MaquinariaFormulario({ token, onCreated }) {
     descripcion: '',
     proveedor: '',
     ubicacion: '',
-    estado: ''
+    estado: '',
   });
-  
+
   // Estados de control
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(isEditMode);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   // Opciones para campos select
   const [opciones, setOpciones] = useState({
     categorias: [],
     ubicaciones: [],
-    estados: []
+    estados: [],
   });
 
   /**
@@ -51,7 +57,7 @@ function MaquinariaFormulario({ token, onCreated }) {
    */
   const cargarMaquinaria = async () => {
     if (!isEditMode) return;
-    
+
     setLoadingData(true);
     try {
       const data = await getMaquinariaById(id, token);
@@ -64,7 +70,7 @@ function MaquinariaFormulario({ token, onCreated }) {
         descripcion: data.descripcion || '',
         proveedor: data.proveedor || '',
         ubicacion: data.ubicacion || '',
-        estado: data.estado || ''
+        estado: data.estado || '',
       });
     } catch (err) {
       console.error('Error al cargar maquinaria:', err);
@@ -83,7 +89,7 @@ function MaquinariaFormulario({ token, onCreated }) {
       setOpciones({
         categorias: data.categorias || [],
         ubicaciones: data.ubicaciones || [],
-        estados: data.estados || []
+        estados: data.estados || [],
       });
     } catch (err) {
       console.error('Error al cargar opciones:', err);
@@ -94,9 +100,9 @@ function MaquinariaFormulario({ token, onCreated }) {
    * Maneja cambios en los campos del formulario
    */
   const handleChange = (field, value) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     // Limpiar mensajes al modificar campos
     if (error) setError('');
@@ -122,7 +128,7 @@ function MaquinariaFormulario({ token, onCreated }) {
         await updateMaquinaria({ ...maquinariaData, id: Number(id) }, token);
         setSuccess('Maquinaria actualizada exitosamente');
         if (onCreated) onCreated();
-        
+
         // Redirigir después de un momento
         setTimeout(() => {
           navigate('/maquinarias');
@@ -131,7 +137,7 @@ function MaquinariaFormulario({ token, onCreated }) {
         await createMaquinaria(maquinariaData, token);
         setSuccess('Maquinaria creada exitosamente');
         if (onCreated) onCreated();
-        
+
         // Limpiar formulario y mostrar mensaje
         setForm({
           nombre: '',
@@ -142,7 +148,7 @@ function MaquinariaFormulario({ token, onCreated }) {
           descripcion: '',
           proveedor: '',
           ubicacion: '',
-          estado: ''
+          estado: '',
         });
 
         // Redirigir después de un momento
@@ -176,7 +182,6 @@ function MaquinariaFormulario({ token, onCreated }) {
   return (
     <div className={CONTAINER_STYLES.main}>
       <div className={CONTAINER_STYLES.maxWidth}>
-        
         {/* Header */}
         <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
           <div className="flex items-center justify-between">
@@ -185,18 +190,27 @@ function MaquinariaFormulario({ token, onCreated }) {
                 {isEditMode ? 'Editar Maquinaria' : 'Nueva Maquinaria'}
               </h1>
               <p className={TEXT_STYLES.subtitle}>
-                {isEditMode 
+                {isEditMode
                   ? 'Modifica los datos de la maquinaria existente'
-                  : 'Completa la información para registrar una nueva maquinaria'
-                }
+                  : 'Completa la información para registrar una nueva maquinaria'}
               </p>
             </div>
             <button
               onClick={handleCancel}
               className={`${BUTTON_STYLES.secondary} flex items-center gap-2`}
             >
-              <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
               Volver al Listado
             </button>
@@ -204,40 +218,44 @@ function MaquinariaFormulario({ token, onCreated }) {
         </div>
 
         {/* Mensajes de estado */}
-        {error && (
-          <div className={ALERT_STYLES.error}>
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className={ALERT_STYLES.success}>
-            {success}
-          </div>
-        )}
+        {error && <div className={ALERT_STYLES.error}>{error}</div>}
+        {success && <div className={ALERT_STYLES.success}>{success}</div>}
 
         {/* Formulario */}
         <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
           {loadingData ? (
             <div className="flex items-center justify-center py-8">
               <div className={TEXT_STYLES.loading}>
-                <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                  <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                <svg
+                  className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    className="opacity-25"
+                  ></circle>
+                  <path
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    className="opacity-75"
+                  ></path>
                 </svg>
                 Cargando datos...
               </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              
               {/* Información básica */}
               <div>
                 <h2 className={TEXT_STYLES.sectionTitle}>Información Básica</h2>
                 <div className={LAYOUT_STYLES.gridForm}>
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Nombre *
-                    </label>
+                    <label className={INPUT_STYLES.label}>Nombre *</label>
                     <input
                       type="text"
                       value={form.nombre}
@@ -249,9 +267,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Modelo *
-                    </label>
+                    <label className={INPUT_STYLES.label}>Modelo *</label>
                     <input
                       type="text"
                       value={form.modelo}
@@ -263,9 +279,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Categoría *
-                    </label>
+                    <label className={INPUT_STYLES.label}>Categoría *</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -277,7 +291,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                         list="categorias-list"
                       />
                       <datalist id="categorias-list">
-                        {opciones.categorias.map(categoria => (
+                        {opciones.categorias.map((categoria) => (
                           <option key={categoria} value={categoria} />
                         ))}
                       </datalist>
@@ -285,9 +299,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Año
-                    </label>
+                    <label className={INPUT_STYLES.label}>Año</label>
                     <input
                       type="number"
                       value={form.anio}
@@ -300,9 +312,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Número de Serie
-                    </label>
+                    <label className={INPUT_STYLES.label}>Número de Serie</label>
                     <input
                       type="text"
                       value={form.numero_serie}
@@ -313,9 +323,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Proveedor
-                    </label>
+                    <label className={INPUT_STYLES.label}>Proveedor</label>
                     <input
                       type="text"
                       value={form.proveedor}
@@ -332,9 +340,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                 <h2 className={TEXT_STYLES.sectionTitle}>Ubicación y Estado</h2>
                 <div className={LAYOUT_STYLES.gridForm}>
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Ubicación
-                    </label>
+                    <label className={INPUT_STYLES.label}>Ubicación</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -345,7 +351,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                         list="ubicaciones-list"
                       />
                       <datalist id="ubicaciones-list">
-                        {opciones.ubicaciones.map(ubicacion => (
+                        {opciones.ubicaciones.map((ubicacion) => (
                           <option key={ubicacion} value={ubicacion} />
                         ))}
                       </datalist>
@@ -353,9 +359,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div>
-                    <label className={INPUT_STYLES.label}>
-                      Estado
-                    </label>
+                    <label className={INPUT_STYLES.label}>Estado</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -366,7 +370,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                         list="estados-list"
                       />
                       <datalist id="estados-list">
-                        {opciones.estados.map(estado => (
+                        {opciones.estados.map((estado) => (
                           <option key={estado} value={estado} />
                         ))}
                       </datalist>
@@ -374,9 +378,7 @@ function MaquinariaFormulario({ token, onCreated }) {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className={INPUT_STYLES.label}>
-                      Descripción
-                    </label>
+                    <label className={INPUT_STYLES.label}>Descripción</label>
                     <textarea
                       value={form.descripcion}
                       onChange={(e) => handleChange('descripcion', e.target.value)}
@@ -405,16 +407,41 @@ function MaquinariaFormulario({ token, onCreated }) {
                 >
                   {loading ? (
                     <>
-                      <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                      <svg
+                        className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          className="opacity-25"
+                        ></circle>
+                        <path
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          className="opacity-75"
+                        ></path>
                       </svg>
                       {isEditMode ? 'Actualizando...' : 'Creando...'}
                     </>
                   ) : (
                     <>
-                      <svg className={ICON_STYLES.small} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className={ICON_STYLES.small}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       {isEditMode ? 'Actualizar Maquinaria' : 'Crear Maquinaria'}
                     </>

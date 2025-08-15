@@ -1,6 +1,6 @@
 /**
  * Configuración centralizada del sistema de logging
- * 
+ *
  * Este archivo configura el comportamiento del logging en toda la aplicación:
  * - Niveles de logging por entorno
  * - Configuraciones específicas por módulo
@@ -8,17 +8,17 @@
  * - Métricas y monitoreo de performance
  */
 
-import { 
-  logger, 
-  apiLogger, 
-  uiLogger, 
-  dataLogger, 
-  authLogger, 
-  filterLogger, 
+import {
+  logger,
+  apiLogger,
+  uiLogger,
+  dataLogger,
+  authLogger,
+  filterLogger,
   navLogger,
   setupGlobalErrorLogging,
   LoggerConfig,
-  LOG_LEVELS 
+  LOG_LEVELS,
 } from './logger';
 
 // Configuración específica por entorno
@@ -29,26 +29,26 @@ const ENVIRONMENT_CONFIGS = {
     enablePerformanceLogging: true,
     enableDeprecationWarnings: true,
     logApiResponses: false, // No loggear responses completas en desarrollo
-    maxApiLogLength: 500
+    maxApiLogLength: 500,
   },
-  
+
   production: {
     ...LoggerConfig.production,
     enableApiLogging: true,
     enablePerformanceLogging: true,
     enableDeprecationWarnings: false, // Desactivar warnings en producción
     logApiResponses: false,
-    maxApiLogLength: 200
+    maxApiLogLength: 200,
   },
-  
+
   testing: {
     ...LoggerConfig.testing,
     enableApiLogging: false, // Menos logging en tests
     enablePerformanceLogging: false,
     enableDeprecationWarnings: false,
     logApiResponses: false,
-    maxApiLogLength: 100
-  }
+    maxApiLogLength: 100,
+  },
 };
 
 // Obtener configuración para el entorno actual
@@ -62,15 +62,15 @@ const getCurrentConfig = () => {
  */
 export function initializeLogging() {
   const config = getCurrentConfig();
-  
+
   logger.info('🔧 Inicializando sistema de logging', {
     environment: process.env.NODE_ENV || 'development',
     config: {
       level: Object.keys(LOG_LEVELS)[config.level],
       apiLogging: config.enableApiLogging,
       performanceLogging: config.enablePerformanceLogging,
-      deprecationWarnings: config.enableDeprecationWarnings
-    }
+      deprecationWarnings: config.enableDeprecationWarnings,
+    },
   });
 
   // Configurar captura de errores globales
@@ -103,17 +103,17 @@ function setupPerformanceLogging() {
     // Crear observer para mutations en el DOM
     const observer = new MutationObserver((mutations) => {
       if (mutations.length > 50) {
-        uiLogger.warn('🐌 Muchas mutations DOM detectadas', { 
-          count: mutations.length 
+        uiLogger.warn('🐌 Muchas mutations DOM detectadas', {
+          count: mutations.length,
         });
       }
     });
 
     // Observar cambios en el body
     if (document.body) {
-      observer.observe(document.body, { 
-        childList: true, 
-        subtree: true 
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
       });
     }
   }
@@ -125,7 +125,7 @@ function setupPerformanceLogging() {
       const memoryData = {
         used: Math.round(memory.usedJSHeapSize / 1024 / 1024),
         total: Math.round(memory.totalJSHeapSize / 1024 / 1024),
-        limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024)
+        limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024),
       };
 
       // Solo loggear si el uso es alto
@@ -149,14 +149,14 @@ function setupDevelopmentLogging() {
 
   // Log de navegación (solo en desarrollo)
   window.addEventListener('popstate', (event) => {
-    navLogger.debug('⬅️ Navegación hacia atrás', { 
-      path: window.location.pathname 
+    navLogger.debug('⬅️ Navegación hacia atrás', {
+      path: window.location.pathname,
     });
   });
 
   // Log de errores de React (si está disponible)
   const originalError = console.error;
-  console.error = function(...args) {
+  console.error = function (...args) {
     // Detectar errores de React
     if (args[0] && typeof args[0] === 'string') {
       if (args[0].includes('React') || args[0].includes('Warning:')) {
@@ -180,7 +180,7 @@ export function configureLogFilters() {
     deprecation: config.enableDeprecationWarnings,
     navigation: process.env.NODE_ENV === 'development',
     user: true, // Siempre loggear acciones del usuario
-    data: true  // Siempre loggear operaciones de datos
+    data: true, // Siempre loggear operaciones de datos
   };
 
   logger.info('🔍 Filtros de logging configurados', filters);
@@ -192,7 +192,7 @@ export function configureLogFilters() {
  */
 export function getLoggingStats() {
   const config = getCurrentConfig();
-  
+
   return {
     environment: process.env.NODE_ENV || 'development',
     level: Object.keys(LOG_LEVELS)[config.level],
@@ -200,7 +200,7 @@ export function getLoggingStats() {
       apiLogging: config.enableApiLogging,
       performanceLogging: config.enablePerformanceLogging,
       deprecationWarnings: config.enableDeprecationWarnings,
-      globalErrorCapture: config.enableGlobalErrorCapture !== false
+      globalErrorCapture: config.enableGlobalErrorCapture !== false,
     },
     loggers: {
       main: 'logger',
@@ -209,8 +209,8 @@ export function getLoggingStats() {
       data: 'dataLogger',
       auth: 'authLogger',
       filter: 'filterLogger',
-      navigation: 'navLogger'
-    }
+      navigation: 'navLogger',
+    },
   };
 }
 
@@ -219,16 +219,16 @@ export function getLoggingStats() {
  */
 export function cleanupLogging() {
   logger.info('🧹 Limpiando sistema de logging');
-  
+
   // Limpiar métricas de API
   if (window.apiMetrics) {
     window.apiMetrics = {
       requests: 0,
       totalTime: 0,
-      errors: 0
+      errors: 0,
     };
   }
-  
+
   logger.info('✅ Limpieza de logging completada');
 }
 
@@ -238,10 +238,10 @@ export function cleanupLogging() {
 export function setupTestingLogging() {
   // En testing, minimizar el logging
   const testConfig = ENVIRONMENT_CONFIGS.testing;
-  
+
   logger.info('🧪 Configurando logging para testing', {
     level: Object.keys(LOG_LEVELS)[testConfig.level],
-    apiLogging: testConfig.enableApiLogging
+    apiLogging: testConfig.enableApiLogging,
   });
 }
 
@@ -255,7 +255,7 @@ export const configuredLoggers = {
   data: dataLogger,
   auth: authLogger,
   filter: filterLogger,
-  nav: navLogger
+  nav: navLogger,
 };
 
 /**
@@ -278,5 +278,5 @@ export default {
   cleanupLogging,
   setupTestingLogging,
   configuredLoggers,
-  loggingConfig
+  loggingConfig,
 };

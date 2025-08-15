@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./public/index.html"
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
     extend: {
       // Colores personalizados del sistema agrícola
@@ -33,7 +30,7 @@ module.exports = {
           800: '#482f21',
           900: '#3a261b',
         },
-        
+
         // Colores agrícolas especializados
         agricultural: {
           // Verde tierra/cultivos
@@ -49,7 +46,7 @@ module.exports = {
             800: '#484f3b',
             900: '#3d4233',
           },
-          
+
           // Verde cultivos/cosecha
           crop: {
             50: '#f0fdf4',
@@ -63,7 +60,7 @@ module.exports = {
             800: '#166534',
             900: '#14532d',
           },
-          
+
           // Azul cielo/agua
           sky: {
             50: '#f0f9ff',
@@ -77,7 +74,7 @@ module.exports = {
             800: '#075985',
             900: '#0c4a6e',
           },
-          
+
           // Dorado maquinaria/herramientas
           machinery: {
             50: '#fefce8',
@@ -91,7 +88,7 @@ module.exports = {
             800: '#92400e',
             900: '#78350f',
           },
-          
+
           // Marrón tierra/suelo
           soil: {
             50: '#fdf8f6',
@@ -104,10 +101,10 @@ module.exports = {
             700: '#8b6f5e',
             800: '#74614f',
             900: '#5d4e43',
-          }
-        }
+          },
+        },
       },
-      
+
       // Familias de fuente
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
@@ -115,25 +112,27 @@ module.exports = {
         mono: ['Monaco', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace'],
         display: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
       },
-      
+
       // Espaciado adicional
       spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '128': '32rem',
-        '144': '36rem',
+        18: '4.5rem',
+        88: '22rem',
+        128: '32rem',
+        144: '36rem',
       },
-      
+
       // Sombras personalizadas
       boxShadow: {
-        'agricultural': '0 4px 6px -1px rgba(34, 197, 94, 0.1), 0 2px 4px -2px rgba(34, 197, 94, 0.1)',
-        'agricultural-lg': '0 10px 15px -3px rgba(34, 197, 94, 0.1), 0 4px 6px -4px rgba(34, 197, 94, 0.1)',
-        'machinery': '0 4px 6px -1px rgba(245, 158, 11, 0.1), 0 2px 4px -2px rgba(245, 158, 11, 0.1)',
-        'soft': '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
-        'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
+        agricultural:
+          '0 4px 6px -1px rgba(34, 197, 94, 0.1), 0 2px 4px -2px rgba(34, 197, 94, 0.1)',
+        'agricultural-lg':
+          '0 10px 15px -3px rgba(34, 197, 94, 0.1), 0 4px 6px -4px rgba(34, 197, 94, 0.1)',
+        machinery: '0 4px 6px -1px rgba(245, 158, 11, 0.1), 0 2px 4px -2px rgba(245, 158, 11, 0.1)',
+        soft: '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
+        glow: '0 0 20px rgba(59, 130, 246, 0.3)',
         'glow-green': '0 0 20px rgba(34, 197, 94, 0.3)',
       },
-      
+
       // Animaciones personalizadas
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
@@ -143,52 +142,52 @@ module.exports = {
         'slide-right': 'slideRight 0.3s ease-out',
         'pulse-slow': 'pulse 3s infinite',
         'bounce-gentle': 'bounceGentle 2s infinite',
-        'float': 'float 3s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
+        float: 'float 3s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite alternate',
       },
-      
+
       // Keyframes para animaciones
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
-          '100%': { opacity: '1' }
+          '100%': { opacity: '1' },
         },
         slideUp: {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' }
+          '100%': { transform: 'translateY(0)', opacity: '1' },
         },
         slideDown: {
           '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' }
+          '100%': { transform: 'translateY(0)', opacity: '1' },
         },
         slideLeft: {
           '0%': { transform: 'translateX(10px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' }
+          '100%': { transform: 'translateX(0)', opacity: '1' },
         },
         slideRight: {
           '0%': { transform: 'translateX(-10px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' }
+          '100%': { transform: 'translateX(0)', opacity: '1' },
         },
         bounceGentle: {
-          '0%, 100%': { 
+          '0%, 100%': {
             transform: 'translateY(-5%)',
-            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)'
+            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)',
           },
-          '50%': { 
+          '50%': {
             transform: 'translateY(0)',
-            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)'
-          }
+            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
+          },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' }
+          '50%': { transform: 'translateY(-10px)' },
         },
         glow: {
           '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
-          '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' }
-        }
+          '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' },
+        },
       },
-      
+
       // Gradientes personalizados
       backgroundImage: {
         'gradient-agricultural': 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
@@ -202,51 +201,51 @@ module.exports = {
         'gradient-warm': 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
         'gradient-cool': 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
       },
-      
+
       // Bordes personalizados
       borderRadius: {
         '4xl': '2rem',
         '5xl': '2.5rem',
       },
-      
+
       // Z-index personalizado
       zIndex: {
-        '60': '60',
-        '70': '70',
-        '80': '80',
-        '90': '90',
-        '100': '100',
+        60: '60',
+        70: '70',
+        80: '80',
+        90: '90',
+        100: '100',
       },
-      
+
       // Tamaños máximos personalizados
       maxWidth: {
         '8xl': '88rem',
         '9xl': '96rem',
         '10xl': '104rem',
       },
-      
+
       // Alturas personalizadas
       height: {
-        '128': '32rem',
-        '144': '36rem',
+        128: '32rem',
+        144: '36rem',
       },
-      
+
       // Anchos personalizados
       width: {
-        '128': '32rem',
-        '144': '36rem',
-      }
+        128: '32rem',
+        144: '36rem',
+      },
     },
   },
   plugins: [
     // Plugin para formularios (si está instalado)
     // require('@tailwindcss/forms'),
-    
+
     // Plugin para tipografía (si está instalado)
     // require('@tailwindcss/typography'),
-    
+
     // Plugin personalizado para utilities agrícolas
-    function({ addUtilities }) {
+    function ({ addUtilities }) {
       const newUtilities = {
         // Utilidades para contenedores agrícolas
         '.container-industrial': {
@@ -259,47 +258,48 @@ module.exports = {
 
         // Utilidades para botones industriales
         '.btn-industrial': {
-          '@apply bg-brand-700 hover:bg-brand-800 text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200': {},
+          '@apply bg-brand-700 hover:bg-brand-800 text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200':
+            {},
         },
 
         // Utilidades para texto industrial
         '.text-industrial': {
           '@apply text-brand-700': {},
         },
-        
+
         // Utilidades de animación
         '.animate-fade-in-up': {
           animation: 'fadeIn 0.3s ease-out, slideUp 0.3s ease-out',
         },
-        
+
         // Utilidades para scrollbar personalizado
         '.scrollbar-thin': {
           'scrollbar-width': 'thin',
           'scrollbar-color': 'rgb(156 163 175) transparent',
         },
-        
+
         '.scrollbar-thin::-webkit-scrollbar': {
           width: '6px',
         },
-        
+
         '.scrollbar-thin::-webkit-scrollbar-track': {
           background: 'transparent',
         },
-        
+
         '.scrollbar-thin::-webkit-scrollbar-thumb': {
           'background-color': 'rgb(156 163 175)',
           'border-radius': '20px',
         },
-        
+
         '.scrollbar-thin::-webkit-scrollbar-thumb:hover': {
           'background-color': 'rgb(107 114 128)',
         },
-      }
-      
-      addUtilities(newUtilities, ['responsive', 'hover'])
-    }
+      };
+
+      addUtilities(newUtilities, ['responsive', 'hover']);
+    },
   ],
-  
+
   // Variantes adicionales
   variants: {
     extend: {
@@ -308,9 +308,9 @@ module.exports = {
       textColor: ['active'],
       scale: ['active'],
       opacity: ['disabled'],
-    }
+    },
   },
-  
+
   // Configuración de purge/content más específica
   safelist: [
     // Safelist para clases dinámicas de estados
@@ -331,5 +331,5 @@ module.exports = {
     'cursor-pointer',
     'cursor-not-allowed',
     'pointer-events-none',
-  ]
+  ],
 };

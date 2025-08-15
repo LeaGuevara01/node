@@ -41,8 +41,8 @@ const handleFileUpload = async (event) => {
 };
 
 // Después: Utilidad reutilizable
-import { handleFileUpload } from "../utils/detailsUtils";
-const result = await handleFileUpload(file, id, "proveedores", token);
+import { handleFileUpload } from '../utils/detailsUtils';
+const result = await handleFileUpload(file, id, 'proveedores', token);
 ```
 
 ### 4. Componentes Reutilizables
@@ -78,16 +78,16 @@ const result = await handleFileUpload(file, id, "proveedores", token);
 ## 🛠️ Patrón de Uso para Nuevas Páginas de Detalles
 
 ```javascript
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getEntityById } from "../services/api";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getEntityById } from '../services/api';
 import {
   DetailsHeader,
   DetailsLoading,
   DetailsSection,
   SimpleField,
-} from "../components/shared/DetailsComponents";
-import { DETAILS_CONTAINER } from "../styles/detailsStyles";
+} from '../components/shared/DetailsComponents';
+import { DETAILS_CONTAINER } from '../styles/detailsStyles';
 
 function EntityDetails({ token }) {
   const { id } = useParams();
@@ -102,10 +102,7 @@ function EntityDetails({ token }) {
   return (
     <div className={DETAILS_CONTAINER.main}>
       <div className={DETAILS_CONTAINER.maxWidth}>
-        <DetailsHeader
-          title={entity.name}
-          onBack={() => navigate("/entities")}
-        />
+        <DetailsHeader title={entity.name} onBack={() => navigate('/entities')} />
 
         <div className={DETAILS_CONTAINER.grid}>
           <DetailsSection title="Información Básica">

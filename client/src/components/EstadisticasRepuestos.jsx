@@ -11,7 +11,7 @@ const EstadisticasRepuestos = ({ token }) => {
   const loadEstadisticas = async () => {
     try {
       const response = await fetch('/api/repuestos/estadisticas', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       setEstadisticas(data);
@@ -56,17 +56,17 @@ const EstadisticasRepuestos = ({ token }) => {
             <div className="text-2xl font-bold text-blue-600">{resumen.total}</div>
             <div className="text-sm text-gray-600">Total repuestos</div>
           </div>
-          
+
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <div className="text-2xl font-bold text-green-600">{resumen.stockDisponible}</div>
             <div className="text-sm text-gray-600">Con stock</div>
           </div>
-          
+
           <div className="text-center p-4 bg-yellow-50 rounded-lg">
             <div className="text-2xl font-bold text-yellow-600">{resumen.stockBajo}</div>
             <div className="text-sm text-gray-600">Stock bajo</div>
           </div>
-          
+
           <div className="text-center p-4 bg-red-50 rounded-lg">
             <div className="text-2xl font-bold text-red-600">{resumen.sinStock}</div>
             <div className="text-sm text-gray-600">Sin stock</div>
@@ -121,17 +121,21 @@ const EstadisticasRepuestos = ({ token }) => {
           {porCategoria.map((item, index) => {
             const percentage = (item.cantidad / resumen.total) * 100;
             const colors = [
-              'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-red-500', 
-              'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-gray-500'
+              'bg-blue-500',
+              'bg-green-500',
+              'bg-yellow-500',
+              'bg-red-500',
+              'bg-purple-500',
+              'bg-pink-500',
+              'bg-indigo-500',
+              'bg-gray-500',
             ];
-            
+
             return (
               <div key={index} className="flex items-center space-x-3">
-                <div className="w-24 text-sm text-gray-600 truncate">
-                  {item.categoria}
-                </div>
+                <div className="w-24 text-sm text-gray-600 truncate">{item.categoria}</div>
                 <div className="flex-1 bg-gray-200 rounded-full h-3">
-                  <div 
+                  <div
                     className={`h-3 rounded-full ${colors[index % colors.length]}`}
                     style={{ width: `${percentage}%` }}
                   ></div>

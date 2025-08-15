@@ -11,11 +11,23 @@
     "build:server": "cd server && npm run build",
     "start": "cd server && npm start",
     "deploy:backend": "cd server && npm install && npm start",
-    "deploy:frontend": "cd client && npm install && npm run build"
+    "deploy:frontend": "cd client && npm install && npm run build",
+    "lint": "concurrently \"cd server && npm run lint\" \"cd client && npm run lint\"",
+    "lint:fix": "concurrently \"cd server && npm run lint:fix\" \"cd client && npm run lint:fix\"",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css,md,json,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,css,md,json,yml,yaml}\""
   },
-  "workspaces": ["server", "client"],
+  "workspaces": [
+    "server",
+    "client"
+  ],
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "prettier": "^3.3.3"
   },
   "dependencies": {
     "@types/react-router-dom": "^5.3.3",

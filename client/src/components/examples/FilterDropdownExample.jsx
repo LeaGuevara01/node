@@ -1,6 +1,6 @@
 /**
  * Ejemplo de implementación de FilterDropdown actualizado
- * 
+ *
  * FilterDropdown tiene las sugerencias integradas directamente
  * sin necesidad de hooks externos
  */
@@ -17,7 +17,7 @@ const FilterDropdownExample = () => {
     { marca: 'John Deere', modelo: 'X500' },
     { marca: 'Case IH', modelo: 'Magnum' },
     { marca: 'New Holland', modelo: 'T7' },
-    { marca: 'Massey Ferguson', modelo: 'MF 4700' }
+    { marca: 'Massey Ferguson', modelo: 'MF 4700' },
   ];
 
   const handleFiltersChange = (newFilters) => {
@@ -28,7 +28,7 @@ const FilterDropdownExample = () => {
   return (
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">FilterDropdown con Sugerencias</h2>
-      
+
       <div className="flex justify-end mb-4">
         <FilterDropdown
           filters={filters}

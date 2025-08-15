@@ -28,12 +28,17 @@ export const buildQueryParams = (filtros, pagina = 1, limit = 10) => {
     page: pagina.toString(),
     limit: limit.toString(),
     sortBy: 'stock',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
   });
 
   // Agregar filtros activos
-  Object.keys(filtros).forEach(key => {
-    if (filtros[key] !== '' && filtros[key] !== false && filtros[key] !== null && filtros[key] !== undefined) {
+  Object.keys(filtros).forEach((key) => {
+    if (
+      filtros[key] !== '' &&
+      filtros[key] !== false &&
+      filtros[key] !== null &&
+      filtros[key] !== undefined
+    ) {
       params.append(key, filtros[key].toString());
     }
   });
@@ -51,7 +56,7 @@ export const clearAllFilters = () => ({
   ubicacion: '',
   stockMin: '',
   stockMax: '',
-  sinStock: false
+  sinStock: false,
 });
 
 /**
@@ -65,42 +70,42 @@ export const parseRange = (rangeString) => {
   }
 
   const trimmed = rangeString.trim();
-  
+
   // Formato "min-max" (ej: "10-50")
   if (trimmed.includes('-') && !trimmed.startsWith('-')) {
     const [minStr, maxStr] = trimmed.split('-');
     return {
       min: minStr ? Number(minStr) : null,
-      max: maxStr ? Number(maxStr) : null
+      max: maxStr ? Number(maxStr) : null,
     };
   }
-  
+
   // Formato "min+" (ej: "10+")
   if (trimmed.endsWith('+')) {
     const minStr = trimmed.slice(0, -1);
     return {
       min: minStr ? Number(minStr) : null,
-      max: null
+      max: null,
     };
   }
-  
+
   // Formato "-max" (ej: "-50")
   if (trimmed.startsWith('-')) {
     const maxStr = trimmed.slice(1);
     return {
       min: null,
-      max: maxStr ? Number(maxStr) : null
+      max: maxStr ? Number(maxStr) : null,
     };
   }
-  
+
   // Formato simple "valor" (se interpreta como valor exacto)
   const value = Number(trimmed);
   if (!isNaN(value)) {
     return {
       min: value,
-      max: value
+      max: value,
     };
   }
-  
+
   return { min: null, max: null };
 };

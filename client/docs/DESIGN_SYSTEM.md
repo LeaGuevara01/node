@@ -30,19 +30,19 @@ Este sistema proporciona una arquitectura completa de design tokens, componentes
 ### Importación Básica
 
 ```jsx
-import { Button, StatusBadge, UniversalList, DESIGN_TOKENS } from "../styles";
+import { Button, StatusBadge, UniversalList, DESIGN_TOKENS } from '../styles';
 ```
 
 ### Uso de Design Tokens
 
 ```jsx
 // En componentes
-import { DESIGN_TOKENS } from "../styles/tokens/designTokens";
+import { DESIGN_TOKENS } from '../styles/tokens/designTokens';
 
 const { colors, spacing, typography } = DESIGN_TOKENS;
 
 // En CSS/Tailwind (ya configurado)
-className = "bg-agricultural-crop-500 text-white p-lg";
+className = 'bg-agricultural-crop-500 text-white p-lg';
 ```
 
 ## 🎯 Componentes Principales
@@ -102,12 +102,7 @@ import { StatusBadge, StatusFilter } from '../styles';
 ### 3. Layout Responsivo
 
 ```jsx
-import {
-  PageContainer,
-  ContentContainer,
-  Card,
-  ResponsiveGrid,
-} from "../styles";
+import { PageContainer, ContentContainer, Card, ResponsiveGrid } from '../styles';
 
 function MyPage() {
   return (
@@ -125,21 +120,11 @@ function MyPage() {
 ### 4. Filtros Inteligentes
 
 ```jsx
-import {
-  SmartFilterPanel,
-  useSmartFilters,
-  TextFilter,
-  SelectFilter,
-} from "../styles";
+import { SmartFilterPanel, useSmartFilters, TextFilter, SelectFilter } from '../styles';
 
 function MyListPage() {
-  const {
-    filters,
-    applyFilter,
-    saveCurrentFilter,
-    applySavedFilter,
-    hasActiveFilters,
-  } = useSmartFilters({}, "my_page_filters");
+  const { filters, applyFilter, saveCurrentFilter, applySavedFilter, hasActiveFilters } =
+    useSmartFilters({}, 'my_page_filters');
 
   return (
     <SmartFilterPanel
@@ -167,30 +152,30 @@ function MyListPage() {
 ### 5. UniversalList - Listado Modular
 
 ```jsx
-import UniversalList from "../components/shared/UniversalList";
+import UniversalList from '../components/shared/UniversalList';
 
 function RepuestosPage() {
   const fields = [
-    { key: "nombre", label: "Nombre" },
-    { key: "codigo", label: "Código" },
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'codigo', label: 'Código' },
     {
-      key: "precio",
-      label: "Precio",
+      key: 'precio',
+      label: 'Precio',
       format: (value) => `$${value.toLocaleString()}`,
     },
   ];
 
   const filterConfig = [
     {
-      key: "search",
-      type: "text",
-      label: "Buscar",
-      placeholder: "Buscar repuestos...",
+      key: 'search',
+      type: 'text',
+      label: 'Buscar',
+      placeholder: 'Buscar repuestos...',
     },
     {
-      key: "categoria",
-      type: "select",
-      label: "Categoría",
+      key: 'categoria',
+      type: 'select',
+      label: 'Categoría',
       options: categoriaOptions,
     },
   ];
@@ -202,11 +187,11 @@ function RepuestosPage() {
       fields={fields}
       filterConfig={filterConfig}
       statusConfig={{
-        type: "stock",
-        field: "estado",
+        type: 'stock',
+        field: 'estado',
         data: (item) => ({ cantidad: item.cantidad, stockMinimo: 10 }),
       }}
-      onCreateNew={() => navigate("/repuestos/nuevo")}
+      onCreateNew={() => navigate('/repuestos/nuevo')}
     />
   );
 }
@@ -236,10 +221,10 @@ className="bg-agricultural-crop-500 text-agricultural-earth-900"
 
 ```jsx
 // Predefinidos en Tailwind
-className = "bg-gradient-agricultural"; // Verde
-className = "bg-gradient-machinery"; // Dorado
-className = "bg-gradient-earth"; // Tierra
-className = "bg-gradient-sky"; // Azul
+className = 'bg-gradient-agricultural'; // Verde
+className = 'bg-gradient-machinery'; // Dorado
+className = 'bg-gradient-earth'; // Tierra
+className = 'bg-gradient-sky'; // Azul
 ```
 
 ## 🔧 Estados Visuales
@@ -283,10 +268,10 @@ className = "bg-gradient-sky"; // Azul
 
 ```jsx
 // Antes
-import { DETAILS_CONTAINER } from "../styles/detailsStyles";
+import { DETAILS_CONTAINER } from '../styles/detailsStyles';
 
 // Después
-import { DETAILS_CONTAINER, Card, Button, StatusBadge } from "../styles";
+import { DETAILS_CONTAINER, Card, Button, StatusBadge } from '../styles';
 ```
 
 ### Paso 2: Reemplazar Estilos
@@ -365,13 +350,7 @@ npm run lint:css
 ### Dashboard con Métricas
 
 ```jsx
-import {
-  PageContainer,
-  ContentContainer,
-  ResponsiveGrid,
-  Card,
-  StatusSummary,
-} from "../styles";
+import { PageContainer, ContentContainer, ResponsiveGrid, Card, StatusSummary } from '../styles';
 
 function Dashboard({ data }) {
   return (
@@ -389,11 +368,7 @@ function Dashboard({ data }) {
           </Card>
         </ResponsiveGrid>
 
-        <StatusSummary
-          type="stock"
-          data={data.repuestos}
-          statusField="estado"
-        />
+        <StatusSummary type="stock" data={data.repuestos} statusField="estado" />
       </ContentContainer>
     </PageContainer>
   );
@@ -403,20 +378,17 @@ function Dashboard({ data }) {
 ### Formulario con Validación
 
 ```jsx
-import { FormLayout, Button, FormButtonGroup } from "../styles";
+import { FormLayout, Button, FormButtonGroup } from '../styles';
 
 function RepuestoForm() {
   return (
-    <FormLayout
-      title="Nuevo Repuesto"
-      subtitle="Agregar repuesto al inventario"
-    >
+    <FormLayout title="Nuevo Repuesto" subtitle="Agregar repuesto al inventario">
       <form onSubmit={handleSubmit}>
         {/* Campos del formulario */}
 
         <FormButtonGroup
           onSave={handleSave}
-          onCancel={() => navigate("/repuestos")}
+          onCancel={() => navigate('/repuestos')}
           loading={saving}
         />
       </form>

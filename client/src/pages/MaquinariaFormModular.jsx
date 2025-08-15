@@ -1,6 +1,6 @@
 /**
  * MaquinariaForm Modular - Versión con Sistema de Estilos Modulares
- * 
+ *
  * Esta versión utiliza el sistema de design tokens y componentes modulares
  * para mantener consistencia visual y facilitar el mantenimiento.
  */
@@ -9,12 +9,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tractor } from 'lucide-react';
 import Papa from 'papaparse';
-import { 
-  createMaquinaria, 
-  updateMaquinaria, 
-  getMaquinarias, 
-  deleteMaquinaria, 
-  getMaquinariaFilters 
+import {
+  createMaquinaria,
+  updateMaquinaria,
+  getMaquinarias,
+  deleteMaquinaria,
+  getMaquinariaFilters,
 } from '../services/api';
 
 // Importar sistema de estilos modulares
@@ -28,45 +28,45 @@ import {
   LoadingState,
   usePageState,
   PAGE_STYLES,
-  classNames
+  classNames,
 } from '../styles';
 
 // Componentes específicos
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
 import EstadoIcon from '../components/EstadoIcon';
 import { getColorFromString } from '../utils/colorUtils';
-import { 
-  sortMaquinariasByCategory, 
-  buildMaquinariaQueryParams, 
-  clearMaquinariaFilters, 
-  getEstadoColorClass, 
-  formatAnio 
+import {
+  sortMaquinariasByCategory,
+  buildMaquinariaQueryParams,
+  clearMaquinariaFilters,
+  getEstadoColorClass,
+  formatAnio,
 } from '../utils/maquinariaUtils';
 
 function MaquinariaFormModular({ token, onCreated }) {
   const navigate = useNavigate();
   const pageState = usePageState(false);
-  
+
   // Estados del formulario
   const [form, setForm] = useState({
-    nombre: '', 
-    modelo: '', 
-    categoria: '', 
-    anio: '', 
-    numero_serie: '', 
-    descripcion: '', 
-    proveedor: '', 
-    ubicacion: '', 
-    estado: ''
+    nombre: '',
+    modelo: '',
+    categoria: '',
+    anio: '',
+    numero_serie: '',
+    descripcion: '',
+    proveedor: '',
+    ubicacion: '',
+    estado: '',
   });
-  
+
   // Estados de la aplicación
   const [maquinarias, setMaquinarias] = useState([]);
   const [selectedMaquinaria, setSelectedMaquinaria] = useState(null);
   const [bulkError, setBulkError] = useState('');
   const [bulkSuccess, setBulkSuccess] = useState('');
   const [error, setError] = useState('');
-  
+
   // Estados para filtros
   const [filtros, setFiltros] = useState({
     search: '',
@@ -74,16 +74,16 @@ function MaquinariaFormModular({ token, onCreated }) {
     ubicacion: '',
     estado: '',
     anioMin: '',
-    anioMax: ''
+    anioMax: '',
   });
-  
+
   const [opcionesFiltros, setOpcionesFiltros] = useState({
     categorias: [],
     ubicaciones: [],
     estados: [],
-    anioRange: { min: 1900, max: new Date().getFullYear() }
+    anioRange: { min: 1900, max: new Date().getFullYear() },
   });
-  
+
   // Estados de UI
   const [mostrarModal, setMostrarModal] = useState(false);
   const [modoVista, setModoVista] = useState('grid'); // 'grid' | 'list'
@@ -91,7 +91,7 @@ function MaquinariaFormModular({ token, onCreated }) {
   const itemsPorPagina = 12;
 
   // ===== EFECTOS =====
-  
+
   useEffect(() => {
     cargarDatos();
     cargarFiltros();
@@ -102,12 +102,9 @@ function MaquinariaFormModular({ token, onCreated }) {
   }, [filtros, paginaActual]);
 
   // ===== FUNCIONES DE CARGA =====
-  
+
   const cargarDatos = async () => {
-    await Promise.all([
-      cargarMaquinarias(),
-      cargarFiltros()
-    ]);
+    await Promise.all([cargarMaquinarias(), cargarFiltros()]);
   };
 
   const cargarMaquinarias = async () => {
@@ -115,8 +112,8 @@ function MaquinariaFormModular({ token, onCreated }) {
     try {
       const params = buildMaquinariaQueryParams(filtros, paginaActual, itemsPorPagina);
       const data = await getMaquinarias(token, params, paginaActual);
-      
-      const maquinariasArray = Array.isArray(data) ? data : (data?.maquinarias || []);
+
+      const maquinariasArray = Array.isArray(data) ? data : data?.maquinarias || [];
       setMaquinarias(maquinariasArray);
       pageState.setSuccess(maquinariasArray);
     } catch (error) {
@@ -128,9 +125,9 @@ function MaquinariaFormModular({ token, onCreated }) {
   const cargarFiltros = async () => {
     try {
       const filtrosData = await getMaquinariaFilters(token);
-      setOpcionesFiltros(prev => ({
+      setOpcionesFiltros((prev) => ({
         ...prev,
-        ...filtrosData
+        ...filtrosData,
       }));
     } catch (error) {
       console.error('Error cargando filtros:', error);
@@ -138,7 +135,7 @@ function MaquinariaFormModular({ token, onCreated }) {
   };
 
   // ===== FUNCIONES DEL FORMULARIO =====
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     pageState.setLoading(true);
@@ -146,20 +143,26 @@ function MaquinariaFormModular({ token, onCreated }) {
 
     try {
       await createMaquinaria(token, form);
-      
+
       // Resetear formulario
       setForm({
-        nombre: '', modelo: '', categoria: '', anio: '', numero_serie: '', 
-        descripcion: '', proveedor: '', ubicacion: '', estado: ''
+        nombre: '',
+        modelo: '',
+        categoria: '',
+        anio: '',
+        numero_serie: '',
+        descripcion: '',
+        proveedor: '',
+        ubicacion: '',
+        estado: '',
       });
-      
+
       // Recargar datos
       await cargarMaquinarias();
       if (onCreated) onCreated();
-      
+
       setBulkSuccess('Maquinaria creada exitosamente');
       setTimeout(() => setBulkSuccess(''), 3000);
-      
     } catch (error) {
       console.error('Error creando maquinaria:', error);
       setError(error.response?.data?.error || 'Error al crear maquinaria');
@@ -170,7 +173,7 @@ function MaquinariaFormModular({ token, onCreated }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Está seguro de eliminar esta maquinaria?')) return;
-    
+
     try {
       await deleteMaquinaria(token, id);
       await cargarMaquinarias();
@@ -182,9 +185,9 @@ function MaquinariaFormModular({ token, onCreated }) {
   };
 
   // ===== FUNCIONES DE FILTROS =====
-  
+
   const aplicarFiltro = (key, value) => {
-    setFiltros(prev => ({ ...prev, [key]: value }));
+    setFiltros((prev) => ({ ...prev, [key]: value }));
     setPaginaActual(1);
   };
 
@@ -194,7 +197,7 @@ function MaquinariaFormModular({ token, onCreated }) {
   };
 
   // ===== FUNCIONES DE IMPORTACIÓN =====
-  
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -219,7 +222,7 @@ function MaquinariaFormModular({ token, onCreated }) {
                 descripcion: row.descripcion || '',
                 proveedor: row.proveedor || '',
                 ubicacion: row.ubicacion || '',
-                estado: row.estado || 'operativa'
+                estado: row.estado || 'operativa',
               });
             }
           }
@@ -231,14 +234,14 @@ function MaquinariaFormModular({ token, onCreated }) {
         } finally {
           pageState.setLoading(false);
         }
-      }
+      },
     });
   };
 
   // ===== RENDER DE COMPONENTES =====
-  
+
   const renderMaquinariaCard = (maquinaria) => (
-    <div 
+    <div
       key={maquinaria.id}
       className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
     >
@@ -249,28 +252,28 @@ function MaquinariaFormModular({ token, onCreated }) {
         </div>
         <EstadoIcon estado={maquinaria.estado} />
       </div>
-      
+
       <div className="space-y-2 text-sm text-gray-600">
         <div className="flex items-center">
           <span className="font-medium w-20">Categoría:</span>
-          <span 
+          <span
             className="px-2 py-1 rounded text-xs font-medium"
-            style={{ 
+            style={{
               backgroundColor: getColorFromString(maquinaria.categoria) + '20',
-              color: getColorFromString(maquinaria.categoria)
+              color: getColorFromString(maquinaria.categoria),
             }}
           >
             {maquinaria.categoria}
           </span>
         </div>
-        
+
         {maquinaria.anio && (
           <div className="flex items-center">
             <span className="font-medium w-20">Año:</span>
             <span>{formatAnio(maquinaria.anio)}</span>
           </div>
         )}
-        
+
         {maquinaria.ubicacion && (
           <div className="flex items-center">
             <span className="font-medium w-20">Ubicación:</span>
@@ -278,7 +281,7 @@ function MaquinariaFormModular({ token, onCreated }) {
           </div>
         )}
       </div>
-      
+
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
         <button
           onClick={() => navigate(`/maquinaria/${maquinaria.id}`)}
@@ -286,7 +289,7 @@ function MaquinariaFormModular({ token, onCreated }) {
         >
           Ver detalles
         </button>
-        
+
         <div className="flex space-x-2">
           <button
             onClick={() => {
@@ -313,9 +316,7 @@ function MaquinariaFormModular({ token, onCreated }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Búsqueda general */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Buscar
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
           <input
             type="text"
             value={filtros.search}
@@ -327,60 +328,58 @@ function MaquinariaFormModular({ token, onCreated }) {
 
         {/* Filtro por categoría */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Categoría
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
           <select
             value={filtros.categoria}
             onChange={(e) => aplicarFiltro('categoria', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todas las categorías</option>
-            {opcionesFiltros.categorias.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+            {opcionesFiltros.categorias.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Filtro por estado */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Estado
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
           <select
             value={filtros.estado}
             onChange={(e) => aplicarFiltro('estado', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todos los estados</option>
-            {opcionesFiltros.estados.map(estado => (
-              <option key={estado} value={estado}>{estado}</option>
+            {opcionesFiltros.estados.map((estado) => (
+              <option key={estado} value={estado}>
+                {estado}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Filtro por ubicación */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Ubicación
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
           <select
             value={filtros.ubicacion}
             onChange={(e) => aplicarFiltro('ubicacion', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Todas las ubicaciones</option>
-            {opcionesFiltros.ubicaciones.map(ubi => (
-              <option key={ubi} value={ubi}>{ubi}</option>
+            {opcionesFiltros.ubicaciones.map((ubi) => (
+              <option key={ubi} value={ubi}>
+                {ubi}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Rango de años */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Año mínimo
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Año mínimo</label>
           <input
             type="number"
             value={filtros.anioMin}
@@ -392,9 +391,7 @@ function MaquinariaFormModular({ token, onCreated }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Año máximo
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Año máximo</label>
           <input
             type="number"
             value={filtros.anioMax}
@@ -413,7 +410,7 @@ function MaquinariaFormModular({ token, onCreated }) {
         >
           Limpiar filtros
         </button>
-        
+
         <div className="text-sm text-gray-600">
           {maquinarias.length} maquinaria(s) encontrada(s)
         </div>
@@ -422,7 +419,7 @@ function MaquinariaFormModular({ token, onCreated }) {
   );
 
   // ===== RENDER PRINCIPAL =====
-  
+
   return (
     <StyledPageWrapper
       title="Gestión de Maquinarias"
@@ -436,13 +433,13 @@ function MaquinariaFormModular({ token, onCreated }) {
           {bulkSuccess}
         </Alert>
       )}
-      
+
       {bulkError && (
         <Alert type="error" title="Error" onClose={() => setBulkError('')}>
           {bulkError}
         </Alert>
       )}
-      
+
       {error && (
         <Alert type="error" title="Error" onClose={() => setError('')}>
           {error}
@@ -457,50 +454,42 @@ function MaquinariaFormModular({ token, onCreated }) {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
             <input
               type="text"
               value={form.nombre}
-              onChange={(e) => setForm({...form, nombre: e.target.value})}
+              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Modelo
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
             <input
               type="text"
               value={form.modelo}
-              onChange={(e) => setForm({...form, modelo: e.target.value})}
+              onChange={(e) => setForm({ ...form, modelo: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Categoría
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
             <input
               type="text"
               value={form.categoria}
-              onChange={(e) => setForm({...form, categoria: e.target.value})}
+              onChange={(e) => setForm({ ...form, categoria: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Año
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Año</label>
             <input
               type="number"
               value={form.anio}
-              onChange={(e) => setForm({...form, anio: e.target.value})}
+              onChange={(e) => setForm({ ...form, anio: e.target.value })}
               min="1900"
               max={new Date().getFullYear()}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -508,24 +497,20 @@ function MaquinariaFormModular({ token, onCreated }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Número de Serie
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Número de Serie</label>
             <input
               type="text"
               value={form.numero_serie}
-              onChange={(e) => setForm({...form, numero_serie: e.target.value})}
+              onChange={(e) => setForm({ ...form, numero_serie: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Estado
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
             <select
               value={form.estado}
-              onChange={(e) => setForm({...form, estado: e.target.value})}
+              onChange={(e) => setForm({ ...form, estado: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Seleccionar estado</option>
@@ -537,12 +522,10 @@ function MaquinariaFormModular({ token, onCreated }) {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descripción
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
             <textarea
               value={form.descripcion}
-              onChange={(e) => setForm({...form, descripcion: e.target.value})}
+              onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
               rows="3"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -561,7 +544,7 @@ function MaquinariaFormModular({ token, onCreated }) {
               className="text-sm text-gray-600"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={pageState.loading}
@@ -576,13 +559,9 @@ function MaquinariaFormModular({ token, onCreated }) {
       {renderFiltros()}
 
       {/* Lista de maquinarias */}
-      <ContentSection 
-        title={`Maquinarias Registradas (${maquinarias.length})`}
-      >
-        <ResponsiveGrid columns="cards">
-          {maquinarias.map(renderMaquinariaCard)}
-        </ResponsiveGrid>
-        
+      <ContentSection title={`Maquinarias Registradas (${maquinarias.length})`}>
+        <ResponsiveGrid columns="cards">{maquinarias.map(renderMaquinariaCard)}</ResponsiveGrid>
+
         {maquinarias.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             <Tractor className="w-16 h-16 mx-auto mb-4 text-gray-400" />

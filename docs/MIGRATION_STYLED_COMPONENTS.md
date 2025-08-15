@@ -18,7 +18,7 @@ Los siguientes componentes de `styledComponents.js` están **DEPRECADOS** y ser�
 **❌ ANTES (Deprecado):**
 
 ```jsx
-import { StyledPageWrapper } from "../styles/styledComponents";
+import { StyledPageWrapper } from '../styles/styledComponents';
 
 function MiPagina() {
   return (
@@ -37,8 +37,8 @@ function MiPagina() {
 **✅ DESPUÉS (Recomendado):**
 
 ```jsx
-import AppLayout from "../components/navigation/AppLayout";
-import { PageContainer } from "../styles";
+import AppLayout from '../components/navigation/AppLayout';
+import { PageContainer } from '../styles';
 
 function MiPagina({ token, role, onLogout }) {
   return (
@@ -63,7 +63,7 @@ function MiPagina({ token, role, onLogout }) {
 **❌ ANTES (Deprecado):**
 
 ```jsx
-import { StyledForm } from "../styles/styledComponents";
+import { StyledForm } from '../styles/styledComponents';
 
 function MiFormulario() {
   return (
@@ -83,7 +83,7 @@ function MiFormulario() {
 **✅ DESPUÉS (Recomendado):**
 
 ```jsx
-import { FormLayout, Alert, LoadingState } from "../styles";
+import { FormLayout, Alert, LoadingState } from '../styles';
 
 function MiFormulario() {
   return (
@@ -106,7 +106,7 @@ function MiFormulario() {
 **❌ ANTES (Deprecado):**
 
 ```jsx
-import { StyledList } from "../styles/styledComponents";
+import { StyledList } from '../styles/styledComponents';
 
 function MiLista({ items }) {
   return (
@@ -125,7 +125,7 @@ function MiLista({ items }) {
 **✅ DESPUÉS (Recomendado):**
 
 ```jsx
-import { UniversalList, ListLayout } from "../styles";
+import { UniversalList, ListLayout } from '../styles';
 
 function MiLista({ items }) {
   return (
@@ -147,7 +147,7 @@ function MiLista({ items }) {
 **❌ ANTES (Deprecado):**
 
 ```jsx
-import { StyledDashboard } from "../styles/styledComponents";
+import { StyledDashboard } from '../styles/styledComponents';
 
 function MiDashboard({ stats }) {
   return (
@@ -166,17 +166,13 @@ function MiDashboard({ stats }) {
 **✅ DESPUÉS (Recomendado):**
 
 ```jsx
-import { PageContainer, StatsGrid } from "../styles";
+import { PageContainer, StatsGrid } from '../styles';
 
 function MiDashboard({ stats }) {
   return (
     <PageContainer>
       <div className="space-y-6">
-        <StatsGrid
-          stats={stats}
-          onCardClick={handleCardClick}
-          variant="default"
-        />
+        <StatsGrid stats={stats} onCardClick={handleCardClick} variant="default" />
 
         <div>Contenido adicional...</div>
       </div>
@@ -243,13 +239,7 @@ Este script:
 ### Dashboard Moderno con Nuevo Sistema:
 
 ```jsx
-import {
-  AppLayout,
-  PageContainer,
-  StatsGrid,
-  Card,
-  ResponsiveGrid,
-} from "../styles";
+import { AppLayout, PageContainer, StatsGrid, Card, ResponsiveGrid } from '../styles';
 
 function DashboardModerno({ token, role, onLogout }) {
   return (
@@ -262,11 +252,7 @@ function DashboardModerno({ token, role, onLogout }) {
     >
       <PageContainer className="space-y-6">
         {/* Estadísticas principales */}
-        <StatsGrid
-          stats={stats}
-          variant="agricultural"
-          onCardClick={handleNavigate}
-        />
+        <StatsGrid stats={stats} variant="agricultural" onCardClick={handleNavigate} />
 
         {/* Grid de contenido */}
         <ResponsiveGrid columns="auto-fit">
@@ -283,14 +269,7 @@ function DashboardModerno({ token, role, onLogout }) {
 ### Formulario Avanzado:
 
 ```jsx
-import {
-  AppLayout,
-  FormLayout,
-  Card,
-  FormButtonGroup,
-  SaveButton,
-  CancelButton,
-} from "../styles";
+import { AppLayout, FormLayout, Card, FormButtonGroup, SaveButton, CancelButton } from '../styles';
 
 function FormularioAvanzado() {
   return (

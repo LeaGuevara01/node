@@ -47,8 +47,8 @@ Actualizar en Render:
 const getCorsOrigins = () => {
   const corsOrigin = config.CORS_ORIGIN;
 
-  if (typeof corsOrigin === "string" && corsOrigin.includes(",")) {
-    return corsOrigin.split(",").map((origin) => origin.trim());
+  if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
+    return corsOrigin.split(',').map((origin) => origin.trim());
   }
 
   return Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
@@ -61,11 +61,9 @@ const getCorsOrigins = () => {
 
 ```javascript
 // JWT con expiración
-const token = jwt.sign(
-  { userId: user.id, role: user.role },
-  process.env.JWT_SECRET,
-  { expiresIn: "24h" }
-);
+const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, {
+  expiresIn: '24h',
+});
 
 // Hash de contraseñas
 const hashedPassword = await bcrypt.hash(password, 10);
@@ -76,7 +74,7 @@ const hashedPassword = await bcrypt.hash(password, 10);
 ```javascript
 // Sanitización de parámetros
 const sanitizeQuery = (query) => {
-  const allowedFields = ["search", "categoria", "ubicacion", "page", "limit"];
+  const allowedFields = ['search', 'categoria', 'ubicacion', 'page', 'limit'];
   return Object.keys(query)
     .filter((key) => allowedFields.includes(key))
     .reduce((obj, key) => {
@@ -91,15 +89,15 @@ const sanitizeQuery = (query) => {
 ```javascript
 // Middleware de autorización
 const requireAdmin = (req, res, next) => {
-  if (req.user.role !== "ADMIN") {
-    return res.status(403).json({ error: "Acceso denegado" });
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ error: 'Acceso denegado' });
   }
   next();
 };
 
 // Aplicación en rutas
-router.post("/repuestos", requireAuth, requireAdmin, createRepuesto);
-router.delete("/repuestos/:id", requireAuth, requireAdmin, deleteRepuesto);
+router.post('/repuestos', requireAuth, requireAdmin, createRepuesto);
+router.delete('/repuestos/:id', requireAuth, requireAdmin, deleteRepuesto);
 ```
 
 ### 4. **Variables de Entorno Seguras**
@@ -200,10 +198,10 @@ secrets/
 ```javascript
 // server/src/index.js
 app.use((req, res, next) => {
-  res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "DENY");
-  res.setHeader("X-XSS-Protection", "1; mode=block");
-  res.setHeader("Strict-Transport-Security", "max-age=31536000");
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   next();
 });
 ```
@@ -211,30 +209,30 @@ app.use((req, res, next) => {
 ### 2. **Rate Limiting**
 
 ```javascript
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // máximo 100 requests por IP
-  message: "Demasiadas solicitudes, intenta más tarde",
+  message: 'Demasiadas solicitudes, intenta más tarde',
 });
 
-app.use("/api/", limiter);
+app.use('/api/', limiter);
 ```
 
 ### 3. **Validación de Input**
 
 ```javascript
-const { body, validationResult } = require("express-validator");
+const { body, validationResult } = require('express-validator');
 
 const validateRepuesto = [
-  body("nombre").trim().isLength({ min: 1 }).escape(),
-  body("categoria").trim().isLength({ min: 1 }).escape(),
-  body("stock").isInt({ min: 0 }),
-  body("precio").isFloat({ min: 0 }),
+  body('nombre').trim().isLength({ min: 1 }).escape(),
+  body('categoria').trim().isLength({ min: 1 }).escape(),
+  body('stock').isInt({ min: 0 }),
+  body('precio').isFloat({ min: 0 }),
 ];
 
-router.post("/repuestos", validateRepuesto, (req, res) => {
+router.post('/repuestos', validateRepuesto, (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -248,17 +246,17 @@ router.post("/repuestos", validateRepuesto, (req, res) => {
 ### 1. **Logs de Seguridad**
 
 ```javascript
-const winston = require("winston");
+const winston = require('winston');
 
 const securityLogger = winston.createLogger({
-  level: "info",
+  level: 'info',
   format: winston.format.json(),
-  transports: [new winston.transports.File({ filename: "security.log" })],
+  transports: [new winston.transports.File({ filename: 'security.log' })],
 });
 
 // Log intentos de acceso
-app.use("/api/admin", (req, res, next) => {
-  securityLogger.info("Admin access attempt", {
+app.use('/api/admin', (req, res, next) => {
+  securityLogger.info('Admin access attempt', {
     ip: req.ip,
     user: req.user?.id,
     endpoint: req.path,
@@ -271,15 +269,15 @@ app.use("/api/admin", (req, res, next) => {
 ### 2. **Health Checks de Seguridad**
 
 ```javascript
-app.get("/api/security-health", requireAdmin, (req, res) => {
+app.get('/api/security-health', requireAdmin, (req, res) => {
   const checks = {
-    database: "connected",
-    jwt: process.env.JWT_SECRET ? "configured" : "missing",
-    cors: process.env.CORS_ORIGIN ? "configured" : "missing",
-    https: req.secure ? "enabled" : "disabled",
+    database: 'connected',
+    jwt: process.env.JWT_SECRET ? 'configured' : 'missing',
+    cors: process.env.CORS_ORIGIN ? 'configured' : 'missing',
+    https: req.secure ? 'enabled' : 'disabled',
   };
 
-  res.json({ status: "OK", checks });
+  res.json({ status: 'OK', checks });
 });
 ```
 
@@ -321,13 +319,11 @@ echo "✅ Auditoría completada"
 ### En caso de brecha de seguridad:
 
 1. **Inmediato** (0-1 hora):
-
    - Rotar todas las credenciales
    - Revisar logs de acceso
    - Desactivar cuentas comprometidas
 
 2. **Corto plazo** (1-24 horas):
-
    - Analizar scope del incidente
    - Aplicar patches de seguridad
    - Notificar a usuarios si es necesario

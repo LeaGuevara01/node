@@ -5,7 +5,7 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
     id: '',
     username: '',
     role: '',
-    password: ''
+    password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,16 +16,16 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
         id: item.id || '',
         username: item.username || '',
         role: item.role || 'User',
-        password: '' // No mostramos la contraseña actual
+        password: '', // No mostramos la contraseña actual
       });
     }
   }, [item]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -38,14 +38,14 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
       const dataToSend = {
         id: form.id,
         username: form.username,
-        role: form.role
+        role: form.role,
       };
-      
+
       // Solo incluir password si se proporcionó uno nuevo
       if (form.password && form.password.trim() !== '') {
         dataToSend.password = form.password;
       }
-      
+
       await onSave(dataToSend);
       onClose();
     } catch (error) {
@@ -110,9 +110,7 @@ function UserEditModal({ item, onClose, onSave, onDelete }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Rol
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
             <select
               name="role"
               value={form.role}

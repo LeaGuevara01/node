@@ -23,9 +23,9 @@ paths:
                 role:
                   type: string
       responses:
-        "201":
+        '201':
           description: Usuario creado
-        "400":
+        '400':
           description: Error de validación
   /auth/login:
     post:
@@ -42,9 +42,9 @@ paths:
                 password:
                   type: string
       responses:
-        "200":
+        '200':
           description: Token JWT
-        "401":
+        '401':
           description: Credenciales inválidas
   /maquinaria:
     get:
@@ -52,7 +52,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Lista de maquinarias
     post:
       summary: Crear maquinaria
@@ -72,9 +72,9 @@ paths:
                 modelo:
                   type: string
       responses:
-        "201":
+        '201':
           description: Maquinaria creada
-        "400":
+        '400':
           description: Error de validación
   /repuestos:
     get:
@@ -82,7 +82,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Lista de repuestos
     post:
       summary: Crear repuesto
@@ -100,9 +100,9 @@ paths:
                 stock:
                   type: integer
       responses:
-        "201":
+        '201':
           description: Repuesto creado
-        "400":
+        '400':
           description: Error de validación
   /compras:
     get:
@@ -110,14 +110,14 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: OK
     post:
       summary: Crear compra
       security:
         - bearerAuth: []
       responses:
-        "201":
+        '201':
           description: Creada
   /compras/stats:
     get:
@@ -125,7 +125,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: OK
   /compras/{id}:
     get:
@@ -133,21 +133,21 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: OK
     put:
       summary: Actualizar compra
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: OK
     delete:
       summary: Eliminar compra
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Eliminada
   /proveedores:
     get:
@@ -155,7 +155,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Lista de proveedores
     post:
       summary: Crear proveedor
@@ -171,9 +171,9 @@ paths:
                 nombre:
                   type: string
       responses:
-        "201":
+        '201':
           description: Proveedor creado
-        "400":
+        '400':
           description: Error de validación
   /reparaciones:
     get:
@@ -181,7 +181,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Lista de reparaciones
     post:
       summary: Crear reparación
@@ -211,9 +211,9 @@ paths:
                       cantidad:
                         type: integer
       responses:
-        "201":
+        '201':
           description: Reparación creada
-        "400":
+        '400':
           description: Error de validación
 components:
   securitySchemes:

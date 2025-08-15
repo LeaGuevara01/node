@@ -7,14 +7,14 @@ export const useFormState = (initialState) => {
   const [loading, setLoading] = useState(false);
 
   const updateField = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: null }));
+      setErrors((prev) => ({ ...prev, [field]: null }));
     }
   };
 
   const setError = (field, message) => {
-    setErrors(prev => ({ ...prev, [field]: message }));
+    setErrors((prev) => ({ ...prev, [field]: message }));
   };
 
   const clearErrors = () => setErrors({});
@@ -33,7 +33,7 @@ export const useFormState = (initialState) => {
     updateField,
     setError,
     clearErrors,
-    resetForm
+    resetForm,
   };
 };
 
@@ -47,9 +47,11 @@ export const useFilterState = (initialFilters) => {
 
     if (campo === 'search' && onFilterChange) {
       if (searchTimeout) clearTimeout(searchTimeout);
-      setSearchTimeout(setTimeout(() => {
-        onFilterChange(nuevosFiltros, 1);
-      }, 300));
+      setSearchTimeout(
+        setTimeout(() => {
+          onFilterChange(nuevosFiltros, 1);
+        }, 300)
+      );
     } else if (onFilterChange) {
       onFilterChange(nuevosFiltros, 1);
     }
@@ -66,7 +68,7 @@ export const useFilterState = (initialFilters) => {
     filtros,
     setFiltros,
     handleFiltroChange,
-    limpiarFiltros
+    limpiarFiltros,
   };
 };
 
@@ -74,7 +76,7 @@ export const usePagination = () => {
   const [paginacion, setPaginacion] = useState({
     current: 1,
     total: 1,
-    totalItems: 0
+    totalItems: 0,
   });
 
   const handlePaginacion = (nuevaPagina, onPageChange) => {
@@ -86,7 +88,7 @@ export const usePagination = () => {
   return {
     paginacion,
     setPaginacion,
-    handlePaginacion
+    handlePaginacion,
   };
 };
 
@@ -104,6 +106,6 @@ export const useBulkOperations = () => {
     setBulkError,
     bulkSuccess,
     setBulkSuccess,
-    clearBulkMessages
+    clearBulkMessages,
   };
 };

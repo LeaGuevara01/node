@@ -39,7 +39,7 @@ import {
   FieldWithIcon, // Campo con icono y datos
   SimpleField, // Campo simple
   ImageUpload, // Upload de imágenes
-} from "../components/shared/DetailsComponents";
+} from '../components/shared/DetailsComponents';
 ```
 
 ### Estructura Visual

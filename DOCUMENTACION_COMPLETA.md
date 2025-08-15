@@ -232,19 +232,16 @@ Evita exponer credenciales, hosts o URLs internas en documentación pública. Ut
 ### 🛡️ Mejoras de Seguridad Implementadas
 
 1. **Autenticación JWT**
-
    - Tokens con expiración
    - Middleware de verificación
    - Headers Authorization
 
 2. **Validación de Entrada**
-
    - Sanitización de parámetros
    - Validación de tipos
    - Protección contra inyección SQL (Prisma ORM)
 
 3. **Control de Acceso**
-
    - Roles diferenciados (Admin/Usuario)
    - Protección de rutas sensibles
    - Verificación de permisos por endpoint
@@ -256,13 +253,11 @@ Evita exponer credenciales, hosts o URLs internas en documentación pública. Ut
 ### 🔧 Recomendaciones de Seguridad
 
 1. **Inmediato**:
-
    - [ ] Cambiar password de base de datos
    - [ ] Rotar JWT_SECRET (>= 32 chars)
    - [ ] Sanitizar documentación y eliminar URLs sensibles
 
 2. **Corto plazo**:
-
    - [ ] Implementar rate limiting
    - [ ] Agregar CORS configurado
    - [ ] Logs de seguridad
@@ -313,7 +308,6 @@ git push origin main
 ```
 
 2. **Render Dashboard**
-
    - Ir a https://dashboard.render.com/
    - New > Blueprint
    - Conectar repositorio GitHub

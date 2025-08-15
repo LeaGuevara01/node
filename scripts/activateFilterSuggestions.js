@@ -2,10 +2,10 @@
 
 /**
  * Script de Activación: Implementar Filtros con Sugerencias
- * 
+ *
  * Este script muestra cómo implementar FilterDropdownV2 o FilterDropdown
  * con funcionalidad de sugerencias en tus páginas existentes.
- * 
+ *
  * Ejecutar: node activateFilterSuggestions.js
  */
 
@@ -86,12 +86,12 @@ const suggestionsConfig = {
   maquinarias: ['marca', 'modelo'],
   repuestos: ['proveedor', 'categoria'],
   proveedores: ['localidad', 'nombre'],
-  reparaciones: ['tecnico', 'observaciones']
+  reparaciones: ['tecnico', 'observaciones'],
 };
 
 Object.entries(suggestionsConfig).forEach(([section, fields]) => {
   console.log(`📂 ${section.charAt(0).toUpperCase() + section.slice(1)}:`);
-  fields.forEach(field => console.log(`   • ${field}`));
+  fields.forEach((field) => console.log(`   • ${field}`));
   console.log('');
 });
 
@@ -177,10 +177,10 @@ const features = [
   '📊 Contador de filtros activos',
   '🎨 UI/UX optimizada',
   '⌨️ Navegación por teclado',
-  '🖱️ Soporte para click y touch'
+  '🖱️ Soporte para click y touch',
 ];
 
-features.forEach(feature => console.log(feature));
+features.forEach((feature) => console.log(feature));
 
 console.log('\n🔧 PERSONALIZACIÓN AVANZADA\n');
 
@@ -210,10 +210,10 @@ const modifiedFiles = [
   '✓ FilterDropdown.jsx - Versión actualizada con sugerencias integradas',
   '✓ TextInputWithSuggestions.jsx - Componente reutilizable de input',
   '✓ useSuggestions.js - Hook para manejo de sugerencias',
-  '✓ MaquinariasPageWithFilters.jsx - Ejemplo de implementación'
+  '✓ MaquinariasPageWithFilters.jsx - Ejemplo de implementación',
 ];
 
-modifiedFiles.forEach(file => console.log(file));
+modifiedFiles.forEach((file) => console.log(file));
 
 console.log('\n🚀 ¡IMPLEMENTACIÓN COMPLETADA!\n');
 console.log('Los filtros con sugerencias están listos para usar.');

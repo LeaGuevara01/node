@@ -11,9 +11,9 @@ Crear un sistema modular que asegure la implementación consistente de estilos e
 ```javascript
 // Clases CSS organizadas por propósito
 export const PAGE_STYLES = {
-  pageContainer: "min-h-screen bg-gray-50",
-  mainContent: "pl-12 md:pl-60 transition-all duration-200",
-  contentWrapper: "px-2 sm:px-4 lg:px-6 py-4 max-w-7xl mx-auto",
+  pageContainer: 'min-h-screen bg-gray-50',
+  mainContent: 'pl-12 md:pl-60 transition-all duration-200',
+  contentWrapper: 'px-2 sm:px-4 lg:px-6 py-4 max-w-7xl mx-auto',
   // ... más estilos
 };
 
@@ -33,13 +33,7 @@ export function ContentSection({ title, children, className }) {
 
 ```javascript
 // Wrapper que aplica estilos automáticamente
-export function StyledPageWrapper({
-  title,
-  subtitle,
-  loading,
-  error,
-  children,
-}) {
+export function StyledPageWrapper({ title, subtitle, loading, error, children }) {
   /* ... */
 }
 
@@ -84,7 +78,7 @@ export class MigrationAssistant {
 ### **Método 1: Wrapper Directo (Más Simple)**
 
 ```jsx
-import { StyledPageWrapper, ContentSection } from "../styles";
+import { StyledPageWrapper, ContentSection } from '../styles';
 
 function MyPage() {
   return (
@@ -105,21 +99,17 @@ function MyPage() {
 ### **Método 2: HOC (Higher Order Component)**
 
 ```jsx
-import { withStyledPage } from "../styles";
+import { withStyledPage } from '../styles';
 
 function MyComponent({ pageState }) {
   const { loading, setLoading, setSuccess } = pageState;
 
-  return (
-    <ContentSection title="Mi Componente">
-      {/* Contenido del componente */}
-    </ContentSection>
-  );
+  return <ContentSection title="Mi Componente">{/* Contenido del componente */}</ContentSection>;
 }
 
 const StyledMyComponent = withStyledPage(MyComponent, {
-  title: "Mi Página",
-  subtitle: "Con HOC",
+  title: 'Mi Página',
+  subtitle: 'Con HOC',
   showBackButton: true,
   initialLoading: false,
 });
@@ -130,20 +120,18 @@ export default StyledMyComponent;
 ### **Método 3: Hook Personalizado**
 
 ```jsx
-import { useStyledPage, ContentSection } from "../styles";
+import { useStyledPage, ContentSection } from '../styles';
 
 function MyPage() {
   const { StyledPage, pageState } = useStyledPage({
-    title: "Mi Página",
-    subtitle: "Con hook personalizado",
+    title: 'Mi Página',
+    subtitle: 'Con hook personalizado',
     initialLoading: false,
   });
 
   return (
     <StyledPage>
-      <ContentSection title="Contenido">
-        {/* Tu contenido aquí */}
-      </ContentSection>
+      <ContentSection title="Contenido">{/* Tu contenido aquí */}</ContentSection>
     </StyledPage>
   );
 }
@@ -152,7 +140,7 @@ function MyPage() {
 ### **Método 4: Componentes Especializados**
 
 ```jsx
-import { StyledForm, StyledList, StyledDashboard } from "../styles";
+import { StyledForm, StyledList, StyledDashboard } from '../styles';
 
 // Para formularios
 function MyForm() {
@@ -202,13 +190,13 @@ function MyDashboard() {
 ### **Paso 1: Análisis Automático**
 
 ```javascript
-import { analyzeComponentForMigration } from "../styles/migrationTools";
+import { analyzeComponentForMigration } from '../styles/migrationTools';
 
 const fileContent = `/* contenido del archivo */`;
 const analysis = analyzeComponentForMigration(fileContent);
 
-console.log("Sugerencias:", analysis.suggestions);
-console.log("Complejidad:", analysis.migrationComplexity);
+console.log('Sugerencias:', analysis.suggestions);
+console.log('Complejidad:', analysis.migrationComplexity);
 ```
 
 ### **Paso 2: Migración Manual**
@@ -237,7 +225,7 @@ function OriginalPage() {
 **Después:**
 
 ```jsx
-import { StyledPageWrapper, ContentSection } from "../styles";
+import { StyledPageWrapper, ContentSection } from '../styles';
 
 function MigratedPage() {
   return (
@@ -253,11 +241,11 @@ function MigratedPage() {
 ### **Paso 3: Migración Automática**
 
 ```javascript
-import { generateMigratedCode } from "../styles/migrationTools";
+import { generateMigratedCode } from '../styles/migrationTools';
 
 const { migratedCode, importsAdded } = generateMigratedCode(originalCode, {
-  title: "Mi Página Migrada",
-  subtitle: "Migrada automáticamente",
+  title: 'Mi Página Migrada',
+  subtitle: 'Migrada automáticamente',
   autoWrap: true,
 });
 ```
@@ -297,7 +285,7 @@ const { migratedCode, importsAdded } = generateMigratedCode(originalCode, {
 // Crear estilos personalizados
 const CUSTOM_STYLES = {
   ...PAGE_STYLES,
-  customSection: "bg-blue-50 border-l-4 border-blue-500 p-4",
+  customSection: 'bg-blue-50 border-l-4 border-blue-500 p-4',
 };
 
 // Usar en componentes
@@ -307,13 +295,13 @@ const CUSTOM_STYLES = {
 ### **Crear Componentes Personalizados**
 
 ```jsx
-import { ContentSection, PAGE_STYLES } from "../styles";
+import { ContentSection, PAGE_STYLES } from '../styles';
 
-function CustomCard({ title, children, variant = "default" }) {
+function CustomCard({ title, children, variant = 'default' }) {
   const variants = {
-    default: "border-gray-200",
-    primary: "border-blue-200 bg-blue-50",
-    success: "border-green-200 bg-green-50",
+    default: 'border-gray-200',
+    primary: 'border-blue-200 bg-blue-50',
+    success: 'border-green-200 bg-green-50',
   };
 
   return (
@@ -355,10 +343,10 @@ function CustomCard({ title, children, variant = "default" }) {
 ### **Testing de Componentes**
 
 ```jsx
-import { render, screen } from "@testing-library/react";
-import { StyledPageWrapper, ContentSection } from "../styles";
+import { render, screen } from '@testing-library/react';
+import { StyledPageWrapper, ContentSection } from '../styles';
 
-test("StyledPageWrapper renderiza correctamente", () => {
+test('StyledPageWrapper renderiza correctamente', () => {
   render(
     <StyledPageWrapper title="Test Page">
       <ContentSection title="Test Section">
@@ -367,16 +355,16 @@ test("StyledPageWrapper renderiza correctamente", () => {
     </StyledPageWrapper>
   );
 
-  expect(screen.getByText("Test Page")).toBeInTheDocument();
-  expect(screen.getByText("Test Section")).toBeInTheDocument();
-  expect(screen.getByText("Test content")).toBeInTheDocument();
+  expect(screen.getByText('Test Page')).toBeInTheDocument();
+  expect(screen.getByText('Test Section')).toBeInTheDocument();
+  expect(screen.getByText('Test content')).toBeInTheDocument();
 });
 ```
 
 ### **Testing de Migración**
 
 ```javascript
-import { validateMigration } from "../styles/migrationTools";
+import { validateMigration } from '../styles/migrationTools';
 
 const originalCode = `/* código original */`;
 const migratedCode = `/* código migrado */`;

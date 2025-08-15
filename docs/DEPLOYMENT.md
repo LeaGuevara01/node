@@ -38,8 +38,9 @@ git push origin main
 2. Conectar repositorio
 3. Configurar:
    - **Root Directory**: `server`
-  - **Build Command**: `npm install && npx prisma generate`
-   - **Start Command**: `npm start`
+
+- **Build Command**: `npm install && npx prisma generate`
+- **Start Command**: `npm start`
 
 **Frontend:**
 
@@ -206,10 +207,10 @@ Respuesta esperada:
 
 ```javascript
 // En la consola del navegador
-fetch("https://sistemagestionagricola.onrender.com/api/health")
+fetch('https://sistemagestionagricola.onrender.com/api/health')
   .then((res) => res.json())
-  .then((data) => console.log("✅ Backend conectado:", data))
-  .catch((err) => console.error("❌ Error de conexión:", err));
+  .then((data) => console.log('✅ Backend conectado:', data))
+  .catch((err) => console.error('❌ Error de conexión:', err));
 ```
 
 ## 🔒 Configuración de Seguridad
@@ -278,7 +279,7 @@ VITE_API_URL=https://backend.onrender.com/api
 ```javascript
 // En server/src/index.js
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN.split(","),
+  origin: process.env.CORS_ORIGIN.split(','),
   credentials: true,
   optionsSuccessStatus: 200,
 };

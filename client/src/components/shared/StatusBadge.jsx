@@ -8,7 +8,7 @@ import { VISUAL_STATUS } from '../../styles/tokens/visualStatus';
 
 /**
  * Componente de badge de estado inteligente
- * 
+ *
  * @param {Object} props
  * @param {string} props.type - Tipo de entidad (maquinaria, stock, reparacion, etc.)
  * @param {string} props.status - Estado específico o valor para calcular estado
@@ -32,7 +32,7 @@ export const StatusBadge = ({
   onClick,
   data = {},
   className = '',
-  tooltip = true
+  tooltip = true,
 }) => {
   // Obtener configuración de estado
   const getStatusConfig = () => {
@@ -55,7 +55,9 @@ export const StatusBadge = ({
 
   if (!statusConfig) {
     return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 ${className}`}>
+      <span
+        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 ${className}`}
+      >
         {label || status || 'Desconocido'}
       </span>
     );
@@ -65,7 +67,7 @@ export const StatusBadge = ({
   const sizeClasses = {
     sm: 'px-2 py-1 text-xs',
     md: 'px-2.5 py-1.5 text-sm',
-    lg: 'px-3 py-2 text-base'
+    lg: 'px-3 py-2 text-base',
   };
 
   // Clases base
@@ -86,26 +88,24 @@ export const StatusBadge = ({
     <>
       {/* Punto de estado */}
       {showDot && (
-        <span 
+        <span
           className={`w-2 h-2 rounded-full mr-2 ${statusConfig.dot} ${statusConfig.animated ? 'animate-ping' : ''}`}
           aria-hidden="true"
         />
       )}
-      
+
       {/* Icono */}
       {showIcon && statusConfig.icon && (
-        <span 
+        <span
           className={`mr-1 ${statusConfig.iconColor || ''} ${statusConfig.animated ? 'animate-spin' : ''}`}
           aria-hidden="true"
         >
           {statusConfig.icon}
         </span>
       )}
-      
+
       {/* Texto */}
-      <span>
-        {label || statusConfig.label}
-      </span>
+      <span>{label || statusConfig.label}</span>
     </>
   );
 
@@ -144,7 +144,7 @@ export const StatusIndicator = ({
   size = 'md',
   data = {},
   className = '',
-  tooltip = true
+  tooltip = true,
 }) => {
   const statusConfig = (() => {
     const statusMap = VISUAL_STATUS[type];
@@ -162,7 +162,7 @@ export const StatusIndicator = ({
   const sizeClasses = {
     sm: 'w-2 h-2',
     md: 'w-3 h-3',
-    lg: 'w-4 h-4'
+    lg: 'w-4 h-4',
   };
 
   return (
@@ -189,7 +189,7 @@ export const StatusFilter = ({
   onStatusChange,
   showCounts = false,
   counts = {},
-  className = ''
+  className = '',
 }) => {
   const statusMap = VISUAL_STATUS[type];
   if (!statusMap) return null;
@@ -229,18 +229,11 @@ export const StatusFilter = ({
             onChange={() => onStatusChange(statusConfig.key)}
             className="text-blue-600"
           />
-          <StatusIndicator
-            type={type}
-            status={statusConfig.key}
-            size="sm"
-            tooltip={false}
-          />
+          <StatusIndicator type={type} status={statusConfig.key} size="sm" tooltip={false} />
           <span className="text-sm text-gray-700">
             {statusConfig.label}
             {showCounts && counts[statusConfig.key] && (
-              <span className="text-gray-500 ml-1">
-                ({counts[statusConfig.key]})
-              </span>
+              <span className="text-gray-500 ml-1">({counts[statusConfig.key]})</span>
             )}
           </span>
         </label>
@@ -252,12 +245,7 @@ export const StatusFilter = ({
 /**
  * Componente de resumen de estados
  */
-export const StatusSummary = ({
-  type,
-  data = [],
-  statusField = 'estado',
-  className = ''
-}) => {
+export const StatusSummary = ({ type, data = [], statusField = 'estado', className = '' }) => {
   const statusMap = VISUAL_STATUS[type];
   if (!statusMap) return null;
 
@@ -281,19 +269,11 @@ export const StatusSummary = ({
             `}
           >
             <div className="flex items-center justify-center mb-2">
-              <span className={`text-2xl ${statusConfig.iconColor}`}>
-                {statusConfig.icon}
-              </span>
+              <span className={`text-2xl ${statusConfig.iconColor}`}>{statusConfig.icon}</span>
             </div>
-            <div className={`text-2xl font-bold ${statusConfig.text}`}>
-              {count}
-            </div>
-            <div className={`text-sm ${statusConfig.text} opacity-75`}>
-              {statusConfig.label}
-            </div>
-            <div className={`text-xs ${statusConfig.text} opacity-60 mt-1`}>
-              {percentage}%
-            </div>
+            <div className={`text-2xl font-bold ${statusConfig.text}`}>{count}</div>
+            <div className={`text-sm ${statusConfig.text} opacity-75`}>{statusConfig.label}</div>
+            <div className={`text-xs ${statusConfig.text} opacity-60 mt-1`}>{percentage}%</div>
           </div>
         );
       })}
@@ -334,7 +314,7 @@ export const useStatus = (type) => {
     getAllStatuses,
     filterByStatus,
     countByStatus,
-    statusMap
+    statusMap,
   };
 };
 

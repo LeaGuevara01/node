@@ -90,10 +90,10 @@ size={16} className="sm:w-5 sm:h-5"
 
 ```jsx
 // Touch-friendly interactions
-className = "... touch-manipulation active:bg-gray-200";
+className = '... touch-manipulation active:bg-gray-200';
 
 // Minimum touch targets (44px+)
-className = "p-2 sm:p-2.5 min-h-[44px]";
+className = 'p-2 sm:p-2.5 min-h-[44px]';
 ```
 
 ## 🔄 Estados Responsive
@@ -108,8 +108,8 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 useEffect(() => {
   const checkMobile = () => setIsMobile(window.innerWidth < 768);
   checkMobile();
-  window.addEventListener("resize", checkMobile);
-  return () => window.removeEventListener("resize", checkMobile);
+  window.addEventListener('resize', checkMobile);
+  return () => window.removeEventListener('resize', checkMobile);
 }, []);
 ```
 
@@ -227,7 +227,7 @@ npm run dev
 export default {
   // Configuración optimizada para mobile
   server: {
-    host: "0.0.0.0", // Para testing en dispositivos
+    host: '0.0.0.0', // Para testing en dispositivos
     port: 3000,
   },
 };
@@ -239,11 +239,11 @@ export default {
 module.exports = {
   theme: {
     screens: {
-      sm: "640px",
-      md: "768px",
-      lg: "1024px",
-      xl: "1280px",
-      "2xl": "1536px",
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
     },
   },
 };
@@ -276,9 +276,9 @@ module.exports = {
 ```jsx
 // Debug mobile state
 {
-  process.env.NODE_ENV === "development" && (
+  process.env.NODE_ENV === 'development' && (
     <div className="fixed top-0 right-0 bg-red-500 text-white p-2 z-50">
-      {isMobile ? "MOBILE" : "DESKTOP"}
+      {isMobile ? 'MOBILE' : 'DESKTOP'}
     </div>
   );
 }

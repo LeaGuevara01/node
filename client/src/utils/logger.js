@@ -1,13 +1,13 @@
 /**
  * Sistema de Logging Centralizado y Modular
- * 
+ *
  * Este módulo proporciona un sistema de logging unificado que:
  * - Maneja diferentes niveles de logging (debug, info, warn, error)
  * - Incluye contexto y timestamps automáticos
  * - Permite filtrar logs por categorías
  * - Facilita el debugging en desarrollo y monitoreo en producción
  * - Soporta formateo consistente y emojis para mejor legibilidad
- * 
+ *
  * Uso:
  * import { Logger } from './utils/logger';
  * const logger = new Logger('ComponentName');
@@ -20,7 +20,7 @@ const LOG_LEVELS = {
   INFO: 1,
   WARN: 2,
   ERROR: 3,
-  NONE: 4
+  NONE: 4,
 };
 
 // Configuración por defecto del logger
@@ -29,7 +29,7 @@ const DEFAULT_CONFIG = {
   enableColors: true,
   enableTimestamps: true,
   enableContext: true,
-  maxLogLength: 1000
+  maxLogLength: 1000,
 };
 
 // Emojis para cada tipo de log
@@ -43,17 +43,17 @@ const LOG_EMOJIS = {
   FILTER: '🔗',
   DATA: '📊',
   NAV: '🧭',
-  USER: '👤'
+  USER: '👤',
 };
 
 // Colores para consola (solo en desarrollo)
 const LOG_COLORS = {
   DEBUG: '\x1b[36m', // Cyan
-  INFO: '\x1b[34m',  // Blue
-  WARN: '\x1b[33m',  // Yellow
+  INFO: '\x1b[34m', // Blue
+  WARN: '\x1b[33m', // Yellow
   ERROR: '\x1b[31m', // Red
   SUCCESS: '\x1b[32m', // Green
-  RESET: '\x1b[0m'
+  RESET: '\x1b[0m',
 };
 
 /**
@@ -71,13 +71,13 @@ class Logger {
    */
   formatMessage(level, message, data = null, category = null) {
     const parts = [];
-    
+
     // Timestamp
     if (this.config.enableTimestamps) {
       const now = new Date();
-      const timestamp = now.toLocaleTimeString('es-ES', { 
+      const timestamp = now.toLocaleTimeString('es-ES', {
         hour12: false,
-        fractionalSecondDigits: 3 
+        fractionalSecondDigits: 3,
       });
       parts.push(`[${timestamp}]`);
     }
@@ -95,14 +95,15 @@ class Logger {
 
     // Emoji del nivel
     const levelEmoji = LOG_EMOJIS[level] || '';
-    
+
     // Mensaje principal
     const baseMessage = `${parts.join(' ')} ${levelEmoji} ${message}`;
-    
+
     // Truncar si es muy largo
-    const truncatedMessage = baseMessage.length > this.config.maxLogLength
-      ? baseMessage.substring(0, this.config.maxLogLength) + '...'
-      : baseMessage;
+    const truncatedMessage =
+      baseMessage.length > this.config.maxLogLength
+        ? baseMessage.substring(0, this.config.maxLogLength) + '...'
+        : baseMessage;
 
     return { message: truncatedMessage, data };
   }
@@ -114,7 +115,7 @@ class Logger {
     if (!this.config.enableColors || process.env.NODE_ENV !== 'development') {
       return message;
     }
-    
+
     const color = LOG_COLORS[level] || LOG_COLORS.RESET;
     return `${color}${message}${LOG_COLORS.RESET}`;
   }
@@ -131,9 +132,8 @@ class Logger {
     const coloredMessage = this.colorize(formatted.message, level);
 
     // Usar el método de consola apropiado
-    const consoleMethod = level === 'ERROR' ? 'error' : 
-                         level === 'WARN' ? 'warn' : 
-                         level === 'DEBUG' ? 'debug' : 'log';
+    const consoleMethod =
+      level === 'ERROR' ? 'error' : level === 'WARN' ? 'warn' : level === 'DEBUG' ? 'debug' : 'log';
 
     if (formatted.data) {
       console[consoleMethod](coloredMessage, formatted.data);
@@ -249,14 +249,14 @@ export function setupGlobalErrorLogging() {
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
-      error: event.error
+      error: event.error,
     });
   });
 
   // Capturar promesas rechazadas
   window.addEventListener('unhandledrejection', (event) => {
     logger.error('Promise rechazada sin manejar', {
-      reason: event.reason
+      reason: event.reason,
     });
   });
 }
@@ -269,22 +269,22 @@ export const LoggerConfig = {
     level: LOG_LEVELS.DEBUG,
     enableColors: true,
     enableTimestamps: true,
-    enableContext: true
+    enableContext: true,
   },
-  
+
   production: {
     level: LOG_LEVELS.WARN,
     enableColors: false,
     enableTimestamps: true,
-    enableContext: true
+    enableContext: true,
   },
-  
+
   testing: {
     level: LOG_LEVELS.ERROR,
     enableColors: false,
     enableTimestamps: false,
-    enableContext: true
-  }
+    enableContext: true,
+  },
 };
 
 export { Logger, LOG_LEVELS, LOG_EMOJIS };

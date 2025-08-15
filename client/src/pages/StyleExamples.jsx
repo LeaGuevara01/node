@@ -1,6 +1,6 @@
 /**
  * Ejemplos de Implementación Modular de Estilos
- * 
+ *
  * Este archivo muestra diferentes formas de aplicar el sistema
  * de estilos modulares a páginas existentes.
  */
@@ -16,7 +16,7 @@ import {
   StyledDashboard,
   ContentSection,
   Alert,
-  PageLayout
+  PageLayout,
 } from '../styles';
 
 // ===== EJEMPLO 1: Página simple con wrapper =====
@@ -48,7 +48,7 @@ function MyPageComponent({ pageState }) {
     setLoading(true);
     try {
       // Simular carga de datos
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccess({ message: 'Datos cargados exitosamente' });
     } catch (error) {
       setErrorState('Error al cargar datos');
@@ -57,7 +57,7 @@ function MyPageComponent({ pageState }) {
 
   return (
     <ContentSection title="Mi Componente">
-      <button 
+      <button
         onClick={handleLoad}
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       >
@@ -68,19 +68,19 @@ function MyPageComponent({ pageState }) {
 }
 
 const StyledMyPage = withStyledPage(MyPageComponent, {
-  title: "Mi Página con HOC",
-  subtitle: "Usando Higher Order Component",
+  title: 'Mi Página con HOC',
+  subtitle: 'Usando Higher Order Component',
   showBackButton: true,
-  initialLoading: false
+  initialLoading: false,
 });
 
 // ===== EJEMPLO 3: Usar hook personalizado =====
 
 function HookBasedPage() {
   const { StyledPage, pageState } = useStyledPage({
-    title: "Página con Hook",
-    subtitle: "Usando hook personalizado",
-    initialLoading: false
+    title: 'Página con Hook',
+    subtitle: 'Usando hook personalizado',
+    initialLoading: false,
   });
 
   return (
@@ -107,10 +107,10 @@ function AutoStyledFormExample() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
+
     try {
       // Simular envío
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccess('Formulario enviado correctamente');
       setFormData({ name: '', email: '' });
     } catch (err) {
@@ -130,9 +130,7 @@ function AutoStyledFormExample() {
         success={success}
       >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
           <input
             type="text"
             value={formData.name}
@@ -143,9 +141,7 @@ function AutoStyledFormExample() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
             type="email"
             value={formData.email}
@@ -226,7 +222,7 @@ function AutoStyledDashboardExample() {
         maquinarias: 25,
         repuestos: 150,
         proveedores: 12,
-        reparaciones: 8
+        reparaciones: 8,
       });
       setLoading(false);
     }, 1000);
@@ -284,10 +280,7 @@ function OriginalPage() {
 // Página migrada (con estilos modulares)
 function MigratedPage() {
   return (
-    <StyledPageWrapper
-      title="Mi Página Migrada"
-      subtitle="Página migrada al sistema modular"
-    >
+    <StyledPageWrapper title="Mi Página Migrada" subtitle="Página migrada al sistema modular">
       <ContentSection>
         <p>Contenido de la página migrada con estilos automáticos</p>
       </ContentSection>
@@ -305,7 +298,7 @@ export {
   AutoStyledListExample,
   AutoStyledDashboardExample,
   OriginalPage,
-  MigratedPage
+  MigratedPage,
 };
 
 export default {
@@ -316,5 +309,5 @@ export default {
   AutoStyledListExample,
   AutoStyledDashboardExample,
   OriginalPage,
-  MigratedPage
+  MigratedPage,
 };

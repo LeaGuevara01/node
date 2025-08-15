@@ -15,13 +15,13 @@ export const sortProveedoresByName = (proveedores) => {
  */
 export const buildProveedorQueryParams = (filtros, pagina = 1) => {
   const params = new URLSearchParams();
-  
+
   if (filtros.search) params.append('search', filtros.search);
   if (filtros.ciudad) params.append('ciudad', filtros.ciudad);
   if (filtros.productos) params.append('productos', filtros.productos);
   params.append('page', pagina.toString());
   params.append('limit', '20');
-  
+
   return params;
 };
 
@@ -31,7 +31,7 @@ export const buildProveedorQueryParams = (filtros, pagina = 1) => {
 export const clearProveedorFilters = () => ({
   search: '',
   ciudad: '',
-  productos: ''
+  productos: '',
 });
 
 /**
@@ -71,7 +71,7 @@ export const formatTelefono = (telefono) => {
  */
 export const extractCiudadFromDireccion = (direccion) => {
   if (!direccion) return '';
-  const parts = direccion.split(',').map(part => part.trim());
+  const parts = direccion.split(',').map((part) => part.trim());
   return parts.length > 1 ? parts[parts.length - 1] : '';
 };
 
@@ -88,7 +88,10 @@ export const formatProductos = (productos) => {
  */
 export const parseProductos = (productosString) => {
   if (!productosString) return [];
-  return productosString.split(',').map(p => p.trim()).filter(p => p.length > 0);
+  return productosString
+    .split(',')
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
 };
 
 /**
@@ -96,7 +99,7 @@ export const parseProductos = (productosString) => {
  */
 export const getCiudadColorClass = (ciudad) => {
   if (!ciudad) return 'bg-gray-100 text-gray-700';
-  
+
   const colors = [
     'bg-brand-100 text-brand-800',
     'bg-brown-100 text-brown-800',
@@ -105,14 +108,14 @@ export const getCiudadColorClass = (ciudad) => {
     'bg-pink-100 text-pink-700',
     'bg-indigo-100 text-indigo-700',
     'bg-red-100 text-red-700',
-    'bg-teal-100 text-teal-700'
+    'bg-teal-100 text-teal-700',
   ];
-  
+
   let hash = 0;
   for (let i = 0; i < ciudad.length; i++) {
     hash = ciudad.charCodeAt(i) + ((hash << 5) - hash);
   }
-  
+
   return colors[Math.abs(hash) % colors.length];
 };
 

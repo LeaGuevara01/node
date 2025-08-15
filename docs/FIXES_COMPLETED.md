@@ -113,10 +113,7 @@ const processedReparaciones = Array.isArray(reparacionesData)
 {
   /* Desktop: "Desde" */
 }
-<input
-  placeholder="Desde"
-  className={`${RANGE_STYLES.input} hidden sm:block`}
-/>;
+<input placeholder="Desde" className={`${RANGE_STYLES.input} hidden sm:block`} />;
 ```
 
 ### Extracción de Filtros
@@ -124,20 +121,16 @@ const processedReparaciones = Array.isArray(reparacionesData)
 ```javascript
 // Ciudades de direcciones
 const ciudades = [
-  ...new Set(
-    proveedoresData
-      .map((p) => extractCiudadFromDireccion(p.direccion))
-      .filter(Boolean)
-  ),
+  ...new Set(proveedoresData.map((p) => extractCiudadFromDireccion(p.direccion)).filter(Boolean)),
 ];
 
 // Productos de strings o arrays
 const productos = [
   ...new Set(
     proveedoresData.flatMap((p) => {
-      if (typeof p.productos === "string") {
+      if (typeof p.productos === 'string') {
         return p.productos
-          .split(",")
+          .split(',')
           .map((prod) => prod.trim())
           .filter(Boolean);
       } else if (Array.isArray(p.productos)) {
@@ -153,7 +146,7 @@ const productos = [
 
 ```javascript
 // Ruta
-router.get("/:id", auth, getProveedorById);
+router.get('/:id', auth, getProveedorById);
 
 // Controlador
 exports.getProveedorById = async (req, res) => {
@@ -163,7 +156,7 @@ exports.getProveedorById = async (req, res) => {
     });
 
     if (!proveedor) {
-      return res.status(404).json({ error: "Proveedor no encontrado" });
+      return res.status(404).json({ error: 'Proveedor no encontrado' });
     }
 
     res.json(proveedor);

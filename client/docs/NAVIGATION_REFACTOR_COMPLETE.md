@@ -45,8 +45,8 @@ Para cada página existente, seguir este patrón:
 
 ```jsx
 // Antes
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function MaquinariasPage({ token }) {
   const navigate = useNavigate();
@@ -60,18 +60,15 @@ function MaquinariasPage({ token }) {
 }
 
 // Después
-import React from "react";
-import AppLayout from "../components/navigation/AppLayout";
-import { CreateButton } from "../components/navigation/NavigationButtons";
-import { useNavigation } from "../hooks/useNavigation";
+import React from 'react';
+import AppLayout from '../components/navigation/AppLayout';
+import { CreateButton } from '../components/navigation/NavigationButtons';
+import { useNavigation } from '../hooks/useNavigation';
 
 function MaquinariasPage({ token, role, onLogout }) {
   const { navigateToListPage } = useNavigation();
 
-  const breadcrumbs = [
-    { label: "Inicio", href: "/" },
-    { label: "Maquinarias" },
-  ];
+  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Maquinarias' }];
 
   const pageActions = <CreateButton entity="maquinarias" />;
 
@@ -107,12 +104,12 @@ Reemplazar las páginas originales con las refactorizadas:
 
 ```jsx
 // En App.jsx, reemplazar:
-import Dashboard from "./pages/Dashboard";
-import MaquinariasPage from "./pages/MaquinariasPage";
+import Dashboard from './pages/Dashboard';
+import MaquinariasPage from './pages/MaquinariasPage';
 
 // Por:
-import Dashboard from "./pages/DashboardRefactored";
-import MaquinariasPage from "./pages/MaquinariasPageRefactored";
+import Dashboard from './pages/DashboardRefactored';
+import MaquinariasPage from './pages/MaquinariasPageRefactored';
 ```
 
 ### Paso 5: Refactorizar Páginas Restantes
@@ -225,19 +222,16 @@ VITE_API_URL=http://localhost:4000
 ### Funcionalidades a Probar
 
 1. **Navegación del Sidebar**
-
    - [ ] Clic en secciones navega correctamente
    - [ ] Estado activo se muestra correctamente
    - [ ] Responsive en mobile funciona
 
 2. **Breadcrumbs**
-
    - [ ] Se generan automáticamente
    - [ ] Enlaces funcionan correctamente
    - [ ] Se actualizan con la navegación
 
 3. **Botones de Navegación**
-
    - [ ] CreateButton navega a formularios
    - [ ] EditButton navega a edición
    - [ ] BackButton regresa correctamente
@@ -253,15 +247,12 @@ VITE_API_URL=http://localhost:4000
 ### Problemas Comunes
 
 1. **Error: "useNavigationContext must be used within a NavigationProvider"**
-
    - Solución: Verificar que App.jsx tenga NavigationProvider
 
 2. **Breadcrumbs no se muestran**
-
    - Solución: Verificar que se pasan correctamente a AppLayout
 
 3. **Botones no navegan**
-
    - Solución: Verificar que useNavigation esté importado correctamente
 
 4. **Estilos rotos**
@@ -271,8 +262,8 @@ VITE_API_URL=http://localhost:4000
 
 ```jsx
 // Agregar en useNavigation para debugging
-console.log("Navigation context:", context);
-console.log("Current page info:", getCurrentPageInfo());
+console.log('Navigation context:', context);
+console.log('Current page info:', getCurrentPageInfo());
 ```
 
 ## 📚 Documentación Adicional

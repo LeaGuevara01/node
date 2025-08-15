@@ -5,16 +5,16 @@
 ### ❌ ANTES (con StyledPageWrapper)
 
 ```jsx
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Tractor } from "lucide-react";
-import Papa from "papaparse";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Tractor } from 'lucide-react';
+import Papa from 'papaparse';
 import {
   createMaquinaria,
   getMaquinarias,
   updateMaquinaria,
   deleteMaquinaria,
-} from "../services/api";
+} from '../services/api';
 
 // Sistema deprecado
 import {
@@ -24,7 +24,7 @@ import {
   ContentSection,
   Alert,
   LoadingState,
-} from "../styles";
+} from '../styles';
 
 function MaquinariaFormModular({ token, role, onLogout }) {
   // ... lógica del componente ...
@@ -63,19 +63,19 @@ function MaquinariaFormModular({ token, role, onLogout }) {
 ### ✅ DESPUÉS (con Sistema Modular)
 
 ```jsx
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Tractor } from "lucide-react";
-import Papa from "papaparse";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Tractor } from 'lucide-react';
+import Papa from 'papaparse';
 import {
   createMaquinaria,
   getMaquinarias,
   updateMaquinaria,
   deleteMaquinaria,
-} from "../services/api";
+} from '../services/api';
 
 // Nuevo sistema modular
-import AppLayout from "../components/navigation/AppLayout";
+import AppLayout from '../components/navigation/AppLayout';
 import {
   PageContainer,
   FormLayout,
@@ -84,7 +84,7 @@ import {
   Card,
   Alert,
   LoadingState,
-} from "../styles";
+} from '../styles';
 
 function MaquinariaFormModular({ token, role, onLogout }) {
   // ... lógica del componente ...
@@ -138,17 +138,11 @@ function MaquinariaFormModular({ token, role, onLogout }) {
 
 ```jsx
 // ❌ Eliminar
-import { StyledPageWrapper, StyledForm, StyledList } from "../styles";
+import { StyledPageWrapper, StyledForm, StyledList } from '../styles';
 
 // ✅ Agregar
-import AppLayout from "../components/navigation/AppLayout";
-import {
-  PageContainer,
-  FormLayout,
-  UniversalList,
-  ListLayout,
-  Card,
-} from "../styles";
+import AppLayout from '../components/navigation/AppLayout';
+import { PageContainer, FormLayout, UniversalList, ListLayout, Card } from '../styles';
 ```
 
 ### 2. Cambiar el Wrapper Principal
