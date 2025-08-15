@@ -26,30 +26,49 @@ try {
 
 // CORS configuration using centralized config
 // En desarrollo, incluir siempre orígenes localhost aunque CORS_ORIGIN esté definido
+// En producción, añadir automáticamente el dominio del frontend de Render si no está presente
 const getCorsOrigins = () => {
   const fromEnv = (() => {
     const corsOrigin = config.CORS_ORIGIN;
     if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
-      return corsOrigin.split(',').map(o => o.trim());
+      return corsOrigin.split(',').map(o => o.trim()).filter(Boolean);
     }
     if (typeof corsOrigin === 'string') {
-      return [corsOrigin];
+      return corsOrigin ? [corsOrigin] : [];
     }
     if (Array.isArray(corsOrigin)) {
-      return corsOrigin;
+      return corsOrigin.filter(Boolean);
     }
     return [];
   })();
 
-  const devDefaults = ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'];
+  const devDefaults = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000'
+  ];
+
   if (config.isDevelopment()) {
-    // Unir y deduplicar
-    return Array.from(new Set([...
-      fromEnv,
-      ...devDefaults
-    ]));
+    return Array.from(new Set([...fromEnv, ...devDefaults]));
   }
-  return fromEnv.length ? fromEnv : devDefaults;
+
+  // Producción: añadir automáticamente la URL de Render si existe
+  const prodOrigins = [...fromEnv];
+  try {
+    const renderFrontend = config.render?.getFrontendUrl?.();
+    if (renderFrontend) {
+      prodOrigins.push(renderFrontend);
+    }
+  } catch (_) { /* noop */ }
+
+  // Si no hay nada definido, caer en devDefaults (útil para pruebas) pero loggear warning
+  if (prodOrigins.length === 0) {
+    console.warn('⚠️  CORS_ORIGIN no definido en producción. Añadiendo dominios localhost por fallback. Define CORS_ORIGIN para restringir correctamente.');
+    return devDefaults;
+  }
+
+  return Array.from(new Set(prodOrigins.filter(Boolean)));
 };
 
 const corsOptions = {
@@ -130,7 +149,11 @@ app.listen(PORT, () => {
   console.log(`📝 Environment: ${config.NODE_ENV}`);
   
   const corsOrigins = getCorsOrigins();
-  console.log(`🌐 CORS habilitado para: ${Array.isArray(corsOrigins) ? corsOrigins.join(', ') : corsOrigins}`);
+  console.log('🌐 CORS habilitado para:');
+  corsOrigins.forEach(o => console.log('   •', o));
+  if (config.isProduction() && !process.env.CORS_ORIGIN) {
+    console.log('💡 Sugerencia: define CORS_ORIGIN en Render para restringir explícitamente los orígenes permitidos.');
+  }
   
   if (fs.existsSync(__dirname + '/docs/openapi.yaml')) {
     console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
