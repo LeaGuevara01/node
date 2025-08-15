@@ -25,7 +25,7 @@ services:
         value: 1
     autoDeploy: true
 
-  - type: static
+  - type: web
     name: sistemagestionagricola
     env: static
     rootDir: ./client
@@ -33,7 +33,7 @@ services:
     staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
-        value: https://sistemagestionagricola-api.onrender.com/api
+        value: https://sistemagestionagricola.onrender.com/api
     headers:
       - path: /*
         name: Cache-Control
