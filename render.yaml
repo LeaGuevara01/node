@@ -44,12 +44,5 @@ services:
       - path: /site.webmanifest
         name: Content-Type
         value: application/manifest+json; charset=utf-8
-    redirects:
-      - source: /favicon.ico
-        destination: /favicon-elorza.ico
-        type: 200
-      # SPA catch-all: enviar cualquier ruta desconocida a index.html
-      - source: /*
-        destination: /index.html
-        type: 200
+  # Se eliminaron los redirects, ahora se gestionan en el archivo _redirects dentro de /client/public
     autoDeploy: true
