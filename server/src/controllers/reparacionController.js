@@ -265,3 +265,35 @@ exports.getReparacionFilters = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+exports.getReparacionFiltersSimple = async (req, res) => {
+  try {
+    // Obtener opciones de maquinaria y repuestos para filtros simples
+    const [maquinarias, repuestos, fechas] = await Promise.all([
+      prisma.maquinaria.findMany({
+        select: { id: true, nombre: true, modelo: true },
+        orderBy: { nombre: 'asc' },
+      }),
+      prisma.repuesto.findMany({
+        select: { id: true, nombre: true, codigo: true, categoria: true },
+        orderBy: { nombre: 'asc' },
+      }),
+      prisma.reparacion.aggregate({
+        _min: { fecha: true },
+        _max: { fecha: true },
+      }),
+    ]);
+
+    res.json({
+      maquinarias,
+      repuestos,
+      fechaRange: {
+        min: fechas._min.fecha,
+        max: fechas._max.fecha,
+      },
+      // Puedes agregar más opciones estándar si el modelo lo permite
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

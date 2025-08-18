@@ -9,7 +9,11 @@ import { BUTTON_STYLES, ICON_STYLES } from '../../styles/repuestoStyles';
  * @param {boolean} props.loading - Estado de carga
  */
 const Pagination = ({ paginacion, onPageChange, loading = false }) => {
-  const { current, total, totalItems, limit } = paginacion;
+  // Usar las propiedades correctas del objeto paginacion
+  const current = paginacion?.paginaActual || paginacion?.current || 1;
+  const total = paginacion?.totalPaginas || paginacion?.total || 1;
+  const totalItems = paginacion?.totalElementos ?? paginacion?.totalItems ?? 0;
+  const limit = paginacion?.limit || 20;
 
   // No mostrar paginación si solo hay una página
   if (total <= 1) {

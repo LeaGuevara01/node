@@ -1,12 +1,13 @@
-const { PrismaClient } = require('@prisma/client');
+
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
-const prisma = new PrismaClient();
+const API_URL = process.env.API_URL || 'http://localhost:4000/api/repuestos/bulk';
 
 async function importRepuestosFromCSV() {
   try {
-    console.log('🚀 Iniciando importación de repuestos...');
+    console.log('🚀 Iniciando importación de repuestos vía API bulk...');
 
     // Leer el archivo CSV
     const csvPath = path.join(__dirname, '../repuestos_normalizado.csv');
@@ -19,18 +20,13 @@ async function importRepuestosFromCSV() {
     console.log(`📊 Headers encontrados: ${headers.join(', ')}`);
     console.log(`📄 Total de líneas: ${lines.length - 1}`);
 
-    let importedCount = 0;
-    let errorCount = 0;
-
-    // Procesar cada línea (saltar header)
+    // Convertir a objetos
+    const repuestos = [];
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
-
       const values = line.split(',');
-
-      // Mapear valores a campos
-      const repuestoData = {
+      repuestos.push({
         nombre: values[0] || 'Sin nombre',
         codigo: values[1] || null,
         stock: values[2] ? parseInt(values[2]) : 0,
@@ -39,67 +35,35 @@ async function importRepuestosFromCSV() {
         descripcion: values[5] || null,
         proveedor: values[6] || null,
         ubicacion: values[7] || null,
-      };
+      });
+    }
 
+    // Importar en lotes/chunks
+    const chunkSize = 20;
+    let importedCount = 0;
+    let errorCount = 0;
+    for (let i = 0; i < repuestos.length; i += chunkSize) {
+      const chunk = repuestos.slice(i, i + chunkSize);
       try {
-        // Verificar si ya existe un repuesto con el mismo código
-        let existingRepuesto = null;
-        if (repuestoData.codigo) {
-          existingRepuesto = await prisma.repuesto.findFirst({
-            where: { codigo: repuestoData.codigo },
-          });
-        }
-
-        if (existingRepuesto) {
-          // Actualizar stock si ya existe
-          await prisma.repuesto.update({
-            where: { id: existingRepuesto.id },
-            data: {
-              stock: existingRepuesto.stock + repuestoData.stock,
-              ubicacion: repuestoData.ubicacion || existingRepuesto.ubicacion,
-            },
-          });
-          console.log(`📦 Actualizado stock para: ${repuestoData.nombre} (${repuestoData.codigo})`);
-        } else {
-          // Crear nuevo repuesto
-          await prisma.repuesto.create({
-            data: repuestoData,
-          });
-          console.log(`✅ Importado: ${repuestoData.nombre}`);
-        }
-
-        importedCount++;
+        const response = await axios.post(API_URL, { repuestos: chunk }, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        importedCount += response.data.created.length;
+        console.log(`✅ Lote importado (${i + 1}-${i + chunk.length})`);
       } catch (error) {
-        console.error(`❌ Error en línea ${i}: ${error.message}`);
-        console.error(`   Datos: ${JSON.stringify(repuestoData)}`);
-        errorCount++;
+        errorCount += chunk.length;
+        console.error(`❌ Error en lote ${i + 1}-${i + chunk.length}: ${error.message}`);
       }
     }
 
     console.log('\n📈 Resumen de importación:');
     console.log(`✅ Repuestos procesados: ${importedCount}`);
     console.log(`❌ Errores: ${errorCount}`);
-
-    // Mostrar estadísticas finales
-    const totalRepuestos = await prisma.repuesto.count();
-    const categorias = await prisma.repuesto.groupBy({
-      by: ['categoria'],
-      _count: { categoria: true },
-    });
-
-    console.log(`📊 Total de repuestos en base de datos: ${totalRepuestos}`);
-    console.log('\n📋 Repuestos por categoría:');
-    categorias.forEach((cat) => {
-      console.log(`   ${cat.categoria || 'Sin categoría'}: ${cat._count.categoria}`);
-    });
   } catch (error) {
     console.error('💥 Error durante la importación:', error);
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// Ejecutar si se llama directamente
 if (require.main === module) {
   importRepuestosFromCSV()
     .then(() => {

@@ -114,17 +114,21 @@ function MaquinariasPage({ token, role, onLogout }) {
 
       const data = await getMaquinarias(token, filtrosActuales, pagina);
 
-      if (data.maquinarias) {
+      if (Array.isArray(data.maquinarias)) {
         setMaquinarias(data.maquinarias);
-        actualizarPaginacion(data.paginacion || data.pagination);
-
+        actualizarPaginacion({
+          paginaActual: data.page || 1,
+          totalPaginas: Math.ceil((data.total || 0) / (data.limit || 20)),
+          totalElementos: data.total || 0,
+        });
         logger.success(`Cargadas ${data.maquinarias.length} maquinarias`, {
-          pagina,
-          total: data.paginacion?.totalElementos || data.pagination?.total || 0,
+          pagina: data.page || pagina,
+          total: data.total || 0,
         });
       } else {
         logger.warn('Respuesta API sin datos de maquinarias', data);
         setMaquinarias([]);
+        actualizarPaginacion({ paginaActual: 1, totalPaginas: 1, totalElementos: 0 });
       }
 
       setError('');
@@ -398,7 +402,10 @@ function MaquinariasPage({ token, role, onLogout }) {
   }, [filtrosConsolidados]);
 
   // Definir breadcrumbs
-  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Equipos' }];
+  // Breadcrumbs automáticos y clickeables según la ruta actual
+  // Se usa el generador del layout para mantener consistencia
+  // No se define manualmente, se deja vacío para que AppLayout lo genere
+  const breadcrumbs = [];
 
   const handleExport = async () => {
     try {

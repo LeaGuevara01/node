@@ -1,0 +1,8 @@
+nombre,stock,categoria,ubicacion,codigo,descripcion
+Rodamiento hexagonal,2,Rodamiento,Embocador - Tambor,JD9373,OEM JD9373 = SKU W208PPB16
+Bulón hexagonal con brida M12 x 35,16,Tornillo,Embocador - Tambor,19M7790,OEM 19M7790 = DIN 6921
+Tuerca hexagonal con brida M12,8,Tuerca,Embocador - Tambor,14M7299,OEM 14M7299 = DIN 6923
+Barra del tambor,1,Componente principal,Embocador - Tambor,H231268,OEM H231268
+Tambor principal,1,Componente principal,Embocador - Tambor,AXE27254,OEM AXE27254
+Brazo izquierdo del tambor,1,Componente principal,Embocador - Tambor,AXE48405,OEM AXE48405
+Brazo derecho del tambor,1,Componente principal,Embocador - Tambor,AXE48406,OEM AXE48406

@@ -267,31 +267,12 @@ const AppLayout = ({
         {/* Contenido principal */}
         <div className="px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4 pb-4">
           <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-            {/* Breadcrumbs */}
+            {/* Breadcrumbs: mostrar en todas las pantallas */}
             {autoBreadcrumbs.length > 0 && (
-              <div className="hidden sm:block">
-                <Breadcrumbs items={autoBreadcrumbs} />
-              </div>
-            )}
-
-            {/* Título y breadcrumb mobile */}
-            {isMobile && (
-              <div>
-                {/* Indicador breadcrumb compacto en pantallas chicas */}
-                {autoBreadcrumbs.length > 1 && (
-                  <div className="text-xs text-gray-500 mb-1">
-                    {autoBreadcrumbs
-                      .map((b) => b.label)
-                      .slice(0, 2) // Mostrar solo los dos primeros niveles
-                      .join(' > ')}
-                  </div>
-                )}
-                {/* Título si no se pasó explícito */}
-                {!title && (
-                  <h1 className="text-xl font-bold text-gray-900">
-                    {autoBreadcrumbs[autoBreadcrumbs.length - 1]?.label || 'Dashboard'}
-                  </h1>
-                )}
+              <div className="w-full pt-2 pb-1 flex justify-start">
+                <div className="max-w-7xl w-full px-2 sm:px-4 lg:px-6">
+                  <Breadcrumbs items={autoBreadcrumbs} />
+                </div>
               </div>
             )}
 

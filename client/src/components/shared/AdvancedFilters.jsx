@@ -38,25 +38,25 @@ const AdvancedFilters = ({
    */
   const renderTextInput = (campo) => (
     <div className={campo.span || 'md:col-span-2 lg:col-span-1 xl:col-span-1'} key={campo.name}>
-      <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
+      <div className={INPUT_STYLES.base + ' flex items-center gap-2 px-2 bg-white'}>
+        {campo.icon && (
+          <span className={ICON_STYLES.medium + ' text-gray-400 mr-2'}>{campo.icon}</span>
+        )}
         <input
           type={campo.type === 'search' ? 'search' : 'text'}
           value={filtrosTemporales[campo.name] || ''}
           onChange={(e) => handleFiltroChange(campo.name, e.target.value)}
           onKeyDown={(e) => {
-            if (campo.type === 'search') {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                aplicarFiltrosActuales();
-              } else if (e.key === 'Escape' || e.key === 'Esc') {
-                e.preventDefault();
-                limpiarTodosFiltros();
-              }
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              aplicarFiltrosActuales();
+            } else if (e.key === 'Escape' || e.key === 'Esc') {
+              e.preventDefault();
+              limpiarTodosFiltros();
             }
           }}
           placeholder={campo.placeholder}
-          className={`${INPUT_STYLES.withIcon} ${INPUT_STYLES.placeholder}`}
+          className={'flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-left'}
         />
       </div>
     </div>
@@ -67,13 +67,11 @@ const AdvancedFilters = ({
    */
   const renderSelect = (campo) => (
     <div className={campo.span || 'md:col-span-2 lg:col-span-1 xl:col-span-1'} key={campo.name}>
-      <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
+      <div className={INPUT_STYLES.base + ' flex items-center gap-2 px-2 bg-white'}>
+        {campo.icon && (
+          <span className={ICON_STYLES.medium + ' text-gray-400 mr-2'}>{campo.icon}</span>
+        )}
         <select
-          /*
-           * Normalizamos el value del select a string para el DOM,
-           * y convertimos de vuelta a primitivo (string|number) en onChange.
-           */
           value={
             filtrosTemporales[campo.name] === 0 ? '0' : (filtrosTemporales[campo.name] ?? '') + ''
           }
@@ -82,9 +80,9 @@ const AdvancedFilters = ({
             const normalized = raw === '' ? '' : campo.valueType === 'number' ? Number(raw) : raw;
             handleFiltroChange(campo.name, normalized);
           }}
-          className={INPUT_STYLES.select}
+          className={'flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-left'}
         >
-          <option value="" className={INPUT_STYLES.selectPlaceholder}>
+          <option value="" className={INPUT_STYLES.selectPlaceholder + ' placeholder-gray-400 text-left'}>
             {campo.placeholder}
           </option>
           {campo.options?.map((option, idx) => {
@@ -99,16 +97,6 @@ const AdvancedFilters = ({
             );
           })}
         </select>
-        <div className={POSITION_STYLES.iconRight}>
-          <svg
-            className={`${ICON_STYLES.medium} ${ICON_STYLES.gray}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
       </div>
     </div>
   );
@@ -136,57 +124,53 @@ const AdvancedFilters = ({
     );
 
     return (
-      <div
-        className={campo.span || 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full'}
-        key={campo.name}
-      >
-        <div className={POSITION_STYLES.relative}>
-          <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
-          {/* Contenedor con altura y estilos consistentes con inputs estándar */}
-          <div className="pl-10 pr-3 h-12 sm:h-12 flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent bg-white relative">
-            <div className="flex items-center gap-2 w-full">
-              <input
-                type={campo.inputType || 'number'}
-                value={
-                  filtrosTemporales[campo.minField] === 0
-                    ? 0
-                    : (filtrosTemporales[campo.minField] ?? '')
-                }
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  const normalized =
-                    raw === '' ? '' : campo.inputType === 'date' ? raw : Number(raw);
-                  handleFiltroChange(campo.minField, normalized);
-                }}
-                placeholder={minPh}
-                className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
-                min={campo.min}
-                max={campo.max}
-                step={campo.inputType === 'date' ? undefined : campo.step || '1'}
-                inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
-              />
-              <span className="text-gray-300 text-sm">-</span>
-              <input
-                type={campo.inputType || 'number'}
-                value={
-                  filtrosTemporales[campo.maxField] === 0
-                    ? 0
-                    : (filtrosTemporales[campo.maxField] ?? '')
-                }
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  const normalized =
-                    raw === '' ? '' : campo.inputType === 'date' ? raw : Number(raw);
-                  handleFiltroChange(campo.maxField, normalized);
-                }}
-                placeholder={maxPh}
-                className="flex-1 border-0 p-0 text-sm placeholder-gray-400 focus:outline-none focus:ring-0 bg-transparent text-center"
-                min={campo.min}
-                max={campo.max}
-                step={campo.inputType === 'date' ? undefined : campo.step || '1'}
-                inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
-              />
-            </div>
+      <div className={campo.span || 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2 w-full'} key={campo.name}>
+        <div className={INPUT_STYLES.base + ' flex items-center gap-2 px-2 bg-white'}>
+          {campo.icon && (
+            <span className={ICON_STYLES.medium + ' text-gray-400 mr-2'}>{campo.icon}</span>
+          )}
+          <div className="flex items-center gap-2 w-full justify-center">
+            <input
+              type={campo.inputType || 'number'}
+              value={
+                filtrosTemporales[campo.minField] === 0
+                  ? 0
+                  : (filtrosTemporales[campo.minField] ?? '')
+              }
+              onChange={(e) => {
+                const raw = e.target.value;
+                const normalized =
+                  raw === '' ? '' : campo.inputType === 'date' ? raw : Number(raw);
+                handleFiltroChange(campo.minField, normalized);
+              }}
+              placeholder={minPh}
+              className={'flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-center'}
+              min={campo.min}
+              max={campo.max}
+              step={campo.inputType === 'date' ? undefined : campo.step || '1'}
+              inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
+            />
+            <span className="text-gray-300 text-sm">-</span>
+            <input
+              type={campo.inputType || 'number'}
+              value={
+                filtrosTemporales[campo.maxField] === 0
+                  ? 0
+                  : (filtrosTemporales[campo.maxField] ?? '')
+              }
+              onChange={(e) => {
+                const raw = e.target.value;
+                const normalized =
+                  raw === '' ? '' : campo.inputType === 'date' ? raw : Number(raw);
+                handleFiltroChange(campo.maxField, normalized);
+              }}
+              placeholder={maxPh}
+              className={'flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-center'}
+              min={campo.min}
+              max={campo.max}
+              step={campo.inputType === 'date' ? undefined : campo.step || '1'}
+              inputMode={campo.inputType === 'number' ? 'numeric' : undefined}
+            />
           </div>
         </div>
       </div>
@@ -198,13 +182,15 @@ const AdvancedFilters = ({
    */
   const renderDateInput = (campo) => (
     <div className={campo.span || 'md:col-span-2 lg:col-span-1 xl:col-span-1'} key={campo.name}>
-      <div className={POSITION_STYLES.relative}>
-        <div className={POSITION_STYLES.iconLeft}>{campo.icon}</div>
+      <div className={INPUT_STYLES.base + ' flex items-center gap-2 px-2 bg-white'}>
         <input
           type="date"
           value={filtrosTemporales[campo.name] || ''}
           onChange={(e) => handleFiltroChange(campo.name, e.target.value)}
-          className={`${INPUT_STYLES.withIcon} ${INPUT_STYLES.placeholder}`}
+          className={'flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-left'}
+          min={campo.min || '2000-01-01'}
+          max={campo.max || '2100-12-31'}
+          placeholder={campo.placeholder || ''}
         />
       </div>
     </div>
@@ -231,7 +217,7 @@ const AdvancedFilters = ({
 
   return (
     <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-      <h2 className={TEXT_STYLES.sectionTitle}>{titulo}</h2>
+  <h2 className="text-base font-semibold text-gray-800 mb-2">{titulo}</h2>
 
       <div className={LAYOUT_STYLES.gridFilters}>
         {camposFiltros.map((campo) => renderField(campo))}

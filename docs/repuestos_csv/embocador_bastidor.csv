@@ -1,0 +1,24 @@
+nombre,stock,categoria,ubicacion,codigo,descripcion
+Tornillo M8 x 20,3,Tornillo,Embocador - Bastidor,03M7608,Tornillo M8 x 20
+Tuerca con brida M8,5,Tuerca,Embocador - Bastidor,14M7298,Tuerca con brida M8
+Tornillo M8 x 30,2,Tornillo,Embocador - Bastidor,19M7868,Tornillo M8 x 30
+Pasamuros,2,Componente,Embocador - Bastidor,H209379,Pasamuros
+Tapadera,1,Componente,Embocador - Bastidor,H226617,Tapadera
+Pasador,2,Componente,Embocador - Bastidor,HXE44824,Pasador (posible ajuste de inclinación)
+Apoyo,1,Componente,Embocador - Bastidor,HXE47153,Apoyo (pivote estructural)
+Bastidor,1,Componente,Embocador - Bastidor,AXE68588,Bastidor (SUB FOR AXE42992; incluye HXE123792)
+Soporte,1,Componente,Embocador - Bastidor,AH224033,Soporte
+Tuerca con brida M10,3,Tuerca,Embocador - Bastidor,14M7296,Tuerca con brida M10
+Placa de desgaste,2,Componente,Embocador - Bastidor,HXE58530,Placa de desgaste
+Tuerca,1,Tuerca,Embocador - Bastidor,M84309,Tuerca
+Aislante,2,Componente,Embocador - Bastidor,HXE61936,Aislante
+Remache,4,Componente,Embocador - Bastidor,M64720,Remache
+Tira/alfombrilla,2,Componente,Embocador - Bastidor,H162672,Tira/alfombrilla
+Tornillo,2,Tornillo,Embocador - Bastidor,GX22456,Tornillo (alternativa)
+Placa,1,Componente,Embocador - Bastidor,HXE83498,Placa
+Casquillo,2,Casquillo,Embocador - Bastidor,HXE84738,Casquillo
+Tornillo M12 x 30,1,Tornillo,Embocador - Bastidor,03M7353,Tornillo M12 x 30
+Tuerca con brida M12,1,Tuerca,Embocador - Bastidor,14M7299,Tuerca con brida M12
+Pasador de aletas,2,Componente,Embocador - Bastidor,H147486,Pasador de aletas
+Etiqueta adhesiva – Elevador del molinete,1,Componente,Embocador - Bastidor,HXE123797,Etiqueta adhesiva – Elevador del molinete (SUB FOR H151671; USE WITH AXE42992)
+Etiqueta adhesiva – Colector,1,Componente,Embocador - Bastidor,HXE123792,Etiqueta adhesiva – Colector (USE WITH AXE68588)

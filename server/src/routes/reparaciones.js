@@ -13,10 +13,12 @@ const {
   updateReparacion,
   deleteReparacion,
   getReparacionFilters,
+  getReparacionFiltersSimple,
 } = require('../controllers/reparacionController');
 
 router.get('/', auth, getReparaciones);
 router.get('/filtros', auth, getReparacionFilters);
+router.get('/filtros-simple', auth, getReparacionFiltersSimple);
 router.get('/:id', auth, getReparacion);
 
 router.post(

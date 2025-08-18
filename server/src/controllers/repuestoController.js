@@ -67,6 +67,12 @@ exports.getRepuestos = async (req, res) => {
       sortOrder = 'asc',
     } = req.query;
 
+    // Limitar el máximo de registros por petición
+    const MAX_LIMIT = 1000;
+    let parsedLimit = parseInt(limit);
+    if (isNaN(parsedLimit) || parsedLimit < 1) parsedLimit = 50;
+    if (parsedLimit > MAX_LIMIT) parsedLimit = MAX_LIMIT;
+
     // Construir filtros dinámicamente con AND/OR correctamente agrupados
     const baseWhere = {};
     const andConds = [];
@@ -173,9 +179,9 @@ exports.getRepuestos = async (req, res) => {
     // Configurar ordenamiento
     orderBy[sortBy] = sortOrder;
 
-    // Paginación
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const take = parseInt(limit);
+  // Paginación
+  const skip = (parseInt(page) - 1) * parsedLimit;
+  const take = parsedLimit;
 
     // Ejecutar consulta con filtros
     const finalWhere = andConds.length
@@ -446,5 +452,33 @@ exports.getRepuestoById = async (req, res) => {
   } catch (err) {
     console.error('Error al obtener repuesto por ID:', err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.bulkImportRepuestos = async (req, res) => {
+  const repuestos = req.body.repuestos;
+  if (!Array.isArray(repuestos)) {
+    return res.status(400).json({ error: 'Formato inválido, se espera un array de repuestos' });
+  }
+  try {
+    const created = [];
+    for (const item of repuestos) {
+      // Normaliza los campos y convierte stock a número
+      const data = {
+        nombre: item.nombre,
+        stock: item.stock ? Number(item.stock) : 0,
+        codigo: item.codigo || null,
+        descripcion: item.descripcion || null,
+        precio: item.precio ? Number(item.precio) : null,
+        proveedor: item.proveedor || null,
+        ubicacion: item.ubicacion || null,
+        categoria: item.categoria || null,
+      };
+      const repuesto = await prisma.repuesto.create({ data });
+      created.push(repuesto);
+    }
+    res.status(201).json({ created });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };

@@ -24,8 +24,8 @@ export const FormHeader = ({
   <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
     <div className={LAYOUT_STYLES.flexBetween}>
       <div>
-        <h1 className={TEXT_STYLES.title}>{title}</h1>
-        <p className={TEXT_STYLES.subtitle}>{subtitle}</p>
+  <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+  <p className="text-base text-gray-600 mt-1">{subtitle}</p>
       </div>
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
         {showUpload && (
@@ -81,7 +81,7 @@ export const FormHeader = ({
 
 export const FilterSection = ({ children, title = 'Filtros', onClearFilters }) => (
   <div className={`${CONTAINER_STYLES.card} ${CONTAINER_STYLES.cardPadding}`}>
-    <h2 className={TEXT_STYLES.sectionTitle}>{title}</h2>
+  <h2 className="text-base font-semibold text-gray-800 mb-2">{title}</h2>
 
     <div className={LAYOUT_STYLES.gridFilters}>{children}</div>
 
@@ -208,7 +208,7 @@ export const StatusMessages = ({ error, success, bulkError, bulkSuccess }) => (
 );
 
 export const LoadingSpinner = ({ text = 'Cargando...' }) => (
-  <div className={TEXT_STYLES.loading}>
+  <div className="text-sm text-gray-500 flex items-center gap-2">
     <svg className={`${ICON_STYLES.small} ${ICON_STYLES.spin}`} fill="none" viewBox="0 0 24 24">
       <circle
         cx="12"

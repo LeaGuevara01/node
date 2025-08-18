@@ -13,6 +13,7 @@ const {
   getEstadisticas,
   busquedaRapida,
   getRepuestoById,
+  bulkImportRepuestos,
 } = require('../controllers/repuestoController');
 
 // Rutas públicas (o con autenticación básica)
@@ -32,6 +33,17 @@ router.post(
     next();
   },
   createRepuesto
+);
+// Importación masiva de repuestos
+router.post(
+  '/bulk',
+  auth,
+  (req, res, next) => {
+    if (!req.isAdmin)
+      return res.status(403).json({ error: 'Solo administradores pueden importar repuestos' });
+    next();
+  },
+  bulkImportRepuestos
 );
 
 router.put(

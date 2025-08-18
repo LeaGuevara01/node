@@ -10,9 +10,22 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight, Home, Truck, Settings, Building2, Wrench, Users, BarChart3, Wheat, ShoppingCart } from 'lucide-react';
 
 const Breadcrumbs = ({ items = [], separator = 'chevron', className = '' }) => {
+  // Mapeo de iconos por label, monocromáticos y consistentes con Sidebar/Dashboard
+  const iconMap = {
+    'Inicio': <Home size={16} className="mr-1 text-gray-500" />,
+    'Dashboard': <BarChart3 size={16} className="mr-1 text-gray-500" />,
+    'Maquinarias': <Truck size={16} className="mr-1 text-gray-500" />,
+    'Equipos': <Truck size={16} className="mr-1 text-gray-500" />,
+    'Repuestos': <Settings size={16} className="mr-1 text-gray-500" />,
+    'Proveedores': <Building2 size={16} className="mr-1 text-gray-500" />,
+    'Reparaciones': <Wrench size={16} className="mr-1 text-gray-500" />,
+    'Compras': <ShoppingCart size={16} className="mr-1 text-gray-500" />,
+    'Usuarios': <Users size={16} className="mr-1 text-gray-500" />,
+    'Sistema Agrícola': <Wheat size={16} className="mr-1 text-gray-500" />,
+  };
   if (!items || items.length === 0) return null;
 
   const renderSeparator = () => {
@@ -25,32 +38,26 @@ const Breadcrumbs = ({ items = [], separator = 'chevron', className = '' }) => {
   return (
     <nav className={`flex items-center space-x-1 text-sm ${className}`} aria-label="Breadcrumb">
       <ol className="flex items-center">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
-
-          return (
-            <li key={index} className="flex items-center">
-              {index > 0 && renderSeparator()}
-
-              {item.href && !isLast ? (
-                <Link
-                  to={item.href}
-                  className="text-gray-500 hover:text-gray-700 transition-colors flex items-center"
-                >
-                  {index === 0 && item.label === 'Inicio' && <Home size={16} className="mr-1" />}
-                  {item.label}
-                </Link>
-              ) : (
-                <span
-                  className={`flex items-center ${isLast ? 'text-gray-900 font-medium' : 'text-gray-500'}`}
-                >
-                  {index === 0 && item.label === 'Inicio' && <Home size={16} className="mr-1" />}
-                  {item.label}
-                </span>
-              )}
-            </li>
-          );
-        })}
+        {items.map((item, index) => (
+          <li key={index} className="flex items-center">
+            {index > 0 && renderSeparator()}
+            {item.href ? (
+              <Link
+                to={item.href}
+                className={`flex items-center ${index === items.length - 1 ? 'text-gray-900 font-semibold underline' : 'text-gray-500 hover:text-gray-700 transition-colors'}`}
+                aria-current={index === items.length - 1 ? 'page' : undefined}
+              >
+                {iconMap[item.label]}
+                {item.label}
+              </Link>
+            ) : (
+              <span className={`flex items-center text-gray-900 font-semibold`}>
+                {iconMap[item.label]}
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
       </ol>
     </nav>
   );

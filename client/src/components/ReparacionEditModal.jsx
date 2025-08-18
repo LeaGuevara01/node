@@ -144,12 +144,13 @@ function ReparacionEditModal({
             name="fecha"
             value={form.fecha}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
             required
             disabled={isLoading}
             min="2000-01-01T00:00"
             max="2100-12-31T23:59"
             title="Seleccione fecha y hora (2000-2100)"
+            placeholder="dd/mm/aaaa hh:mm"
           />
         </div>
 
