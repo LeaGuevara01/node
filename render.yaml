@@ -7,14 +7,14 @@ services:
     rootDir: ./server
     buildCommand: npm install && npx prisma generate && npx prisma db push --accept-data-loss
     startCommand: npx prisma migrate deploy && npm start
-      healthCheckPath: /api/health
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 4000
       - key: CORS_ORIGIN
-        value: https://sistemagestionagricola.onrender.com
+        value: https://sistemagestionagricola.onrender.com,https://sistemagestionagricola-frontend.onrender.com
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
@@ -24,15 +24,16 @@ services:
       - key: CHECKPOINT_DISABLE
         value: 1
     autoDeploy: true
+
   - type: web
     name: sistemagestionagricola
     env: static
+    rootDir: ./client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
-    rootDir: ./client
     envVars:
       - key: VITE_API_URL
-        value: https://sistemagestionagricola-api.onrender.com/api
+        value: https://sistemagestionagricola.onrender.com/api
     headers:
       - path: /*
         name: Cache-Control
@@ -40,12 +41,8 @@ services:
       - path: /assets/*
         name: Cache-Control
         value: max-age=31536000
-    redirects:
-      - source: /favicon.ico
-        destination: /favicon-elorza.ico
-        type: 200
-      # SPA catch-all: enviar cualquier ruta desconocida a index.html
-      - source: /*
-        destination: /index.html
-        type: 200
+      - path: /site.webmanifest
+        name: Content-Type
+        value: application/manifest+json; charset=utf-8
+  # Se eliminaron los redirects, ahora se gestionan en el archivo _redirects dentro de /client/public
     autoDeploy: true
