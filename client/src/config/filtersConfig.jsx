@@ -263,20 +263,20 @@ export const MAQUINARIA_FILTERS_CONFIG = (opcionesFiltros) => [
   {
     name: 'anio',
     type: 'range',
-    icon: ICONS.anio,
+    // icon: ICONS.anio, // Quitar icono
     minField: 'anioMin',
     maxField: 'anioMax',
     minPlaceholder: 'Año mínimo',
     maxPlaceholder: 'Año máximo',
     responsivePlaceholders: {
-      min: { sm: 'Mín', md: 'Mínimo', lg: 'Año mínimo' },
-      max: { sm: 'Máx', md: 'Máximo', lg: 'Año máximo' },
+      min: { sm: 'Año mínimo', md: 'Año mínimo', lg: 'Año mínimo' },
+      max: { sm: 'Año máximo', md: 'Año máximo', lg: 'Año máximo' },
     },
     min: opcionesFiltros.anioRange?.min || 1900,
     max: opcionesFiltros.anioRange?.max || new Date().getFullYear(),
-    // Indica que los valores del rango son numéricos
     valueType: 'number',
-    // Mover min/max a una fila dedicada (2x1), como en repuestos
+    // Centrar texto en los inputs (el estilo ya lo hace, pero aseguramos consistencia)
+    inputClass: 'text-center',
     span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2',
   },
 ];
@@ -329,18 +329,18 @@ export const REPUESTO_FILTERS_CONFIG = (opcionesFiltros) => [
     span: 'sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1',
   },
   {
-    name: 'precio',
+    name: 'cantidad',
     type: 'range',
-    icon: ICONS.precio,
-    minField: 'precioMin',
-    maxField: 'precioMax',
-    minPlaceholder: 'Precio mínimo',
-    maxPlaceholder: 'Precio máximo',
-    min: opcionesFiltros.precioRange?.min ?? 0,
-    max: opcionesFiltros.precioRange?.max ?? 10000,
-    step: '0.01',
+    icon: ICONS.stock,
+    minField: 'stockMin',
+    maxField: 'stockMax',
+    minPlaceholder: 'Stock mínimo',
+    maxPlaceholder: 'Stock máximo',
+    min: opcionesFiltros.stockRange?.min ?? 0,
+    max: opcionesFiltros.stockRange?.max ?? 10000,
+    step: '1',
     inputType: 'number',
-    // Precio min/max 2x1
+    // Stock min/max 2x1
     span: 'sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2',
   },
 ];

@@ -20,7 +20,6 @@ import {
 // Importar sistema de estilos modulares
 import {
   StyledPageWrapper,
-  ContentSection,
   StyledForm,
   StyledList,
   ResponsiveGrid,
@@ -30,6 +29,8 @@ import {
   PAGE_STYLES,
   classNames,
 } from '../styles';
+import AdvancedFilters from '../components/shared/AdvancedFilters';
+import { MAQUINARIA_FILTERS_CONFIG } from '../config/filtersConfig';
 
 // Componentes específicos
 import MaquinariaEditModal from '../components/MaquinariaEditModal';
@@ -67,16 +68,9 @@ function MaquinariaFormModular({ token, onCreated }) {
   const [bulkSuccess, setBulkSuccess] = useState('');
   const [error, setError] = useState('');
 
-  // Estados para filtros
-  const [filtros, setFiltros] = useState({
-    search: '',
-    categoria: '',
-    ubicacion: '',
-    estado: '',
-    anioMin: '',
-    anioMax: '',
-  });
-
+  // Estados para filtros avanzados
+  const [filtrosTemporales, setFiltrosTemporales] = useState({});
+  const [tokensActivos, setTokensActivos] = useState([]);
   const [opcionesFiltros, setOpcionesFiltros] = useState({
     categorias: [],
     ubicaciones: [],
@@ -93,8 +87,8 @@ function MaquinariaFormModular({ token, onCreated }) {
   // ===== EFECTOS =====
 
   useEffect(() => {
-    cargarDatos();
-    cargarFiltros();
+  cargarMaquinarias();
+  cargarFiltros();
   }, [token]);
 
   useEffect(() => {
@@ -110,7 +104,12 @@ function MaquinariaFormModular({ token, onCreated }) {
   const cargarMaquinarias = async () => {
     pageState.setLoading(true);
     try {
-      const params = buildMaquinariaQueryParams(filtros, paginaActual, itemsPorPagina);
+      // Consolidar filtros activos
+      const filtrosConsolidados = {};
+      tokensActivos.forEach((token) => {
+        filtrosConsolidados[token.name] = token.value;
+      });
+      const params = buildMaquinariaQueryParams(filtrosConsolidados, paginaActual, itemsPorPagina);
       const data = await getMaquinarias(token, params, paginaActual);
 
       const maquinariasArray = Array.isArray(data) ? data : data?.maquinarias || [];
@@ -185,14 +184,25 @@ function MaquinariaFormModular({ token, onCreated }) {
   };
 
   // ===== FUNCIONES DE FILTROS =====
-
-  const aplicarFiltro = (key, value) => {
-    setFiltros((prev) => ({ ...prev, [key]: value }));
+  // AdvancedFilters handlers
+  const handleFiltroChange = (name, value) => {
+    setFiltrosTemporales((prev) => ({ ...prev, [name]: value }));
+  };
+  const aplicarFiltrosActuales = () => {
+    // Convierte los filtros temporales en tokens activos
+    const nuevosTokens = Object.entries(filtrosTemporales)
+      .filter(([_, v]) => v !== '' && v !== null && v !== undefined)
+      .map(([k, v]) => ({ name: k, value: v }));
+    setTokensActivos(nuevosTokens);
     setPaginaActual(1);
   };
-
-  const limpiarFiltros = () => {
-    setFiltros(clearMaquinariaFilters());
+  const limpiarTodosFiltros = () => {
+    setFiltrosTemporales({});
+    setTokensActivos([]);
+    setPaginaActual(1);
+  };
+  const removerToken = (tokenName) => {
+    setTokensActivos((prev) => prev.filter((t) => t.name !== tokenName));
     setPaginaActual(1);
   };
 
@@ -312,110 +322,17 @@ function MaquinariaFormModular({ token, onCreated }) {
   );
 
   const renderFiltros = () => (
-    <ContentSection title="Filtros de Búsqueda">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Búsqueda general */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-          <input
-            type="text"
-            value={filtros.search}
-            onChange={(e) => aplicarFiltro('search', e.target.value)}
-            placeholder="Nombre, modelo, serie..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {/* Filtro por categoría */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-          <select
-            value={filtros.categoria}
-            onChange={(e) => aplicarFiltro('categoria', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todas las categorías</option>
-            {opcionesFiltros.categorias.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Filtro por estado */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-          <select
-            value={filtros.estado}
-            onChange={(e) => aplicarFiltro('estado', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todos los estados</option>
-            {opcionesFiltros.estados.map((estado) => (
-              <option key={estado} value={estado}>
-                {estado}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Filtro por ubicación */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
-          <select
-            value={filtros.ubicacion}
-            onChange={(e) => aplicarFiltro('ubicacion', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todas las ubicaciones</option>
-            {opcionesFiltros.ubicaciones.map((ubi) => (
-              <option key={ubi} value={ubi}>
-                {ubi}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Rango de años */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Año mínimo</label>
-          <input
-            type="number"
-            value={filtros.anioMin}
-            onChange={(e) => aplicarFiltro('anioMin', e.target.value)}
-            min={opcionesFiltros.anioRange.min}
-            max={opcionesFiltros.anioRange.max}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Año máximo</label>
-          <input
-            type="number"
-            value={filtros.anioMax}
-            onChange={(e) => aplicarFiltro('anioMax', e.target.value)}
-            min={opcionesFiltros.anioRange.min}
-            max={opcionesFiltros.anioRange.max}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-        <button
-          onClick={limpiarFiltros}
-          className="text-gray-600 hover:text-gray-800 text-sm font-medium"
-        >
-          Limpiar filtros
-        </button>
-
-        <div className="text-sm text-gray-600">
-          {maquinarias.length} maquinaria(s) encontrada(s)
-        </div>
-      </div>
-    </ContentSection>
+    <AdvancedFilters
+      filtrosTemporales={filtrosTemporales}
+      handleFiltroChange={handleFiltroChange}
+      aplicarFiltrosActuales={aplicarFiltrosActuales}
+      limpiarTodosFiltros={limpiarTodosFiltros}
+      tokensActivos={tokensActivos}
+      removerToken={removerToken}
+      opcionesFiltros={opcionesFiltros}
+      camposFiltros={MAQUINARIA_FILTERS_CONFIG(opcionesFiltros)}
+      titulo="Filtros de Búsqueda"
+    />
   );
 
   // ===== RENDER PRINCIPAL =====

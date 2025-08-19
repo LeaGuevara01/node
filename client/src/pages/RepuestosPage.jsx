@@ -329,14 +329,23 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
           <span
             className={`${LIST_STYLES.itemTag} ${getStockBadge(repuesto.stock, repuesto.ubicacion)}`}
           >
-            Stock: {repuesto.stock}
+              <svg
+                className={ICON_STYLES.small}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2"
+                />
+                <circle cx="12" cy="9" r="3" />
+              </svg>
+              <span className="ml-1">Cantidad: {repuesto.stock}</span>
           </span>
-          {/* Precio: DEPRECATED, eliminado del modelo */}
-          <span
-            className={`${LIST_STYLES.itemTag} bg-brand-100 text-brand-800 hidden lg:inline-flex`}
-          >
-            {/* DEPRECATED: repuesto.precio eliminado del modelo */}
-          </span>
+            {/* Precio: eliminado completamente del modelo y UI */}
         </div>
       </div>
     </>
@@ -511,16 +520,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                       className={INPUT_STYLES.base}
                     />
                   </div>
-                  <div>
-                    {/* <label className={INPUT_STYLES.label}>Precio</label> */} // DEPRECATED
-                    <input
-                      type="number"
-                      // value={form.precio} // DEPRECATED
-                      // onChange={(e) => setForm({ ...form, precio: e.target.value })} // DEPRECATED
-                      className={INPUT_STYLES.base}
-                      step="0.01"
-                    />
-                  </div>
+                  {/* Precio: eliminado del formulario */}
                   <div>
                     <label className={INPUT_STYLES.label}>Proveedor</label>
                     <input
