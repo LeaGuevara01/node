@@ -29,7 +29,7 @@ function RepuestoForm({ token, onCreated }) {
     stock: '',
     codigo: '',
     descripcion: '',
-    precio: '',
+  // precio: '', // DEPRECATED: campo eliminado del modelo
     proveedor: '',
     ubicacion: '',
     categoria: '',
@@ -143,7 +143,7 @@ function RepuestoForm({ token, onCreated }) {
     try {
       const repuestoData = {
         ...form,
-        precio: Number(form.precio),
+  // precio: Number(form.precio), // DEPRECATED
         stock: Number(form.stock),
       };
       await createRepuesto(repuestoData, token);
@@ -152,7 +152,7 @@ function RepuestoForm({ token, onCreated }) {
         stock: '',
         codigo: '',
         descripcion: '',
-        precio: '',
+  // precio: '', // DEPRECATED
         proveedor: '',
         ubicacion: '',
         categoria: '',
@@ -238,7 +238,7 @@ function RepuestoForm({ token, onCreated }) {
                                 stock: Number(row.stock) || 0,
                                 codigo: row.codigo || '',
                                 descripcion: row.descripcion || '',
-                                precio: Number(row.precio) || 0,
+                                // precio: Number(row.precio) || 0, // DEPRECATED
                                 proveedor: row.proveedor || '',
                                 ubicacion: row.ubicacion || '',
                                 categoria: row.categoria || '',
@@ -863,11 +863,11 @@ function RepuestoForm({ token, onCreated }) {
                       />
                     </div>
                     <div>
-                      <label className={INPUT_STYLES.label}>Precio</label>
+                      {/* <label className={INPUT_STYLES.label}>Precio</label> */} // DEPRECATED
                       <input
                         type="number"
-                        value={form.precio}
-                        onChange={(e) => setForm({ ...form, precio: e.target.value })}
+                        // value={form.precio} // DEPRECATED
+                        // onChange={(e) => setForm({ ...form, precio: e.target.value })} // DEPRECATED
                         className={INPUT_STYLES.base}
                         step="0.01"
                       />

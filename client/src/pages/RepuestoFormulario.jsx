@@ -30,7 +30,7 @@ function RepuestoFormulario({ token, onCreated }) {
     stock: '',
     codigo: '',
     descripcion: '',
-    precio: '',
+  // precio: '', // DEPRECATED: campo eliminado del modelo
     proveedor: '',
     ubicacion: '',
     categoria: '',
@@ -56,7 +56,7 @@ function RepuestoFormulario({ token, onCreated }) {
         stock: data?.stock?.toString?.() || '',
         codigo: data?.codigo || '',
         descripcion: data?.descripcion || '',
-        precio: (data?.precio ?? '').toString(),
+  // precio: (data?.precio ?? '').toString(), // DEPRECATED
         proveedor: data?.proveedor || '',
         ubicacion: data?.ubicacion || '',
         categoria: data?.categoria || '',
@@ -96,7 +96,7 @@ function RepuestoFormulario({ token, onCreated }) {
       const repuestoData = {
         ...form,
         stock: form.stock !== '' ? Number(form.stock) : 0,
-        precio: form.precio !== '' ? Number(form.precio) : 0,
+  // precio: form.precio !== '' ? Number(form.precio) : 0, // DEPRECATED
       };
 
       if (isEditMode) {
@@ -249,12 +249,12 @@ function RepuestoFormulario({ token, onCreated }) {
                     />
                   </div>
                   <div>
-                    <label className={INPUT_STYLES.label}>Precio</label>
+                    {/* <label className={INPUT_STYLES.label}>Precio</label> */} // DEPRECATED
                     <input
                       type="number"
                       step="0.01"
-                      value={form.precio}
-                      onChange={(e) => handleChange('precio', e.target.value)}
+                      // value={form.precio} // DEPRECATED
+                      // onChange={(e) => handleChange('precio', e.target.value)} // DEPRECATED
                       className={INPUT_STYLES.base}
                     />
                   </div>

@@ -1,3 +1,11 @@
+model Componente {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  estado      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,62 +16,62 @@ datasource db {
 }
 
 model Maquinaria {
-  id           Int          @id @default(autoincrement())
-  nombre       String
-  modelo       String
-  anio         Int?
-  categoria    String?
-  descripcion  String?
-  estado       String?
-  numero_serie String?
-  proveedor    String?
-  ubicacion    String?
-  reparaciones Reparacion[]
+  id             Int             @id @default(autoincrement())
+  nombre         String
+  modelo         String
+  anio           Int?
+  categoria      String?
+  descripcion    String?
+  estado         String?
+  numero_serie   String?
+  proveedor      String?
+  ubicacion      String?
   compraDetalles CompraDetalle[]
+  reparaciones   Reparacion[]
 }
 
 model Repuesto {
-  id           Int                  @id @default(autoincrement())
-  nombre       String
-  stock        Int
-  proveedorId  Int?
-  categoria    String?
-  codigo       String?
-  descripcion  String?
-  precio       Int?
-  proveedor    String?
-  ubicacion    String?
-  reparaciones ReparacionRepuesto[]
-  proveedorRel Proveedor?           @relation(fields: [proveedorId], references: [id])
+  id             Int                  @id @default(autoincrement())
+  nombre         String
+  stock          Int
+  proveedorId    Int?
+  categoria      String?
+  codigo         String?
+  descripcion    String?
+  precio         Int?
+  proveedor      String?
+  ubicacion      String?
   compraDetalles CompraDetalle[]
+  reparaciones   ReparacionRepuesto[]
+  proveedorRel   Proveedor?           @relation(fields: [proveedorId], references: [id])
 }
 
 model Proveedor {
   id        Int        @id @default(autoincrement())
   nombre    String
-  contacto  String?
   cuit      String?
   direccion String?
-  ubicacion String?
   email     String?
   productos String[]
   telefono  String?
   web       String?
+  contacto  String?
   notas     String?
-  repuestos Repuesto[]
+  ubicacion String?
   compras   Compra[]
+  repuestos Repuesto[]
 }
 
 model Reparacion {
-  id           Int                  @id @default(autoincrement())
-  fecha        DateTime
-  maquinariaId Int
-  descripcion  String?
-  userId       Int?
-  maquinaria   Maquinaria           @relation(fields: [maquinariaId], references: [id], onDelete: Cascade)
-  usuario      User?                @relation(fields: [userId], references: [id])
-  repuestos    ReparacionRepuesto[]
+  id             Int                  @id @default(autoincrement())
+  fecha          DateTime
+  maquinariaId   Int
+  descripcion    String?
+  userId         Int?
   compraDetalles CompraDetalle[]
+  maquinaria     Maquinaria           @relation(fields: [maquinariaId], references: [id], onDelete: Cascade)
+  usuario        User?                @relation(fields: [userId], references: [id])
+  repuestos      ReparacionRepuesto[]
 }
 
 model ReparacionRepuesto {
@@ -85,30 +93,28 @@ model User {
 
 /// Compras a proveedores
 model Compra {
-  id         Int             @id @default(autoincrement())
-  fecha      DateTime        @default(now())
+  id          Int             @id @default(autoincrement())
+  fecha       DateTime        @default(now())
   proveedorId Int
-  estado     String          @default("PENDIENTE") // PENDIENTE | RECIBIDA | CANCELADA
-  total      Int?
-  notas      String?
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-
-  proveedor  Proveedor       @relation(fields: [proveedorId], references: [id])
-  detalles   CompraDetalle[]
+  estado      String          @default("PENDIENTE")
+  total       Int?
+  notas       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  proveedor   Proveedor       @relation(fields: [proveedorId], references: [id])
+  detalles    CompraDetalle[]
 }
 
 model CompraDetalle {
-  id            Int         @id @default(autoincrement())
-  compraId      Int
-  repuestoId    Int
-  cantidad      Int
+  id             Int         @id @default(autoincrement())
+  compraId       Int
+  repuestoId     Int
+  cantidad       Int
   precioUnitario Int?
-  maquinariaId  Int?
-  reparacionId  Int?
-
-  compra        Compra      @relation(fields: [compraId], references: [id], onDelete: Cascade)
-  repuesto      Repuesto    @relation(fields: [repuestoId], references: [id])
-  maquinaria    Maquinaria? @relation(fields: [maquinariaId], references: [id])
-  reparacion    Reparacion? @relation(fields: [reparacionId], references: [id])
+  maquinariaId   Int?
+  reparacionId   Int?
+  compra         Compra      @relation(fields: [compraId], references: [id], onDelete: Cascade)
+  maquinaria     Maquinaria? @relation(fields: [maquinariaId], references: [id])
+  reparacion     Reparacion? @relation(fields: [reparacionId], references: [id])
+  repuesto       Repuesto    @relation(fields: [repuestoId], references: [id])
 }

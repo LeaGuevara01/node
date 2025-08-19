@@ -133,6 +133,7 @@ app.use('/api/users', require('./routes/users'));
 // Alias en español para compatibilidad con el cliente (/api/usuarios)
 app.use('/api/usuarios', require('./routes/users'));
 app.use('/api/compras', require('./routes/compras'));
+app.use('/api/componentes', require('./routes/componenteRoutes'));
 
 // Error handling middleware (respuesta consistente)
 app.use((err, req, res, next) => {

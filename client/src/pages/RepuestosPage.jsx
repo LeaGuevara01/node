@@ -47,7 +47,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     stock: '',
     codigo: '',
     descripcion: '',
-    precio: '',
+  // precio: '', // DEPRECATED: campo eliminado del modelo
     proveedor: '',
     ubicacion: '',
     categoria: '',
@@ -126,7 +126,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
             categoria: row.categoria || '',
             ubicacion: row.ubicacion || '',
             stock: row.stock ? Number(row.stock) : 0,
-            precio: row.precio ? Number(row.precio) : 0,
+            // precio: row.precio ? Number(row.precio) : 0, // DEPRECATED
             descripcion: row.descripcion || '',
           },
           token
@@ -206,7 +206,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
     try {
       const repuestoData = {
         ...form,
-        precio: Number(form.precio),
+  // precio: Number(form.precio), // DEPRECATED
         stock: Number(form.stock),
       };
       await createRepuesto(repuestoData, token);
@@ -215,7 +215,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         stock: '',
         codigo: '',
         descripcion: '',
-        precio: '',
+  // precio: '', // DEPRECATED
         proveedor: '',
         ubicacion: '',
         categoria: '',
@@ -331,11 +331,11 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
           >
             Stock: {repuesto.stock}
           </span>
-          {/* Precio: solo en pantallas grandes */}
+          {/* Precio: DEPRECATED, eliminado del modelo */}
           <span
             className={`${LIST_STYLES.itemTag} bg-brand-100 text-brand-800 hidden lg:inline-flex`}
           >
-            ${repuesto.precio?.toFixed(2) || '0.00'}
+            {/* DEPRECATED: repuesto.precio eliminado del modelo */}
           </span>
         </div>
       </div>
@@ -361,7 +361,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
         categoria: r.categoria,
         ubicacion: r.ubicacion,
         stock: r.stock,
-        precio: r.precio,
+  // precio: r.precio, // DEPRECATED
       }))
     );
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -393,7 +393,7 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                 categoria: row.categoria || '',
                 ubicacion: row.ubicacion || '',
                 stock: row.stock ? Number(row.stock) : 0,
-                precio: row.precio ? Number(row.precio) : 0,
+                // precio: row.precio ? Number(row.precio) : 0, // DEPRECATED
                 descripcion: row.descripcion || '',
               },
               token
@@ -512,11 +512,11 @@ function RepuestosPage({ token, role, onLogout, onCreated }) {
                     />
                   </div>
                   <div>
-                    <label className={INPUT_STYLES.label}>Precio</label>
+                    {/* <label className={INPUT_STYLES.label}>Precio</label> */} // DEPRECATED
                     <input
                       type="number"
-                      value={form.precio}
-                      onChange={(e) => setForm({ ...form, precio: e.target.value })}
+                      // value={form.precio} // DEPRECATED
+                      // onChange={(e) => setForm({ ...form, precio: e.target.value })} // DEPRECATED
                       className={INPUT_STYLES.base}
                       step="0.01"
                     />

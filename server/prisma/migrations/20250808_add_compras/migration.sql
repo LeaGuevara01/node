@@ -27,24 +27,24 @@ CREATE TABLE IF NOT EXISTS "CompraDetalle" (
 
 -- AddForeignKey for Compra.proveedorId -> Proveedor.id
 ALTER TABLE "Compra"
-ADD CONSTRAINT IF NOT EXISTS "Compra_proveedorId_fkey"
+ADD CONSTRAINT "Compra_proveedorId_fkey"
 FOREIGN KEY ("proveedorId") REFERENCES "Proveedor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKeys for CompraDetalle
 ALTER TABLE "CompraDetalle"
-ADD CONSTRAINT IF NOT EXISTS "CompraDetalle_compraId_fkey"
+ADD CONSTRAINT "CompraDetalle_compraId_fkey"
 FOREIGN KEY ("compraId") REFERENCES "Compra"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "CompraDetalle"
-ADD CONSTRAINT IF NOT EXISTS "CompraDetalle_repuestoId_fkey"
+ADD CONSTRAINT "CompraDetalle_repuestoId_fkey"
 FOREIGN KEY ("repuestoId") REFERENCES "Repuesto"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE "CompraDetalle"
-ADD CONSTRAINT IF NOT EXISTS "CompraDetalle_maquinariaId_fkey"
+ADD CONSTRAINT "CompraDetalle_maquinariaId_fkey"
 FOREIGN KEY ("maquinariaId") REFERENCES "Maquinaria"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE "CompraDetalle"
-ADD CONSTRAINT IF NOT EXISTS "CompraDetalle_reparacionId_fkey"
+ADD CONSTRAINT "CompraDetalle_reparacionId_fkey"
 FOREIGN KEY ("reparacionId") REFERENCES "Reparacion"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- Trigger to update updatedAt on Compra

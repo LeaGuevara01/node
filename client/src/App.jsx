@@ -1,3 +1,4 @@
+import ComponenteDetails from './pages/ComponenteDetails';
 /**
  * App (SPA root)
  * Rol: router + gate de autenticación
@@ -37,7 +38,8 @@ import ProveedorForm from './pages/ProveedorForm';
 import ProveedorFormulario from './pages/ProveedorFormulario';
 import { jwtDecode } from 'jwt-decode';
 import ContextPlaceholder from './pages/ContextPlaceholder';
-
+import ComponentePage from './pages/ComponentePage';
+import ComponenteForm from './pages/ComponenteForm';
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -213,7 +215,11 @@ function App() {
         {/* Formularios de Repuestos y Proveedores */}
         <Route path="/repuestos/formulario" element={<RepuestoFormulario token={token} />} />
         <Route path="/repuestos/editar/:id" element={<RepuestoFormulario token={token} />} />
-        <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
+  <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
+  {/* Rutas estandarizadas para componentes */}
+  <Route path="/componentes" element={<ComponentePage token={token} />} />
+  <Route path="/componentes/nuevo" element={<ComponenteForm onSubmit={() => {}} onClose={() => {}} />} />
+  <Route path="/componentes/:id" element={<ComponenteDetails token={token} />} />
         <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
         <Route path="/proveedores/formulario" element={<ProveedorFormulario token={token} />} />
         <Route path="/proveedores/editar/:id" element={<ProveedorFormulario token={token} />} />

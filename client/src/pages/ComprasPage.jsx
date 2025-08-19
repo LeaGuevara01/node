@@ -1,43 +1,81 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCompras, getComprasStats, deleteCompra } from '../services/api';
+import { PAGE_STYLES, BUTTON_STYLES, FORM_STYLES } from '../styles/componentStyles';
+import EntityList from '../components/EntityList';
+import EntityForm from '../components/EntityForm';
 import AppLayout from '../components/navigation/AppLayout';
 
-export default function ComprasPage({ token, role, onLogout }) {
+function ComprasPage({ token, role, onLogout }) {
   const navigate = useNavigate();
-  const [filtros, setFiltros] = useState({ estado: '', proveedorId: '' });
+  const [compras, setCompras] = useState([]);
   const [page, setPage] = useState(1);
-  const [data, setData] = useState({ data: [], pagination: { current: 1, total: 1 } });
-  const [stats, setStats] = useState(null);
+  const [pagination, setPagination] = useState({ current: 1, total: 1 });
   const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [error, setError] = useState('');
+  const [filtros, setFiltros] = useState({ estado: '', proveedorId: '' });
   const isAdmin = role && role.toLowerCase() === 'admin';
 
-  const load = async () => {
+  const fetchCompras = async () => {
     setLoading(true);
     try {
       const res = await getCompras(token, filtros, page);
-      setData(res);
-      const st = await getComprasStats(token);
-      setStats(st);
+      setCompras(res.data || []);
+      setPagination(res.pagination || { current: 1, total: 1 });
     } catch (e) {
-      console.error(e);
+      setError('Error al cargar compras');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    load(); /* eslint-disable-next-line */
+    fetchCompras();
+    // eslint-disable-next-line
   }, [page]);
 
-  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Compras' }];
+  // Acciones para el listado y formulario
+  const handleView = (id) => navigate(`/compras/${id}`);
+  const handleEdit = (compra) => {
+    setSelected(compra);
+    setShowForm(true);
+  };
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Eliminar compra?')) {
+      try {
+        await deleteCompra(id, token);
+        fetchCompras();
+      } catch (e) {
+        setError('Error al eliminar compra');
+      }
+    }
+  };
+  const handleCreate = async (form) => {
+    try {
+      await createCompra(form, token);
+      setShowForm(false);
+      setSelected(null);
+      setError('');
+      setPage(1); // Volver a la primera página para ver la nueva compra
+      fetchCompras();
+    } catch (e) {
+      setError('Error al crear compra');
+    }
+  };
 
+  const breadcrumbs = [{ label: 'Inicio', href: '/' }, { label: 'Compras' }];
   const pageActions = (
     <>
       {isAdmin && (
         <button
-          onClick={() => navigate('/compras/nueva')}
-          className="bg-green-600 text-white px-3 py-2 rounded"
+          onClick={() => {
+            setShowForm(true);
+            setSelected(null);
+            setError('');
+          }}
+          className={BUTTON_STYLES.primary}
         >
           Nueva compra
         </button>
@@ -56,12 +94,12 @@ export default function ComprasPage({ token, role, onLogout }) {
       role={role}
       onLogout={onLogout}
     >
-      <div className="p-0">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+      <div className={PAGE_STYLES.container}>
+        <div className="flex gap-3 mb-6">
           <select
             value={filtros.estado}
             onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
-            className="border p-2 rounded"
+            className={FORM_STYLES.input}
           >
             <option value="">Todos los estados</option>
             <option value="PENDIENTE">Pendiente</option>
@@ -73,91 +111,69 @@ export default function ComprasPage({ token, role, onLogout }) {
             placeholder="Proveedor ID"
             value={filtros.proveedorId}
             onChange={(e) => setFiltros({ ...filtros, proveedorId: e.target.value })}
-            className="border p-2 rounded"
+            className={FORM_STYLES.input}
           />
           <button
-            onClick={() => {
-              setPage(1);
-              load();
-            }}
-            className="bg-blue-600 text-white px-3 py-2 rounded"
+            onClick={() => { setPage(1); fetchCompras(); }}
+            className={BUTTON_STYLES.primary}
           >
             Filtrar
           </button>
         </div>
-
-        {stats && (
-          <div className="mb-4 text-sm text-gray-700">
-            <div>
-              Por estado: {stats.porEstado.map((s) => `${s.estado}: ${s._count.id}`).join(' | ')}
-            </div>
-          </div>
+        {error && <div className={PAGE_STYLES.error}>{error}</div>}
+        <EntityList
+          items={compras}
+          fields={[
+            { label: 'ID', key: 'id' },
+            { label: 'Fecha', key: 'fecha' },
+            { label: 'Proveedor', key: 'proveedorId' },
+            { label: 'Estado', key: 'estado' },
+            { label: 'Total', key: 'total' },
+          ]}
+          onView={handleView}
+          onEdit={null}
+          onDelete={handleDelete}
+          isAdmin={isAdmin}
+        />
+        {compras.length === 0 && !loading && (
+          <div className="text-gray-400 text-center mt-8">No hay compras registradas.</div>
         )}
-
-        <div className="bg-white rounded shadow">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b">
-                <th className="p-2">Fecha</th>
-                <th className="p-2">Proveedor</th>
-                <th className="p-2">Estado</th>
-                <th className="p-2">Total</th>
-                <th className="p-2">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.data.map((c) => (
-                <tr key={c.id} className="border-b hover:bg-gray-50">
-                  <td className="p-2">{new Date(c.fecha).toLocaleDateString()}</td>
-                  <td className="p-2">{c.proveedor?.nombre || c.proveedorId}</td>
-                  <td className="p-2">{c.estado}</td>
-                  <td className="p-2">{c.total ?? '-'}</td>
-                  <td className="p-2 space-x-2">
-                    <button className="text-blue-600" onClick={() => navigate(`/compras/${c.id}`)}>
-                      Ver
-                    </button>
-                    {isAdmin && (
-                      <button
-                        className="text-red-600"
-                        onClick={async () => {
-                          if (confirm('¿Eliminar compra?')) {
-                            await deleteCompra(c.id, token);
-                            load();
-                          }
-                        }}
-                      >
-                        Eliminar
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
         <div className="flex justify-between mt-4">
           <button
-            disabled={page <= 1}
+            disabled={pagination.current <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-2 border rounded disabled:opacity-50"
+            className={BUTTON_STYLES.secondary + ' disabled:opacity-50'}
           >
             Anterior
           </button>
           <span>
-            Página {data.pagination.current} de {data.pagination.total}
+            Página {pagination.current} de {pagination.total}
           </span>
           <button
-            disabled={data.pagination.current >= data.pagination.total}
+            disabled={pagination.current >= pagination.total}
             onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-2 border rounded disabled:opacity-50"
+            className={BUTTON_STYLES.secondary + ' disabled:opacity-50'}
           >
             Siguiente
           </button>
         </div>
-
+        {showForm && (
+          <EntityForm
+            fields={[
+              { label: 'Proveedor ID', key: 'proveedorId' },
+              { label: 'Estado', key: 'estado' },
+              { label: 'Total', key: 'total', type: 'number' },
+              { label: 'Fecha', key: 'fecha', type: 'date' },
+            ]}
+            initialData={selected}
+            onSubmit={handleCreate}
+            onClose={() => { setShowForm(false); setSelected(null); }}
+          />
+        )}
         {loading && <div className="mt-2 text-gray-500">Cargando...</div>}
       </div>
     </AppLayout>
   );
 }
+
+export default ComprasPage;

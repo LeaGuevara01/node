@@ -399,6 +399,7 @@ function RepuestoDetails({ token }) {
                             </div>
                           </div>
                         )}
+                        {/** DEPRECATED: cierre de bloque precio eliminado */}
                         {repuesto.categoria && (
                           <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
                             <div
@@ -459,31 +460,6 @@ function RepuestoDetails({ token }) {
                               </p>
                               <p className="text-sm font-semibold text-gray-900">
                                 {repuesto.ubicacion}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        {repuesto.precio && (
-                          <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                            <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg">
-                              <svg
-                                className="w-5 h-5 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                                />
-                              </svg>
-                            </div>
-                            <div>
-                              <p className="text-xs font-medium text-gray-500 uppercase">Precio</p>
-                              <p className="text-sm font-semibold text-gray-900">
-                                ${Number(repuesto.precio).toLocaleString()}
                               </p>
                             </div>
                           </div>
