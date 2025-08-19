@@ -55,13 +55,26 @@ function MaquinariasPage({ token, onCreated }) {
       const data = await getMaquinarias(token, filtrosActuales, pagina);
       console.log('API Response:', data);
 
+      // Ordenar por menos tags completas y más antigüedad primero
+      const sortMaquinariasCustom = (arr) => {
+        return [...arr].sort((a, b) => {
+          // Contar cantidad de tags completas (asumiendo propiedad 'tagsCompletas' o 'tags')
+          const tagsA = Array.isArray(a.tagsCompletas) ? a.tagsCompletas.length : (Array.isArray(a.tags) ? a.tags.length : 0);
+          const tagsB = Array.isArray(b.tagsCompletas) ? b.tagsCompletas.length : (Array.isArray(b.tags) ? b.tags.length : 0);
+          if (tagsA !== tagsB) return tagsA - tagsB;
+          // Si tienen igual cantidad de tags, ordenar por año más antiguo
+          const anioA = a.anio || a.año || 0;
+          const anioB = b.anio || b.año || 0;
+          return anioA - anioB;
+        });
+      };
       if (data.maquinarias) {
-        const maquinariasOrdenadas = sortMaquinariasByCategory(data.maquinarias);
+        const maquinariasOrdenadas = sortMaquinariasCustom(data.maquinarias);
         setMaquinarias(maquinariasOrdenadas);
         actualizarPaginacion(data.pagination || { current: 1, total: 1, totalItems: 0, limit: 10 });
       } else {
         // Respuesta legacy sin paginación
-        const maquinariasOrdenadas = sortMaquinariasByCategory(data || []);
+        const maquinariasOrdenadas = sortMaquinariasCustom(data || []);
         setMaquinarias(maquinariasOrdenadas);
         actualizarPaginacion({
           current: 1,
