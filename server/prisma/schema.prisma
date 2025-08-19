@@ -44,7 +44,6 @@ model Repuesto {
   compraDetalles CompraDetalle[]
   reparaciones   ReparacionRepuesto[]
   proveedorRel   Proveedor?           @relation(fields: [proveedorId], references: [id])
-  preciosProveedores PrecioRepuestoProveedor[]
 }
 
 model Proveedor {
@@ -61,7 +60,6 @@ model Proveedor {
   ubicacion String?
   compras   Compra[]
   repuestos Repuesto[]
-  preciosRepuestos PrecioRepuestoProveedor[]
 }
 
 model Reparacion {
@@ -105,18 +103,6 @@ model Compra {
   updatedAt   DateTime        @updatedAt
   proveedor   Proveedor       @relation(fields: [proveedorId], references: [id])
   detalles    CompraDetalle[]
-}
-
-
-/// Precios de repuestos según proveedor y fecha
-model PrecioRepuestoProveedor {
-  id           Int        @id @default(autoincrement())
-  repuestoId   Int
-  proveedorId  Int
-  precio       Int
-  fecha        DateTime   @default(now())
-  repuesto     Repuesto   @relation(fields: [repuestoId], references: [id])
-  proveedor    Proveedor  @relation(fields: [proveedorId], references: [id])
 }
 
 model CompraDetalle {
