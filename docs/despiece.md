@@ -2,12 +2,10 @@
 
 ---
 
-## Embocador (Caja del alimentador)
+## Embocador
 
-### Conjuntos principales
-
-#### Tambor
-##### Componentes
+### Tambor del alimentador
+#### Componentes
 - (2) OEM **JD9373** = SKU **W208PPB16** – Rodamiento de bolas hexagonal con soporte
 - (16) OEM **19M7790** = **DIN 6921** – Bulón hexagonal con brida M12 x 35
 - (8) OEM **14M7299** = **DIN 6923** – Tuerca hexagonal con brida M12
@@ -16,8 +14,8 @@
 - (1) OEM **AXE48405** – Brazo izquierdo del tambor
 - (1) OEM **AXE48406** – Brazo derecho del tambor
 
-#### Cadena transportadora
-##### Componentes
+### Cadena transportadora del alimentador
+#### Componentes
 - (4) OEM **AH220541** – Eslabón de cadena
 - (8) OEM **H226769** – Tuerca
 - (1) OEM **AXE89726** – Cadena de rodillos (SUB FOR APPL AXE27247)
@@ -28,8 +26,8 @@
 - (1) OEM **AXE28719** – Eslabón de cadena
 - (1) OEM **AH220867** – Eslabón de cadena
 
-#### Eje superior
-##### Componentes
+### Eje superior del alimentador
+#### Componentes
 - (1) OEM **JD10020** = SKU **208DBL** – Rodamiento de bolas estándar con soporte
 - (6) OEM **19M7372** ≈ **DIN 912 / ISO 4762** – Bulón hexagonal M5 x 16
 - (4) OEM **19M7867** ≈ **DIN 912 / ISO 4762** – Bulón hexagonal M8 x 25
@@ -53,8 +51,8 @@
 - (1) OEM **AXE47444** – Tubo
 - (4) OEM **H171960** – Fleje
 
-#### Piso Central del Alimentador – ST858818
-##### Componentes
+### Piso central del alimentador
+#### Componentes
 - (32) OEM **14M7396** – Tuerca de seguridad M8
 - (8) OEM **AXE28255** – Patín
 - (1) OEM **AXE34024** – Piso
@@ -71,8 +69,8 @@
 
 ---
 
-## Bastidor fijo del alimentador de mies – ST858857
-### Componentes
+### Bastidor del alimentador
+#### Componentes
 - (3) OEM **03M7608** – Tornillo M8 x 20
 - (5) OEM **14M7298** – Tuerca con brida M8
 - (2) OEM **19M7868** – Tornillo M8 x 30
@@ -99,8 +97,8 @@
 
 ---
 
-## Transmisión del Embocador – ST929753
-### Componentes
+### Transmisión del alimentador
+#### Componentes
 - (1) OEM **11M7021** – Pasador de aletas 4 x 25 mm
 - (2) OEM **14M7275** – Tuerca M12
 - (1) OEM **14M7291** – Tuerca con brida M16
@@ -132,15 +130,13 @@
 - (1) OEM **H224257** – Refuerzo
 - (1) OEM **HXE47152** – Correa trapezoidal LGTH 3913 mm, WIDTH 76 mm
 - (1) OEM **H231294** – Tira
-- (1) OEM **HXE10467** – Árbol
+- (1) OEM **HXE10467** – Árbol 
 - (2) OEM **JD10018** = SKU **63102RS** – Rodamiento de bolas
 
 ---
 
-## Sistema de transmisión del molinete
-
-### Bomba de molinete de transmisión de extremo delantero con 5 velocidades
-##### Componentes
+### Transmisión del molinete
+#### Componentes
 - (4) OEM **19M7835** – Tornillo M10 x 35
 - (1) OEM **HXE117080** – Tapón
 - (1) OEM **E59406** – Tuerca
@@ -195,8 +191,10 @@
 
 ---
 
-## Cubierta del Batidor – Primer Conjunto
-### Componentes
+## Rotor
+
+### Cubierta del batidor
+#### Componentes
 - (7) OEM **14M7296** – Tuerca con brida M10
 - (15) OEM **19M7784** – Tornillo M10 x 20
 - (2) OEM **19M7866** – Tornillo M8 x 20
@@ -209,8 +207,8 @@
 
 ---
 
-## Bastidor Fijo del Batidor – ST858859
-### Componentes
+### Bastidor fijo del batidor
+#### Componentes
 - (4) OEM **HXE45122** – Soporte
 - (2) OEM **HXE45233** – Casquillo
 - (6) OEM **14M7296** – Tuerca con brida M10
@@ -230,8 +228,8 @@
 
 ---
 
-## Cubierta del Batidor – Segundo Conjunto
-### Componentes
+### Cubierta del rotor (primer conjunto)
+#### Componentes
 - (10) OEM **14M7299** – Tuerca con brida M12
 - (10) OEM **19M7789** – Tornillo M12 x 30
 - (2) OEM **AH219192** – Soporte
@@ -250,8 +248,8 @@
 
 ---
 
-## Embocador – Trampa de Piedras
-### Subconjunto 1
+### Trampa de piedras
+#### Componentes
 - (1) OEM **AH156157** – Placa
 - (1) OEM **AH227675** – Bisagra
 - (2) OEM **11M7030** – Pasador de aletas 5 x 40 mm
@@ -275,7 +273,7 @@
 - (1) OEM — – Bulón CTL 1385 mm, MF H130057
 - (1) OEM — – Aislante CTL 1377 mm, MF AH80335
 
-### Subconjunto 2
+### Cubierta del rotor (segundo conjunto)
 - (4) OEM **14M7299** – Tuerca con brida M12
 - (4) OEM **19M7789** – Tornillo M12 x 30
 - (1) OEM **AH154691** – Piso
