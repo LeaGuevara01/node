@@ -1,72 +1,166 @@
-# 🌾 Sistema de Gestión Agrícola — Guía Rápida
+# 🌾 Sistema de Gestión Agrícola
 
-Estado: producción | Node >= 18 | Licencia: MIT
+**Estado:** Producción activa | **Node:** >= 18 | **Licencia:** MIT
 
-## Qué es
+## 📋 Tabla de Contenidos
+- [Descripción General](#descripción-general)
+- [Arquitectura del Sistema](#arquitectura-del-sistema)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Instalación Rápida](#instalación-rápida)
+- [Desarrollo](#desarrollo)
+- [Documentación](#documentación)
+- [Contribución](#contribución)
 
-Plataforma web para gestionar maquinaria, repuestos, proveedores, reparaciones y usuarios. Frontend en React + Vite + Tailwind. Backend en Node.js + Express + Prisma (PostgreSQL). Deploy en Render.
+## 🎯 Descripción General
 
-## Estructura
+Sistema integral de gestión agrícola que permite administrar:
+- **Maquinaria** y equipos agrícolas
+- **Repuestos** y inventario
+- **Proveedores** y contactos
+- **Reparaciones** y mantenimiento
+- **Usuarios** y permisos
 
-- client: SPA React
-- server: API REST Express
-- docs: guías y referencias
-- scripts: utilidades de deploy
+## 🏗️ Arquitectura del Sistema
 
-## Empezar en 5 minutos
-
-```bash
-# Requisitos
-node -v   # >= 18
-npm -v    # >= 8
-
-# Instalar y preparar
-npm i
-cp server/.env.example server/.env
-cp client/.env.example client/.env
-
-# Base de datos
-cd server && npx prisma generate && npx prisma db push
-
-# Desarrollo (dos servicios)
-cd .. && npm run dev
+```mermaid
+graph TD
+    A[Frontend React] --> B[API REST Express]
+    B --> C[PostgreSQL]
+    B --> D[Prisma ORM]
+    A --> E[Tailwind CSS]
 ```
 
-URLs de dev
+### Stack Tecnológico
+| Componente | Tecnología |
+|----------|------------|
+| Frontend | React 18 + Vite + TypeScript |
+| Estilos | Tailwind CSS |
+| Backend | Node.js + Express |
+| ORM | Prisma |
+| Base de datos | PostgreSQL |
+| Autenticación | JWT |
 
-- Frontend: http://localhost:5173
-- API: http://localhost:4000/api
-- Health: http://localhost:4000/api/health
+## 📁 Estructura del Proyecto
 
-## Scripts útiles (raíz)
+```
+sistema-gestion-agricola/
+├── client/          # Frontend React SPA
+├── server/          # Backend API REST
+├── docs/           # Documentación técnica
+├── scripts/        # Utilidades de deploy
+├── data/          # Datos de ejemplo
+└── README.md      # Este archivo
+```
 
-- npm run dev: levantar frontend y backend
-- npm run dev:server | dev:client: servicios por separado
-- npm run build: construir client y server
+### 📦 Carpetas Principales
 
-## Configuración mínima
+#### [`client/`](./client/README.md)
+- **Frontend SPA** en React + TypeScript
+- **Build system**: Vite
+- **Estilos**: Tailwind CSS
+- **Incluye**: Componentes, páginas, hooks, servicios
 
-Backend (server/.env)
+#### [`server/`](./server/README.md)
+- **Backend API** en Node.js + Express
+- **ORM**: Prisma con PostgreSQL
+- **Autenticación**: JWT
+- **Incluye**: Controladores, rutas, modelos, middleware
 
-- PORT=4000
-- DATABASE_URL=postgresql://user:pass@host:5432/db
-- JWT_SECRET=valor-seguro
-- CORS_ORIGIN=http://localhost:5173
+#### [`docs/`](./docs/README.md)
+- **Documentación técnica** completa
+- **Guías**: Deployment, API, seguridad
+- **Archivos CSV**: Importación de repuestos
+- **Logs**: Migraciones y optimizaciones
 
-Frontend (client/.env)
+## 🚀 Instalación Rápida
 
-- VITE_API_URL=http://localhost:4000/api
+### Requisitos previos
+```bash
+node -v   # >= 18
+npm -v    # >= 8
+```
 
-## Documentación
+### 1. Clonar y preparar
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd sistema-gestion-agricola
+npm install
+```
 
-- docs/DEPLOYMENT.md: deploy en Render
-- docs/API_REFERENCE.md: endpoints principales
-- docs/SECURITY.md: prácticas recomendadas
-- docs/TROUBLESHOOTING.md: errores comunes
-- docs/DOCUMENTATION_STYLE.md: guía de estilo de documentación y comentarios
+### 2. Configurar variables de entorno
+```bash
+# Backend
+cp server/.env.example server/.env
+# Frontend
+cp client/.env.example client/.env
+```
 
-## Licencia
+### 3. Base de datos
+```bash
+cd server
+npx prisma generate
+npx prisma db push
+```
 
-MIT. Ver LICENSE.
+## 🔧 Desarrollo
 
-— Documentación breve y accionable. Profundiza en docs/ cuando lo necesites.
+### Iniciar todos los servicios
+```bash
+npm run dev          # Frontend + Backend
+# o individualmente:
+npm run dev:client   # Solo frontend
+npm run dev:server   # Solo backend
+```
+
+### URLs de desarrollo
+- **Frontend**: http://localhost:5173
+- **Backend**: http://localhost:4000/api
+- **Health check**: http://localhost:4000/api/health
+
+### Scripts disponibles
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Inicia frontend y backend |
+| `npm run dev:client` | Solo frontend |
+| `npm run dev:server` | Solo backend |
+| `npm run build` | Build producción |
+| `npm run deploy` | Deploy a Render |
+
+## 📚 Documentación
+
+### 📖 Guías principales
+- [Deployment](./docs/DEPLOYMENT.md) - Deploy en Render
+- [API Reference](./docs/API_REFERENCE.md) - Endpoints y respuestas
+- [Security](./docs/SECURITY.md) - Prácticas de seguridad
+- [Troubleshooting](./docs/TROUBLESHOOTING.md) - Errores comunes
+
+### 🔧 Configuración
+- [Setup Desarrollo](./docs/SETUP_DESARROLLO.md) - Configuración completa
+- [Sistema de Filtros](./docs/SISTEMA_FILTROS.md) - Filtros avanzados
+- [Logging](./docs/SISTEMA_LOGGING_MODULAR.md) - Sistema de logs
+
+### 📊 Importación de datos
+- [Repuestos CSV](./docs/repuestos_importacion.csv) - Plantilla de importación
+- [Maquinarias](./docs/maquinas/) - Documentación por máquina
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea tu feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📞 Soporte
+
+- **Issues**: [GitHub Issues](URL_ISSUES)
+- **Email**: soporte@tudominio.com
+- **Documentación**: [Wiki del proyecto](URL_WIKI)
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+**Nota**: Para información detallada sobre cada componente, consulta los README específicos en cada carpeta.

@@ -93,52 +93,28 @@ exports.getRepuestos = async (req, res) => {
       if (searchOR.length) andConds.push({ OR: searchOR });
     }
 
-    // Filtros modularizados
-    const { buildStringFilter, buildRangeFilter } = require('../utils/filtrosBuilder');
-
-    // Filtro por código apilado
-    let codigos = [];
-    if (Array.isArray(codigo)) {
-      codigos = codigo;
-    } else if (typeof codigo === 'string') {
-      codigos = codigo.split(',').map(c => c.trim()).filter(Boolean);
-    }
-    if (codigos.length > 0) {
-      andConds.push({
-        OR: codigos.map(c => ({ codigo: { contains: c, mode: 'insensitive' } }))
-      });
+    // Filtro por código específico (puede ser múltiple)
+    if (codigo) {
+      const codigoTerms = Array.isArray(codigo) ? codigo : codigo.split(',');
+      const codeOR = codigoTerms
+        .map((term) => term.trim())
+        .filter(Boolean)
+        .map((t) => ({ codigo: { contains: t, mode: 'insensitive' } }));
+      if (codeOR.length === 1) {
+        baseWhere.codigo = codeOR[0].codigo; // objeto { contains, mode }
+      } else if (codeOR.length > 1) {
+        andConds.push({ OR: codeOR });
+      }
     }
 
-    // Filtro por categoría apilado
-    let categorias = [];
-    if (Array.isArray(categoria)) {
-      categorias = categoria;
-    } else if (typeof categoria === 'string') {
-      categorias = categoria.split(',').map(c => c.trim()).filter(Boolean);
-    }
-    if (categorias.length > 0) {
-      andConds.push({
-        OR: categorias.map(c => ({ categoria: { contains: c, mode: 'insensitive' } }))
-      });
+    // Filtro por categoría
+    if (categoria && categoria !== 'all') {
+      baseWhere.categoria = categoria;
     }
 
-    // Filtro por stock (rango)
-    const stockFilter = buildRangeFilter(stockMin, stockMax);
-    if (stockFilter && Object.keys(stockFilter).length) {
-      andConds.push({ stock: stockFilter });
-    }
-
-    // Filtro por ubicación apilado
-    let ubicaciones = [];
-    if (Array.isArray(ubicacion)) {
-      ubicaciones = ubicacion;
-    } else if (typeof ubicacion === 'string') {
-      ubicaciones = ubicacion.split(',').map(u => u.trim()).filter(Boolean);
-    }
-    if (ubicaciones.length > 0) {
-      andConds.push({
-        OR: ubicaciones.map(u => ({ ubicacion: { contains: u, mode: 'insensitive' } }))
-      });
+    // Filtro por ubicación
+    if (ubicacion && ubicacion !== 'all') {
+      baseWhere.ubicacion = ubicacion;
     }
 
     // Filtro por stock mínimo
