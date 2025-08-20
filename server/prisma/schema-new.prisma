@@ -1,0 +1,423 @@
+// This is a new schema file for the redesigned application
+// Rename this to schema.prisma when ready to migrate
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      UserRole @default(OPERATOR)
+  firstName String?
+  lastName  String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  operators        Operator[]
+  repairs          Repair[]
+  createdBudgets   Budget[]
+  approvedPayments Payment[]
+  createdSuppliers Supplier[]
+}
+
+// Equipment Management System
+model Machine {
+  id          Int      @id @default(autoincrement())
+  name        String
+  model       String
+  serial      String?  @unique
+  brand       String
+  year        Int?
+  category    String
+  description String?
+  status      MachineStatus @default(ACTIVE)
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  sections       Section[]
+  operators      Operator[]
+  repairs        Repair[]
+  budgetItems    BudgetItem[]
+  stockItems     StockItem[]
+}
+
+model Section {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  order       Int
+  machineId   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  machine    Machine     @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  components Component[]
+}
+
+model Component {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  partNumber  String?
+  order       Int
+  sectionId   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  parts   Part[]
+}
+
+model Part {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  partNumber  String?
+  quantity    Int      @default(1)
+  unit        String   @default("unidad")
+  componentId Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  component Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  repairs   RepairPart[]
+  stockItems StockItem[]
+}
+
+// Operator Management System
+model Operator {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?  @unique
+  phone     String
+  role      String
+  license   String?
+  status    OperatorStatus @default(ACTIVE)
+  userId    Int
+  machineId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user      User         @relation(fields: [userId], references: [id])
+  machine   Machine?     @relation(fields: [machineId], references: [id])
+  tools     Tool[]
+  supplies  Supply[]
+}
+
+model Tool {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  category    String
+  quantity    Int      @default(1)
+  condition   ToolCondition @default(GOOD)
+  operatorId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  operator Operator @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+}
+
+model Supply {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  category    String
+  quantity    Int      @default(0)
+  unit        String   @default("unidad")
+  minStock    Int      @default(0)
+  operatorId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  operator Operator @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+}
+
+// Budget Management System
+model Budget {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  totalAmount Int
+  spentAmount Int      @default(0)
+  startDate   DateTime
+  endDate     DateTime
+  status      BudgetStatus @default(ACTIVE)
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user       User         @relation(fields: [userId], references: [id])
+  purchases  Purchase[]
+  items      BudgetItem[]
+}
+
+model BudgetItem {
+  id          Int      @id @default(autoincrement())
+  description String
+  amount      Int
+  quantity    Int      @default(1)
+  budgetId    Int
+  machineId   Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  budget  Budget    @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  machine Machine? @relation(fields: [machineId], references: [id])
+}
+
+model Purchase {
+  id          Int      @id @default(autoincrement())
+  number      String   @unique
+  date        DateTime @default(now())
+  description String?
+  totalAmount Int
+  status      PurchaseStatus @default(PENDING)
+  budgetId    Int
+  supplierId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  budget   Budget          @relation(fields: [budgetId], references: [id])
+  supplier Supplier        @relation(fields: [supplierId], references: [id])
+  items    PurchaseItem[]
+  payments Payment[]
+}
+
+model PurchaseItem {
+  id          Int      @id @default(autoincrement())
+  description String
+  quantity    Int
+  unitPrice   Int
+  totalPrice  Int
+  purchaseId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  purchase Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id          Int      @id @default(autoincrement())
+  amount      Int
+  method      PaymentMethod
+  date        DateTime @default(now())
+  reference   String?
+  status      PaymentStatus @default(PENDING)
+  purchaseId  Int
+  approvedBy  Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  approvedBy User?    @relation(fields: [approvedBy], references: [id])
+}
+
+model Supplier {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String?  @unique
+  phone       String?
+  address     String?
+  taxId       String?
+  contact     String?
+  notes       String?
+  status      SupplierStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  purchases Purchase[]
+  stockItems StockItem[]
+}
+
+// Stock Management
+model StockItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  quantity    Int      @default(0)
+  minStock    Int      @default(0)
+  unit        String   @default("unidad")
+  price       Int?
+  location    String?
+  machineId   Int?
+  partId      Int?
+  supplierId  Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  machine  Machine?   @relation(fields: [machineId], references: [id])
+  part     Part?      @relation(fields: [partId], references: [id])
+  supplier Supplier?  @relation(fields: [supplierId], references: [id])
+}
+
+// Repair Management System
+model Repair {
+  id          Int      @id @default(autoincrement())
+  number      String   @unique
+  title       String
+  description String?
+  priority    RepairPriority @default(MEDIUM)
+  status      RepairStatus @default(PENDING)
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  estimatedCost Int    @default(0)
+  actualCost    Int    @default(0)
+  machineId   Int
+  operatorId  Int?
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  machine    Machine      @relation(fields: [machineId], references: [id])
+  operator   Operator?    @relation(fields: [operatorId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
+  parts      RepairPart[]
+}
+
+model RepairPart {
+  id        Int      @id @default(autoincrement())
+  quantity  Int      @default(1)
+  unitPrice Int
+  totalPrice Int
+  notes     String?
+  repairId  Int
+  partId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  repair Repair @relation(fields: [repairId], references: [id], onDelete: Cascade)
+  part   Part   @relation(fields: [partId], references: [id])
+}
+
+// Import Management
+model ImportJob {
+  id          Int      @id @default(autoincrement())
+  type        ImportType
+  filename    String
+  status      ImportStatus @default(PENDING)
+  totalRows   Int
+  processedRows Int    @default(0)
+  errors      Json     @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  MANAGER
+  OPERATOR
+  VIEWER
+}
+
+enum MachineStatus {
+  ACTIVE
+  MAINTENANCE
+  INACTIVE
+  DECOMMISSIONED
+}
+
+enum OperatorStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ToolCondition {
+  GOOD
+  FAIR
+  POOR
+  BROKEN
+}
+
+enum BudgetStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  OVERDUE
+}
+
+enum PurchaseStatus {
+  PENDING
+  APPROVED
+  RECEIVED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+  CHECK
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum RepairPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum RepairStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  ON_HOLD
+}
+
+enum ImportType {
+  CSV
+  MARKDOWN
+  JSON
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
