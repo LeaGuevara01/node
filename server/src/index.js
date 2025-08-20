@@ -31,7 +31,10 @@ const getCorsOrigins = () => {
   const fromEnv = (() => {
     const corsOrigin = config.CORS_ORIGIN;
     if (typeof corsOrigin === 'string' && corsOrigin.includes(',')) {
-      return corsOrigin.split(',').map(o => o.trim()).filter(Boolean);
+      return corsOrigin
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean);
     }
     if (typeof corsOrigin === 'string') {
       return corsOrigin ? [corsOrigin] : [];
@@ -46,7 +49,7 @@ const getCorsOrigins = () => {
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173',
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000',
   ];
 
   if (config.isDevelopment()) {
@@ -60,11 +63,15 @@ const getCorsOrigins = () => {
     if (renderFrontend) {
       prodOrigins.push(renderFrontend);
     }
-  } catch (_) { /* noop */ }
+  } catch (_) {
+    /* noop */
+  }
 
   // Si no hay nada definido, caer en devDefaults (útil para pruebas) pero loggear warning
   if (prodOrigins.length === 0) {
-    console.warn('⚠️  CORS_ORIGIN no definido en producción. Añadiendo dominios localhost por fallback. Define CORS_ORIGIN para restringir correctamente.');
+    console.warn(
+      '⚠️  CORS_ORIGIN no definido en producción. Añadiendo dominios localhost por fallback. Define CORS_ORIGIN para restringir correctamente.'
+    );
     return devDefaults;
   }
 
@@ -136,7 +143,7 @@ app.use('/api/compras', require('./routes/compras'));
 app.use('/api/componentes', require('./routes/componenteRoutes'));
 
 // Error handling middleware (respuesta consistente)
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
@@ -153,11 +160,13 @@ app.listen(PORT, () => {
 
   const corsOrigins = getCorsOrigins();
   console.log('🌐 CORS habilitado para:');
-  corsOrigins.forEach(o => console.log('   •', o));
+  corsOrigins.forEach((o) => console.log('   •', o));
   if (config.isProduction() && !process.env.CORS_ORIGIN) {
-    console.log('💡 Sugerencia: define CORS_ORIGIN en Render para restringir explícitamente los orígenes permitidos.');
+    console.log(
+      '💡 Sugerencia: define CORS_ORIGIN en Render para restringir explícitamente los orígenes permitidos.'
+    );
   }
-  
+
   if (fs.existsSync(__dirname + '/docs/openapi.yaml')) {
     console.log(`📖 Swagger UI disponible en http://localhost:${PORT}/api/docs`);
   }

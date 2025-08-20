@@ -9,14 +9,27 @@ try {
   const path = require('path');
   const dotenv = require('dotenv');
   const candidates = [
-    path.resolve(__dirname, '../.env'), // c:\...\server\.env
     path.resolve(__dirname, '../../.env'), // c:\...\.env (raíz del repo)
+    path.resolve(__dirname, '../.env'), // c:\...\server\.env
   ];
-  for (const p of candidates) {
-    dotenv.config({ path: p }); // no sobreescribe valores ya definidos
-  }
-} catch (_) {
-  // Si dotenv no está disponible o ocurre un error, continuar: en muchos entornos ya están definidas
+  candidates.forEach((p) => {
+    if (require('fs').existsSync(p)) {
+      dotenv.config({ path: p });
+      console.log(`✅ .env file loaded from: ${p}`);
+    } else {
+      console.log(`ℹ️  .env file not found at: ${p}`);
+    }
+  });
+  candidates.forEach((p) => {
+    if (require('fs').existsSync(p)) {
+      dotenv.config({ path: p });
+      console.log(`✅ .env file loaded from: ${p}`);
+    } else {
+      console.log(`ℹ️  .env file not found at: ${p}`);
+    }
+  });
+} catch (error) {
+  console.warn('⚠️  Error loading .env files:', error);
 }
 
 /**

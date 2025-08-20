@@ -220,6 +220,14 @@ class CSVConverter {
         fs.writeFileSync(csvPath, csvContent, 'utf-8');
         console.log(`   📈 componentes_importacion.csv generado (${resultados.consolidado.length} registros)`);
         
+            // 3b. Generar CSV en formato masivo esperado
+            if (typeof convertirComponentesParaImportacionMasiva === 'function') {
+                const csvMasivo = convertirComponentesParaImportacionMasiva(resultados.consolidado);
+                const csvMasivoPath = path.join(this.directorioBase, 'componentes_importacion_masiva.csv');
+                fs.writeFileSync(csvMasivoPath, csvMasivo, 'utf-8');
+                console.log(`   📊 componentes_importacion_masiva.csv generado (${resultados.consolidado.length} registros)`);
+            }
+        
         // 4. Generar resumen JSON para referencia
         const resumenJSON = {
             estadisticas: this.estadisticas,
@@ -311,6 +319,61 @@ class CSVConverter {
 function convertirParaImportacion(directorio = null) {
     const converter = new CSVConverter(directorio);
     return converter.ejecutar();
+}
+
+// Nueva función para convertir componentes a CSV para importación masiva
+function convertirComponentesParaImportacionMasiva(componentes) {
+    const headers = ['nombre', 'stock', 'categoria', 'ubicacion', 'codigo', 'descripcion'];
+    let csv = headers.join(',') + '\n';
+
+    componentes.forEach(comp => {
+        // Inferir categoría
+        let categoria = '';
+        const desc = (comp.descripcion || '').toLowerCase();
+        if (desc.includes('tornillo')) categoria = 'Tornillo';
+        else if (desc.includes('tuerca')) categoria = 'Tuerca';
+        else if (desc.includes('arandela')) categoria = 'Arandela';
+        else if (desc.includes('manguera')) categoria = 'Manguera';
+        else if (desc.includes('abrazadera')) categoria = 'Abrazadera';
+        else if (desc.includes('espárrago')) categoria = 'Espárrago';
+        else if (desc.includes('soporte')) categoria = 'Soporte';
+        else if (desc.includes('correa')) categoria = 'Correa';
+        else if (desc.includes('retendedor')) categoria = 'Retenedor';
+        else if (desc.includes('radiador')) categoria = 'Radiador';
+        else if (desc.includes('filtro')) categoria = 'Filtro';
+        else if (desc.includes('polea')) categoria = 'Polea';
+        else if (desc.includes('ventilador')) categoria = 'Ventilador';
+        else if (desc.includes('tapón')) categoria = 'Tapón';
+        else if (desc.includes('aislante')) categoria = 'Aislante';
+        else if (desc.includes('banda')) categoria = 'Banda';
+        else if (desc.includes('apoyo')) categoria = 'Apoyo';
+        else if (desc.includes('cabeza')) categoria = 'Cabeza';
+        else if (desc.includes('espaciador')) categoria = 'Espaciador';
+        else if (desc.includes('rodamiento')) categoria = 'Rodamiento';
+        else if (desc.includes('anillo')) categoria = 'Anillo';
+        else if (desc.includes('cubo')) categoria = 'Cubo';
+        else if (desc.includes('tensor')) categoria = 'Tensor';
+        else if (desc.includes('rueda')) categoria = 'Rueda';
+        else if (desc.includes('tapa')) categoria = 'Tapa';
+        else if (desc.includes('coraza')) categoria = 'Coraza';
+        else if (desc.includes('tapadera')) categoria = 'Tapadera';
+        else if (desc.includes('refrigerador')) categoria = 'Refrigerador';
+        else categoria = 'Componente';
+
+        // Ubicación: solo el valor de modelos, sin prefijo
+        let ubicacion = comp.modelos ? comp.modelos : (comp.archivo_origen || '');
+
+        csv += [
+            `"${comp.descripcion.replace(/"/g, '""')}"`,
+            comp.cantidad || '1',
+            `"${categoria}"`,
+            `"${ubicacion}"`,
+            `"${comp.codigo.replace(/"/g, '""')}"`,
+            `"${comp.observaciones.replace(/"/g, '""') || ''}"`
+        ].join(',') + '\n';
+    });
+
+    return csv;
 }
 
 // Exportar para uso como módulo
