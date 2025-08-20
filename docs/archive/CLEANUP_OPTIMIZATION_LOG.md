@@ -76,7 +76,7 @@
 
 ### **Antes de la Optimización**
 
-```
+```fence
 ReparacionForm.jsx         43,112 bytes (43KB)
 ReparacionForm_new.jsx     42,346 bytes (42KB)
 MaquinariaForm.jsx         34,103 bytes (34KB)
@@ -87,7 +87,7 @@ ProveedorForm.jsx          31,942 bytes (32KB)
 
 ### **Después de la Optimización**
 
-```
+```fence
 ReparacionForm.jsx         ~25,000 bytes (25KB) - Optimizado con hooks
 MaquinariaForm.jsx         ~20,000 bytes (20KB) - Refactorizado
 RepuestoForm.jsx           ~22,000 bytes (22KB) - Usando componentes shared
@@ -138,7 +138,7 @@ ProveedorForm.jsx          ~18,000 bytes (18KB) - Hooks integrados
 
 ### **Estructura Nueva**
 
-```
+```fence
 docs/
 ├── README.md                    # Índice principal (NUEVO)
 ├── SETUP_DESARROLLO.md          # Setup local

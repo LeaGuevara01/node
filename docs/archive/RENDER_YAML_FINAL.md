@@ -4,7 +4,7 @@
 
 ### ❌ **Error anterior:**
 
-```
+```fence
 redirects: field redirects not found in type file.Service
 ```
 

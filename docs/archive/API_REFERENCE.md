@@ -618,7 +618,7 @@ try {
 }
 ```
 
-### Paginación
+### Paginación (Detalles)
 
 ```javascript
 class RepuestosPaginated {

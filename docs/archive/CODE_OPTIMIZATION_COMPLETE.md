@@ -66,7 +66,7 @@ Constantes de estilos CSS organizadas por categorías:
 
 ## Estructura Final
 
-```
+```fence
 client/src/
 ├── pages/
 │   ├── RepuestoForm.jsx              # Componente principal optimizado

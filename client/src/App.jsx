@@ -1,247 +1,37 @@
-import ComponenteDetails from './pages/ComponenteDetails';
-/**
- * App (SPA root)
- * Rol: router + gate de autenticación
- * Notas: token JWT en estado local; NavigationProvider para navegación avanzada
- *
- * ACTUALIZADO PARA USAR NAVEGACIÓN REFACTORIZADA
- * Fecha: 2025-08-07T04:19:54.386Z
- *
- * Cambios:
- * - Dashboard → DashboardRefactored
- * - MaquinariasPage → MaquinariasPageRefactored
- * - MaquinariaDetails → MaquinariaDetailsRefactored
- */
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
+import Layout from './components/common/Layout';
+import Dashboard from './pages/Dashboard';
+import MachineList from './pages/machines/MachineList';
+import MachineDetails from './pages/machines/MachineDetails';
+import RepairOrderList from './pages/repairs/RepairOrderList';
+import RepairOrderForm from './pages/repairs/RepairOrderForm';
+import InventoryDashboard from './pages/inventory/InventoryDashboard';
+import SupplierList from './pages/suppliers/SupplierList';
+import PurchaseOrderList from './pages/purchases/PurchaseOrderList';
+import './App.css';
 
-import React, { useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { login } from './services/api';
-import { NavigationProvider } from './contexts/NavigationContext';
-import Dashboard from './pages/DashboardRefactored';
-import MaquinariaDetails from './pages/MaquinariaDetailsRefactored';
-import MaquinariasPage from './pages/MaquinariasPageRefactored';
-import MaquinariaFormulario from './pages/MaquinariaFormulario';
-import RepuestosPage from './pages/RepuestosPage';
-import ProveedoresPage from './pages/ProveedoresPage';
-import ReparacionesPage from './pages/ReparacionesPage';
-import ReparacionForm from './pages/ReparacionForm';
-import UsuariosPage from './pages/UsuariosPage';
-import ComprasPage from './pages/ComprasPage';
-import CompraForm from './pages/CompraForm';
-import CompraDetails from './pages/CompraDetails';
-import RepuestoDetails from './pages/RepuestoDetails';
-import ReparacionDetails from './pages/ReparacionDetails';
-import ProveedorDetails from './pages/ProveedorDetails';
-import RepuestoForm from './pages/RepuestoForm';
-import RepuestoFormulario from './pages/RepuestoFormulario';
-import ProveedorForm from './pages/ProveedorForm';
-import ProveedorFormulario from './pages/ProveedorFormulario';
-import { jwtDecode } from 'jwt-decode';
-import ContextPlaceholder from './pages/ContextPlaceholder';
-import ComponentePage from './pages/ComponentePage';
-import ComponenteForm from './pages/ComponenteForm';
 function App() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState(null);
-  const [role, setRole] = useState(null);
-  const [error, setError] = useState('');
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const res = await login(username, password);
-      if (res.token) {
-        setToken(res.token);
-        const decoded = jwtDecode(res.token);
-        setRole(decoded.role);
-        setError('');
-      } else {
-        setError(res.error || 'Credenciales inválidas');
-      }
-    } catch (err) {
-      setError('Error de conexión');
-    }
-  };
-
-  if (!token) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-80">
-          <h2 className="text-xl mb-4">Iniciar sesión</h2>
-          <input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="mb-2 p-2 w-full border rounded"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mb-2 p-2 w-full border rounded"
-            required
-          />
-          <button type="submit" className="w-full bg-green-600 text-white py-2 rounded">
-            Entrar
-          </button>
-          {error && <div className="text-red-500 mt-2">{error}</div>}
-        </form>
-      </div>
-    );
-  }
-
   return (
-    <NavigationProvider>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Dashboard
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        {/* Alias explícito para permitir /dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <Dashboard
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-
-        {/* Páginas de listado con filtros avanzados */}
-        <Route
-          path="/maquinarias"
-          element={
-            <MaquinariasPage
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        <Route
-          path="/repuestos"
-          element={
-            <RepuestosPage
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        <Route
-          path="/proveedores"
-          element={
-            <ProveedoresPage
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        <Route
-          path="/reparaciones"
-          element={
-            <ReparacionesPage
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        <Route
-          path="/usuarios"
-          element={
-            <UsuariosPage
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        <Route
-          path="/compras"
-          element={
-            <ComprasPage
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-        <Route path="/compras/nueva" element={<CompraForm token={token} />} />
-        <Route path="/compras/:id" element={<CompraDetails token={token} />} />
-
-        {/* Formularios y páginas de detalles */}
-        <Route path="/maquinarias/formulario" element={<MaquinariaFormulario token={token} />} />
-        <Route path="/maquinarias/editar/:id" element={<MaquinariaFormulario token={token} />} />
-        <Route path="/maquinarias/:id" element={<MaquinariaDetails token={token} />} />
-        {/* Formularios de Repuestos y Proveedores */}
-        <Route path="/repuestos/formulario" element={<RepuestoFormulario token={token} />} />
-        <Route path="/repuestos/editar/:id" element={<RepuestoFormulario token={token} />} />
-  <Route path="/repuestos/:id" element={<RepuestoDetails token={token} />} />
-  {/* Rutas estandarizadas para componentes */}
-  <Route path="/componentes" element={<ComponentePage token={token} />} />
-  <Route path="/componentes/nuevo" element={<ComponenteForm onSubmit={() => {}} onClose={() => {}} />} />
-  <Route path="/componentes/:id" element={<ComponenteDetails token={token} />} />
-        <Route path="/reparaciones/:id" element={<ReparacionDetails token={token} />} />
-        <Route path="/proveedores/formulario" element={<ProveedorFormulario token={token} />} />
-        <Route path="/proveedores/editar/:id" element={<ProveedorFormulario token={token} />} />
-        <Route path="/proveedores/:id" element={<ProveedorDetails token={token} />} />
-        {/* Rutas de contexto (placeholder) */}
-        <Route
-          path="/contexto/:tipo/:valor"
-          element={
-            <ContextPlaceholder
-              token={token}
-              role={role}
-              onLogout={() => {
-                setToken(null);
-                setRole(null);
-              }}
-            />
-          }
-        />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </NavigationProvider>
+    <Provider store={store}>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/machines" element={<MachineList />} />
+            <Route path="/machines/:id" element={<MachineDetails />} />
+            <Route path="/repairs" element={<RepairOrderList />} />
+            <Route path="/repairs/new" element={<RepairOrderForm />} />
+            <Route path="/repairs/:id" element={<RepairOrderForm />} />
+            <Route path="/inventory" element={<InventoryDashboard />} />
+            <Route path="/suppliers" element={<SupplierList />} />
+            <Route path="/purchase-orders" element={<PurchaseOrderList />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </Provider>
   );
 }
 

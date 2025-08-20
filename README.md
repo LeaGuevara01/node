@@ -3,24 +3,26 @@
 **Estado:** Producción activa | **Node:** >= 18 | **Licencia:** MIT
 
 ## 📋 Tabla de Contenidos
-- [Descripción General](#descripción-general)
+
+- [Descripción General](#descripcion-general)
 - [Arquitectura del Sistema](#arquitectura-del-sistema)
 - [Estructura del Proyecto](#estructura-del-proyecto)
-- [Instalación Rápida](#instalación-rápida)
+- [Instalacion Rapida](#instalacion-rapida)
 - [Desarrollo](#desarrollo)
-- [Documentación](#documentación)
-- [Contribución](#contribución)
+- [Documentacion](#documentacion)
+- [Contribucion](#contribucion)
 
-## 🎯 Descripción General
+## Descripcion General
 
 Sistema integral de gestión agrícola que permite administrar:
+
 - **Maquinaria** y equipos agrícolas
 - **Repuestos** y inventario
 - **Proveedores** y contactos
 - **Reparaciones** y mantenimiento
 - **Usuarios** y permisos
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ```mermaid
 graph TD
@@ -31,6 +33,7 @@ graph TD
 ```
 
 ### Stack Tecnológico
+
 | Componente | Tecnología |
 |----------|------------|
 | Frontend | React 18 + Vite + TypeScript |
@@ -40,9 +43,9 @@ graph TD
 | Base de datos | PostgreSQL |
 | Autenticación | JWT |
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
-```
+```fenced
 sistema-gestion-agricola/
 ├── client/          # Frontend React SPA
 ├── server/          # Backend API REST
@@ -55,32 +58,37 @@ sistema-gestion-agricola/
 ### 📦 Carpetas Principales
 
 #### [`client/`](./client/README.md)
+
 - **Frontend SPA** en React + TypeScript
 - **Build system**: Vite
 - **Estilos**: Tailwind CSS
 - **Incluye**: Componentes, páginas, hooks, servicios
 
 #### [`server/`](./server/README.md)
+
 - **Backend API** en Node.js + Express
 - **ORM**: Prisma con PostgreSQL
 - **Autenticación**: JWT
 - **Incluye**: Controladores, rutas, modelos, middleware
 
 #### [`docs/`](./docs/README.md)
+
 - **Documentación técnica** completa
 - **Guías**: Deployment, API, seguridad
 - **Archivos CSV**: Importación de repuestos
 - **Logs**: Migraciones y optimizaciones
 
-## 🚀 Instalación Rápida
+## Instalacion Rapida
 
 ### Requisitos previos
+
 ```bash
 node -v   # >= 18
 npm -v    # >= 8
 ```
 
 ### 1. Clonar y preparar
+
 ```bash
 git clone [URL_DEL_REPOSITORIO]
 cd sistema-gestion-agricola
@@ -88,6 +96,7 @@ npm install
 ```
 
 ### 2. Configurar variables de entorno
+
 ```bash
 # Backend
 cp server/.env.example server/.env
@@ -96,15 +105,17 @@ cp client/.env.example client/.env
 ```
 
 ### 3. Base de datos
+
 ```bash
 cd server
 npx prisma generate
 npx prisma db push
 ```
 
-## 🔧 Desarrollo
+## Desarrollo
 
 ### Iniciar todos los servicios
+
 ```bash
 npm run dev          # Frontend + Backend
 # o individualmente:
@@ -113,11 +124,13 @@ npm run dev:server   # Solo backend
 ```
 
 ### URLs de desarrollo
-- **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:4000/api
-- **Health check**: http://localhost:4000/api/health
+
+- **Frontend**: <http://localhost:5173>
+- **Backend**: <http://localhost:4000/api>
+- **Health check**: <http://localhost:4000/api/health>
 
 ### Scripts disponibles
+
 | Comando | Descripción |
 |---------|-------------|
 | `npm run dev` | Inicia frontend y backend |
@@ -126,24 +139,27 @@ npm run dev:server   # Solo backend
 | `npm run build` | Build producción |
 | `npm run deploy` | Deploy a Render |
 
-## 📚 Documentación
+## Documentacion
 
 ### 📖 Guías principales
+
 - [Deployment](./docs/DEPLOYMENT.md) - Deploy en Render
 - [API Reference](./docs/API_REFERENCE.md) - Endpoints y respuestas
 - [Security](./docs/SECURITY.md) - Prácticas de seguridad
 - [Troubleshooting](./docs/TROUBLESHOOTING.md) - Errores comunes
 
 ### 🔧 Configuración
+
 - [Setup Desarrollo](./docs/SETUP_DESARROLLO.md) - Configuración completa
 - [Sistema de Filtros](./docs/SISTEMA_FILTROS.md) - Filtros avanzados
 - [Logging](./docs/SISTEMA_LOGGING_MODULAR.md) - Sistema de logs
 
 ### 📊 Importación de datos
+
 - [Repuestos CSV](./docs/repuestos_importacion.csv) - Plantilla de importación
 - [Maquinarias](./docs/maquinas/) - Documentación por máquina
 
-## 🤝 Contribución
+## Contribucion
 
 1. Fork el proyecto
 2. Crea tu feature branch (`git checkout -b feature/AmazingFeature`)
@@ -154,7 +170,7 @@ npm run dev:server   # Solo backend
 ## 📞 Soporte
 
 - **Issues**: [GitHub Issues](URL_ISSUES)
-- **Email**: soporte@tudominio.com
+- **Email**: <soporte@tudominio.com>
 - **Documentación**: [Wiki del proyecto](URL_WIKI)
 
 ## 📄 Licencia

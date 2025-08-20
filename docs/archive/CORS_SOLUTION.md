@@ -2,7 +2,7 @@
 
 ## ❌ Problema Original
 
-```
+```fence
 Access to fetch at 'http://localhost:4000/api/auth/login' from origin 'http://localhost:3000'
 has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header contains multiple
 values 'http://localhost:5173,http://localhost:3000,https://sistemagestionagricola-frontend.onrender.com',
@@ -134,7 +134,7 @@ const corsOptions = {
 
 **Resultado**: Header `Access-Control-Allow-Origin` contenía literalmente:
 
-```
+```fence
 Access-Control-Allow-Origin: http://localhost:3000,http://localhost:5173
 ```
 

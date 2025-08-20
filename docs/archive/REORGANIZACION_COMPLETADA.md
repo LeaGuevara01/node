@@ -4,7 +4,7 @@
 
 ### 🗂️ Nueva Estructura Implementada
 
-```
+```fence
 docs/
 ├── README.md                    # ✨ Índice general de documentación
 ├── SETUP_DESARROLLO.md          # ✨ Guía de instalación y desarrollo
@@ -173,7 +173,7 @@ docs/
 
 ## 🏆 Resultado Final
 
-**✅ Documentación completamente reorganizada y sectorizada**
+## ✅ Documentación completamente reorganizada y sectorizada
 
 - 📁 **8 documentos nuevos** especializados y bien estructurados
 - 🔗 **Navegación intuitiva** con enlaces contextuales

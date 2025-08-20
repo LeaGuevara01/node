@@ -37,7 +37,7 @@ Los siguientes documentos han sido **consolidados** en el nuevo README.md princi
 
 ## 🎯 **Estructura Final de Documentación**
 
-```
+```fence
 📦 Documentación/
 ├── 📄 README.md                          # 🟢 DOCUMENTACIÓN PRINCIPAL UNIFICADA
 │   ├── Descripción completa del proyecto
