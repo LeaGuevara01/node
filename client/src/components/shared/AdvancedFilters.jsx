@@ -80,9 +80,7 @@ const AdvancedFilters = ({
             const normalized = raw === '' ? '' : campo.valueType === 'number' ? Number(raw) : raw;
             handleFiltroChange(campo.name, normalized);
           }}
-          className={
-            'min-w-0 w-full truncate bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-left'
-          }
+          className={'flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder-gray-400 text-left'}
         >
           <option value="" className={INPUT_STYLES.selectPlaceholder + ' placeholder-gray-400 text-left'}>
             {campo.placeholder}

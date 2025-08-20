@@ -1,0 +1,42 @@
+{
+  "estadisticas": {
+    "archivosProcesados": 31,
+    "totalComponentes": 471,
+    "errores": []
+  },
+  "totalComponentes": 471,
+  "archivosProcesados": [
+    "ST350411.md",
+    "ST350426.md",
+    "ST350433.md",
+    "ST350784.md",
+    "ST350785.md",
+    "ST350787.md",
+    "ST350788.md",
+    "ST350789.md",
+    "ST350791.md",
+    "ST350792.md",
+    "ST350793.md",
+    "ST350794.md",
+    "ST350795.md",
+    "ST350797.md",
+    "ST350798.md",
+    "ST350799.md",
+    "ST350800.md",
+    "ST350801.md",
+    "ST350802.md",
+    "ST350803.md",
+    "ST350804.md",
+    "ST350805.md",
+    "ST350807.md",
+    "ST350808.md",
+    "ST350809.md",
+    "ST350811.md",
+    "ST350814.md",
+    "ST350815.md",
+    "ST350816.md",
+    "ST350817.md",
+    "ST350818.md"
+  ],
+  "fechaGeneracion": "2025-08-20T03:58:26.037Z"
+}
